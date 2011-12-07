@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  game_id: 1
+  turn: 1
+  state: MyString
+
+two:
+  game_id: 1
+  turn: 1
+  state: MyString

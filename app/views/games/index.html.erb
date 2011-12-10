@@ -1,23 +1,26 @@
-<h1>Current Games</h1>
+<h1>Games#index</h1>
 
+<h2>Games In Server</h2>
 <table>
   <tr>
-    <th>Game Name</th>
-    <th>It started at</th>
+    <th>Game Title</th>
     <th>Variant</th>
-    <th>Status</th>
+    <th>Started At</th>
+    <th>Options</th>
   </tr>
 
-<% @games.each do |user| %>
-  <tr>
-    <td><%= user.username %></td>
-    <td><%= link_to 'Show', user %></td>
-    <td><%= link_to 'Edit', edit_user_path(user) %></td>
-    <td><%= link_to 'Destroy', user, confirm: 'Are you sure?', method: :delete %></td>
-  </tr>
-<% end %>
+  <% @games.each do |game| %>
+    <tr>
+      <td><%= link_to game.title, game %></td>
+      <td><%= game.variant.name %></td>
+      <td><%= game.start_time %></td>
+      <td><%= link_to 'Delete', game, confirm: 'Are you sure?', method: :delete %></td>
+    </tr>
+  <% end %>
 </table>
 
 <br />
+<%= link_to 'New Game', new_game_path %>
 
-<%= link_to 'New User', new_user_path %>
+
+

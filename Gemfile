@@ -34,6 +34,7 @@ gem 'jquery-rails'
 group :development do 
   #gem 'ruby-debug19', :require => 'ruby-debug'
   gem 'pry-rails'
+  gem 'rspec-rails'
 end
 
 group :test do

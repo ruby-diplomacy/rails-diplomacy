@@ -1,6 +1,6 @@
 class Game < ActiveRecord::Base
 
-  has_many :game_users
+  has_many :game_users, :uniq => true
   has_many :users, :through => :game_users, :uniq => true
   belongs_to :variant
   has_many :powers, :through => :variant, :uniq => true

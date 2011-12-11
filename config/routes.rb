@@ -1,5 +1,11 @@
 RailsDiplomacy::Application.routes.draw do
 
+  get "chatroom/index"
+
+  get "chatroom/create"
+
+  get "chatroom/show"
+
   resources :users
   resources :games
 

@@ -1,5 +1,17 @@
+<% content_for :prehead do %>
+  <%= javascript_include_tag "#{FayeSettings::SERVER_URL}/faye.js"%>
+<% end %>
+
 <p id="notice"><%= notice %></p>
 
+<h2>Messages  sax</h2>
+<ul id='message-list' class='message-list' data-channel='<%= channel_for_chatroom(@chatroom) %>'>
+  <%= render @chatroom.messages %>
+</ul>
 
-<%= link_to 'Edit', edit_chatroom_path(@chatroom) %> |
-<%= link_to 'Back', chatrooms_path %>
+<%= form_for @chatroom.messages.build(:power => Power.first), :remote => true do |f| %>
+  <%= f.text_field :text %>
+  <%= f.hidden_field :chatroom_id %>
+  <%= f.submit "Send" %>
+<% end %>
+

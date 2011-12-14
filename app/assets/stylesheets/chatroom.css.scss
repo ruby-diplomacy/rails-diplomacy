@@ -1,3 +1,9 @@
 // Place all the styles related to the chatroom controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.message-list {
+  height: 300px;
+  width: 220px;
+  overflow: auto;
+}

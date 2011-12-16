@@ -9,7 +9,7 @@
   <%= render @chatroom.messages %>
 </ul>
 
-<%= form_for @chatroom.messages.build(:power => Power.first), :remote => true do |f| %>
+<%= form_for @chatroom.messages.new(:power => Power.first), :remote => true do |f| %>
   <%= f.text_field :text %>
   <%= f.hidden_field :chatroom_id %>
   <%= f.submit "Send" %>

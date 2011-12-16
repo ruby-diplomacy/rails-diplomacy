@@ -1,13 +1,13 @@
-class Chatroom < ActiveRecord::Base
+class Chatroom
+  include DataMapper::Resource
+  property :id, Serial
   belongs_to :game
-  has_many :chatroom_power_associations
-  has_many :powers, :through => :chatroom_power_associations
-  has_many :messages
+  has n, :chatroom_power_associations
+  has n, :powers, :through => :chatroom_power_associations
+  has n, :messages
 
-  def users_hash
-    chatroom_power_associations.inject({}) do |hash, item|
-      hash[item.power.name] = item.user
-    end
+  def users
+   self.powers.user_assignments.users
   end
 
 end

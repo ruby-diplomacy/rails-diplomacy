@@ -5,7 +5,7 @@ class MessagesController < ApplicationController
   def create
     @user = logged_user
     @message = Message.new(params[:message])
-    @message.power = Power.first
+    @message.power = @user.power_for_chatroom(@message.chatroom)
 
     if @message.save
       flash[:notice] = 'Message was successfully created'

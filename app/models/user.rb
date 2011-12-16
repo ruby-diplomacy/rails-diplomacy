@@ -1,25 +1,18 @@
-class User < ActiveRecord::Base
-  validates_presence_of :username
-  validates_uniqueness_of :username
+class User 
+  include DataMapper::Resource
+  property :id, Serial
+  property :username, String, :required => true
 
-  has_many :game_users
-  has_many :games, :through => :game_users, :uniq => true
+  has n, :user_assignments
+  has n, :games, :through => :user_assignments
+  has n, :powers, :through => :user_assignments
 
-  def game_associations(options = {:include => :power})
-    self.game_users.find(:all, options)
+  def assign_power_for_game(g)
+    self.user_assignments.create(:game => g, :power => power)
   end
 
-  def game_association(game)
-    self.game_associations.where(:game_id => game.id).first
+  def power_for_chatroom(c)
+    self.user_assignments.first(:game => c.game).power
   end
 
-  def power_for_game(game)
-    self.game_association(game).power
-  end
-
-  def assign_power_for_game(attrs)
-    assoc = self.game_association(attrs[:game])
-    assoc.power = attrs[:power]
-    assoc.save
-  end
 end

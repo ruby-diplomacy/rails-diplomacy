@@ -1,5 +1,5 @@
 module FayeSettings
-  SERVER_URL = "http://192.168.1.200:9292"
+  SERVER_URL = "http://localhost:9292"
   
   def self.security_token
     # FIXME: Should change over time

@@ -63,8 +63,8 @@ module Diplomacy
 
   class Convoy < GenericOrder
     attr_accessor :src
-    def initialize(unit, unit_area, dst, src)
-      super(unit, unit_area, dst, src)
+    def initialize(unit, unit_area, src, dst)
+      super(unit, unit_area, dst)
       @src = src
     end
     

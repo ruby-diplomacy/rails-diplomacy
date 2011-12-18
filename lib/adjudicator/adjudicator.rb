@@ -91,26 +91,33 @@ module Diplomacy
       order = wrapped_order.order
       case order
       when Move
+        # get all convoys for this move
+        convoys_to_area = @convoys[order.dst]
+        convoys_to_area.each do |convoy|
+          if convoy.order.src == order.unit_area
+            dependencies << convoy
+          end
+        end unless convoys_to_area.nil?
+        
+        # get all moves to the same destination
         some_deps = @moves_by_dst[order.dst]
         
         if not some_deps.nil?
-          some_deps.delete_if {|dep| dep.equal? wrapped_order}
-          dependencies.concat(some_deps)
+          dependencies.concat(some_deps.reject {|dep| dep.equal? wrapped_order})
         end
         
+        # get all supports to the destination
         some_deps = @supports_by_dst[order.dst]
         
         if not some_deps.nil?
-          some_deps.delete_if {|dep| dep.equal? wrapped_order}
-          dependencies.concat(some_deps)
+          dependencies.concat(some_deps.reject {|dep| dep.equal? wrapped_order})
         end
         
+        # get the move leaving from the destination - can only be one or zero
         dep_move = @moves_by_origin[order.dst]
         
         # add the move from the destination, unless it's a head to head 
         dependencies << dep_move unless dep_move.nil? or dep_move.order.dst == order.unit_area
-        
-        @@log.debug "Dependencies for #{wrapped_order} are #{dependencies}"
       when Support, SupportHold
         # get all moves towards this area
         moves_to_area = @moves_by_dst[order.unit_area]
@@ -132,9 +139,11 @@ module Diplomacy
       when Hold
         # intentionally empty: Holds have no dependencies
       when Convoy
-        dependencies.concat(deps_part = @moves_by_dst[order.unit_area]) unless deps_part.nil?
-        dependencies.concat(deps_part = @supports_by_dst[order.unit_area]) unless deps_part.nil?
+        deps_part = @moves_by_dst[order.unit_area]
+        dependencies.concat(deps_part) unless deps_part.nil?
       end
+      
+      @@log.debug "Dependencies for #{wrapped_order} are #{dependencies}"
       
       dependencies
     end
@@ -145,8 +154,20 @@ module Diplomacy
       order = wrapped_order.order
       case order
       when Move
+        # check convoy path
+        related_convoys = @convoys[order.dst]
+        if not related_convoys.nil?
+          related_convoys.delete_if {|move| not move.order.src.eql? order.unit_area}
+        end
         
-        # TODO path
+        # this checks if ANY convoy fails, which isn't enough for eg. multiple 
+        # convoy paths. Need to seperate into paths and check each one. 
+        related_convoys.each do |convoy|
+          if convoy.status == OrderWrapper::FAILURE
+            wrapped_order.status = OrderWrapper::FAILURE
+            return
+          end
+        end unless related_convoys.nil?
         
         # check for head to head battle
         head_to_head_move = nil
@@ -161,7 +182,7 @@ module Diplomacy
         if not head_to_head_move.nil?
           # there is a head to head battle
           defend_prevent_strengths = [calculate_defend_strength(head_to_head_move)]
-          if not (competing_moves = @moves_by_dst[order.dst]).nil?
+          if not (competing_moves = @moves_by_dst[order.dst].reject {|move| move.equal? wrapped_order}).nil?
             competing_moves.each do |competing_move|
               defend_prevent_strengths << calculate_prevent_strength(competing_move)
             end
@@ -178,13 +199,15 @@ module Diplomacy
           hold_strength = calculate_hold_strength(order.dst)
           @@log.debug "Hold strength for #{order.dst}: #{hold_strength}"
           hold_prevent_strengths = [hold_strength]
-          if not (competing_moves = @moves_by_dst[order.dst]).nil?
+          if not (competing_moves = @moves_by_dst[order.dst].reject {|move| move.equal? wrapped_order}).nil?
             competing_moves.each do |competing_move|
-              defend_prevent_strengths << calculate_prevent_strength(competing_move)
+              hold_prevent_strengths << calculate_prevent_strength(competing_move)
             end
           end
           
           hold_prevent_strengths.sort!
+          
+          @@log.debug "#{attack_strength}, #{hold_prevent_strengths}"
           
           attack_strength > hold_prevent_strengths[-1] ? 
             wrapped_order.status = OrderWrapper::SUCCESS 
@@ -193,7 +216,7 @@ module Diplomacy
         
       when Support        
         # get all moves against this area
-        moves_to_area = moves_by_dst[order.unit_area]
+        moves_to_area = @moves_by_dst[order.unit_area]
         
         moves_to_area.each do |wrapped_move|
           if order.nationality != wrapped_move.order.nationality and
@@ -209,13 +232,22 @@ module Diplomacy
       when Hold
         # Hold always succeeds
         wrapped_order.status = OrderWrapper::SUCCESS
+      when Convoy
+        intercepting_moves = @moves_by_dst[order.unit_area]
+        
+        intercepting_moves.each do |move|
+          if move.status == OrderWrapper::SUCCESS
+            wrapped_order.status = OrderWrapper::FAILURE
+            return
+          end
+        end unless intercepting_moves.nil?
+        
+        wrapped_order.status = OrderWrapper::SUCCESS
       end
     end
     
     def calculate_attack_strength(wrapped_move)
       strength = 1
-      
-      # TODO path
       
       unit_at_dst = @state.area_unit(wrapped_move.order.dst)
       

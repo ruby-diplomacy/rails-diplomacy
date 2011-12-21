@@ -1,9 +1,11 @@
-class Message < ActiveRecord::Base
+class Message
+  include DataMapper::Resource
+
+  property :id, Serial
+  property :text, String
   belongs_to :power
   belongs_to :chatroom
-
-  validates_presence_of :chatroom
-  validates_presence_of :power
+  has 1, :game, {:through => :chatroom}
 
   def game
     self.chatroom.game

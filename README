@@ -1,1 +1,3 @@
-Web Based Diplomacy Game
+A Ruby-powered website that implements Diplomacy, the greatest boardgame ever, by Allan Calhammer. 
+
+This project aims to provide the community with a Diplomacy website with a usable point-and-click interface, and a host of features we feel are missing from existing websites. 

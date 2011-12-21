@@ -1,33 +1,23 @@
-class Game < ActiveRecord::Base
+class Game
+  include DataMapper::Resource
+  property :id, Serial
+  property :title, String, :required => true
+  property :status, Integer, :required => true, :default => 0
+  property :start_time, DateTime
 
-  has_many :game_users, :uniq => true, :include => [:power, :user]
-  has_many :users, :through => :game_users, :uniq => true
+  has n, :user_assignments
+  has n, :users, :through => :user_assignments
   belongs_to :variant
-  has_many :powers, :through => :variant, :uniq => true
-  
+  has n, :powers, :through => :variant
 
-  def user_associations
-    self.game_users
+  def assign_user(user, power)
+    self.user_assignments.create(:user => user, :power => power)
+    self.save
   end
 
-  def user_association(user)
-    self.user_associations.where(:user_id => user.id).first
-  end
 
-  def user_association_by_power(power)
-    self.user_associations.where(:power_id => power.id).first
-  end
-
-  def power_assignments
-    self.user_associations.with_power
-  end
-
-  def assigned_powers
-    power_assigments.collect {|a| a.power}
-  end
-
-  def unassigned_powers
-    powers - assigned_powers
+  def power_for_user(user)
+    self.user_assignments(:user => user).first.power
   end
 
 end

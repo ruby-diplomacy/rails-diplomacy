@@ -4,7 +4,7 @@
 #
 #
 jQuery  ->
-  faye = new Faye.Client('http://192.168.1.200:9292/faye')
+  faye = new Faye.Client('http://localhost:9292/faye')
   channel = $('#message-list').data('channel')
   faye.subscribe channel, (data) ->
     eval(data)

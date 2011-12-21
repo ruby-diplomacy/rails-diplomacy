@@ -1,7 +1,8 @@
-class Variant < ActiveRecord::Base
-  has_many :games
-  has_many :powers
+class Variant 
+  include DataMapper::Resource
+  property :id, Serial
+  property :name, String, :required => true
+  has n, :games
+  has n, :powers
 
-  validates_presence_of :name
-  validates_uniqueness_of :name
 end

@@ -13,7 +13,7 @@ class ChatroomsController < ApplicationController
   # GET /chatrooms/1
   # GET /chatrooms/1.json
   def show
-    @chatroom = Chatroom.find(params[:id])
+    @chatroom = Chatroom.first(params[:id])
 
     respond_to do |format|
       format.html # show.html.erb
@@ -56,7 +56,7 @@ class ChatroomsController < ApplicationController
   # PUT /chatrooms/1
   # PUT /chatrooms/1.json
   def update
-    @chatroom = Chatroom.find(params[:id])
+    @chatroom = Chatroom.first(params[:id])
 
     respond_to do |format|
       if @chatroom.update_attributes(params[:chatroom])
@@ -72,7 +72,7 @@ class ChatroomsController < ApplicationController
   # DELETE /chatrooms/1
   # DELETE /chatrooms/1.json
   def destroy
-    @chatroom = Chatroom.find(params[:id])
+    @chatroom = Chatroom.first(params[:id])
     @chatroom.destroy
 
     respond_to do |format|

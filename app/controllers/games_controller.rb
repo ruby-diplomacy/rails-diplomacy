@@ -8,7 +8,7 @@ class GamesController < ApplicationController
   end
 
   def show
-    @game = Game.find(params[:id])
+    @game = Game.first(params[:id])
     respond_to do |format|
       format.html
       format.json {render json: @game}
@@ -38,7 +38,7 @@ class GamesController < ApplicationController
     end
 
     def update
-      @game = Game.find(params[:id])
+      @game = Game.first(params[:id])
 
       respond_to do |format|
         if @game.update_attributes(params[:user])
@@ -54,7 +54,7 @@ class GamesController < ApplicationController
     # DELETE /users/1
     # DELETE /users/1.json
     def destroy
-      @game = Game.find(params[:id])
+      @game = Game.first(params[:id])
       @game.destroy
 
       respond_to do |format|
@@ -65,7 +65,7 @@ class GamesController < ApplicationController
   end
 
   def edit
-    @game = Game.find(params[:id])
+    @game = Game.first(params[:id])
   end
 
 end

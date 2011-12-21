@@ -1,5 +1,11 @@
-class Power < ActiveRecord::Base
+class Power 
+  include DataMapper::Resource
+  property :id, Serial
+  property :name, String, :required => true, :unique => :variant
   belongs_to :variant
+  has n, :user_assignments
 
-  validates :name, :presence => true, :uniqueness => {:scope =>:variant_id, :message => 'should be unique for a variant'}
+  def user_for_game(g)
+    user_assignments(:game => g).first.user
+  end
 end

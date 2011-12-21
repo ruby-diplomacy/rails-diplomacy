@@ -17,6 +17,7 @@ module Diplomacy
       @moves = {}
       @supports = {}
       @holds = {}
+      @supportholds = {}
       @convoys = {}
       
       # create wrappers and categorize orders
@@ -31,7 +32,7 @@ module Diplomacy
         when Hold 
           (self.holds[wrapped.order.dst] ||= Array.new) << wrapped
         when SupportHold
-          (self.supports[wrapped.order.dst] ||= Array.new) << wrapped
+          (self.supportholds[wrapped.order.dst] ||= Array.new) << wrapped
         when Convoy
           (self.convoys[wrapped.order.dst] ||= Array.new) << wrapped
         end
@@ -75,6 +76,9 @@ module Diplomacy
       hold = @holds[area] || []
     end
     
+    def supportholds_to(area)
+      supports = @supportholds[area] || []
+    end
   end
   
   class Adjudicator
@@ -340,12 +344,10 @@ module Diplomacy
         else # unit was ordered something supportable
           strength = 1
           
-          supports = @orders.hold_in(area) # FIXME FIXME FIXME!!!!
+          supports = @orders.supportholds_to(area)
           
           supports.each do |support|
-            if support.status == OrderWrapper::SUCCESS 
-              strength += 1
-            end
+            strength += 1 if support.status == OrderWrapper::SUCCESS 
           end
         end
       else # there is no unit

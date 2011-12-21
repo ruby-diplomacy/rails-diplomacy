@@ -4,6 +4,7 @@ class Game < ActiveRecord::Base
   has_many :users, :through => :game_users, :uniq => true
   belongs_to :variant
   has_many :powers, :through => :variant, :uniq => true
+  
 
   def user_associations
     self.game_users

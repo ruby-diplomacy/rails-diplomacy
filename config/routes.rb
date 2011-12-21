@@ -2,9 +2,9 @@ RailsDiplomacy::Application.routes.draw do
 
   resources :users
   resources :games 
-  resources :chatrooms 
-  resources :messages
-  match '/auth/:provider/callback', to: 'sessions#create'
+  resources :chatrooms do
+    resources :messages
+  end
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

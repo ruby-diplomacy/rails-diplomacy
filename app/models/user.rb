@@ -2,15 +2,12 @@ class User < ActiveRecord::Base
   validates_presence_of :username
   validates_uniqueness_of :username
 
-  has_many :game_users
+  has_many :game_users, :include => :power
   has_many :games, :through => :game_users, :uniq => true
-
-  def game_associations(options = {:include => :power})
-    self.game_users.find(:all, options)
-  end
+  scope 
 
   def game_association(game)
-    self.game_associations.where(:game_id => game.id).first
+    self.game_users.where(:game_id => game.id).first
   end
 
   def power_for_game(game)

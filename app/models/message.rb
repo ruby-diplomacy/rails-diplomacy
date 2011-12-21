@@ -5,4 +5,7 @@ class Message < ActiveRecord::Base
   validates_presence_of :chatroom
   validates_presence_of :power
 
+  def game
+    self.chatroom.game
+  end
 end

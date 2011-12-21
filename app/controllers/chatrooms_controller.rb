@@ -13,7 +13,7 @@ class ChatroomsController < ApplicationController
   # GET /chatrooms/1
   # GET /chatrooms/1.json
   def show
-    @chatroom = Chatroom.first(params[:id])
+    @chatroom = Chatroom.get(params[:id].to_i)
 
     respond_to do |format|
       format.html # show.html.erb

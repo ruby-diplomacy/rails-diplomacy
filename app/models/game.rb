@@ -10,7 +10,7 @@ class Game
   belongs_to :variant
   has n, :powers, :through => :variant
 
-  def assign_user(user, power)
+  def assign_user(user, power = nil)
     self.user_assignments.create(:user => user, :power => power)
     self.save
   end

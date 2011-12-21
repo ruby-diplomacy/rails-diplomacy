@@ -36,4 +36,6 @@ RailsDiplomacy::Application.configure do
 
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
+
+  Dir[Rails.root.join("spec/factories/**/*.rb")].each {|f| require f}
 end

@@ -1,6 +1,5 @@
 FactoryGirl.define  do
 
-
   factory :game do 
     start_time {2.days.ago}
     variant {FactoryGirl.create :variant_with_powers}
@@ -8,14 +7,15 @@ FactoryGirl.define  do
     sequence(:title) {|n| "game_#{n}"}
   end
 
-  factory :game_user_assoc, :class => GameUser do 
+  factory :user_assignment do 
     user
     game
 
-    factory :game_user_assoc_with_power do 
+    factory :user_assignment_with_power do 
       power_id { game.powers.first.id}
     end
   end
 end
+
 
 

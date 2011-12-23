@@ -7,8 +7,8 @@ class User
   has n, :games, :through => :user_assignments
   has n, :powers, :through => :user_assignments
 
-  def assign_power_for_game(g)
-    self.user_assignments.create(:game => g, :power => power)
+  def assign_power_for_game(game, power = nil)
+    game.assign_user(self, power)
   end
 
   def power_for_chatroom(c)

@@ -6,7 +6,10 @@ describe Game do
   describe "User Assignment" do
     let(:user) {Factory.create :user}
     let(:power) {subject.powers.first}
-    before {subject.users << user; subject.save}
+    before do 
+      subject.users << user
+      subject.save
+    end
  
     it "should have the user in the list" do
       subject.users.should include(user)
@@ -14,9 +17,7 @@ describe Game do
 
     it "should NOT assign the same user twice" do
       subject.users << user
-      subject.save
-      subject.reload
-      subject.users.to_a.count(user).should == 1
+      expect {subject.save}.to_not change{UserAssignment.count}
     end
 
     it "should assing power to user" do

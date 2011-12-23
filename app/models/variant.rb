@@ -4,5 +4,4 @@ class Variant
   property :name, String, :required => true
   has n, :games
   has n, :powers
-
 end

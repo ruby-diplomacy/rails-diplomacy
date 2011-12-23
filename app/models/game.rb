@@ -11,7 +11,8 @@ class Game
   has n, :powers, :through => :variant
 
   def assign_user(user, power = nil)
-    self.user_assignments.create(:user => user, :power => power)
+    u = self.user_assignments.first_or_create(:user => user)
+    u.power = power if power
     self.save
   end
 

@@ -1,0 +1,11 @@
+<h2>Messages  sax</h2>
+<ul id='message-list' class='message-list' data-channel='<%= channel_for_chatroom(chatroom) %>'>
+  <%= render chatroom.messages %>
+</ul>
+
+<%= form_for([chatroom, chatroom.messages.build], :remote => true) do |f| %>
+  <%= f.text_field :text %>
+  <%= f.hidden_field :chatroom_id %>
+  <%= f.submit "Send" %>
+<% end %>
+

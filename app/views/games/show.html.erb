@@ -1,0 +1,21 @@
+<h1>Game Page</h1>
+
+<h2>Player List</h2> 
+
+<table>
+  <tr>
+    <th>Player Name</th>
+    <th>Assigned Power</th>
+  </tr>
+  <% @game.user_associations.each do |user_assoc| %>
+    <tr>
+      <td><%= link_to user_assoc.user.username, user_assoc.user %></td>
+      <td><%= user_assoc.power_name %></td>
+    </tr>
+  <% end %>
+</table>
+
+
+
+
+

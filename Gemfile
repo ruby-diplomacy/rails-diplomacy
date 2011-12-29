@@ -29,6 +29,7 @@ gem 'execjs'
 
 gem 'therubyracer'
 gem 'faye'
+gem 'less-rails-bootstrap'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -54,6 +55,9 @@ group :development do
   gem 'ruby-debug19', :require => 'ruby-debug'
   gem 'pry-rails'
   gem 'rspec-rails'
+  gem 'watchr'
+  gem 'spork'
+  gem 'foreman'
 end
 
 group :test do

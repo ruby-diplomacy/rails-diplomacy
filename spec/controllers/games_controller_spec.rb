@@ -1,54 +1,28 @@
 require 'spec_helper'
 
 describe GamesController do
+  let!(:games) {FactoryGirl.create_list(:game, 4)}
 
-  describe "GET 'index'" do
-    it "returns http success" do
+  describe "GET 'index" do
+    it "should assign @games and return http success" do
       get 'index'
+      assigns(:games).should eq(games)
       response.should be_success
     end
   end
 
-  describe "GET 'show'" do
-    it "returns http success" do
-      get 'show'
-      response.should be_success
+  describe "GET show" do
+    context "when given a game id" do
+      it "should return the game" do
+        get "show", :id => games.first.id
+        assigns(:game).should eq(games.first)
+      end
+    end
+
+    context "when given an invalid game id" do
+      it "should return 404" do
+        get :show, :id => Game.last.id + 40
+      end
     end
   end
-
-  describe "GET 'new'" do
-    it "returns http success" do
-      get 'new'
-      response.should be_success
-    end
-  end
-
-  describe "GET 'create'" do
-    it "returns http success" do
-      get 'create'
-      response.should be_success
-    end
-  end
-
-  describe "GET 'update'" do
-    it "returns http success" do
-      get 'update'
-      response.should be_success
-    end
-  end
-
-  describe "GET 'destroy'" do
-    it "returns http success" do
-      get 'destroy'
-      response.should be_success
-    end
-  end
-
-  describe "GET 'edit'" do
-    it "returns http success" do
-      get 'edit'
-      response.should be_success
-    end
-  end
-
 end

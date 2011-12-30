@@ -1,6 +1,8 @@
 class ChatroomsController < ApplicationController
   # GET /chatrooms
   # GET /chatrooms.json
+  #
+  respond_to :html
   def index
     @chatrooms = Chatroom.all
 

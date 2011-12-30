@@ -33,18 +33,20 @@ describe MessagesController do
     chatroom.save
   }
 
-  shared_examples "owner only request" do
+  shared_examples "MessagesController action" do
     it "should return 401 Unauthorized if the user is non the given chatroom" do
       controller.should_receive(:logged_user).and_return(malicious)
-      get :index, :chatroom_id => chatroom.id#}.to raise_error(User::NotAuthorizedError)
+      get :index, :chatroom_id => chatroom.id
+      response.status.should == 401
+    end
+
+    it "should return 404 without chatroom_id" do
+      expect{get :index}.to raise_error(ActionController::RoutingError)
     end
   end
 
   describe "GET index" do
-    it_behaves_like "owner only request"
-    it "should return 404 without chatroom_id" do
-      expect{get :index}.to raise_error(ActionController::RoutingError)
-    end
+    it_behaves_like "MessagesController action"
 
     it "assigns all messages as @messages" do
       get :index, :chatroom_id => chatroom.id
@@ -52,21 +54,17 @@ describe MessagesController do
     end
   end
 
-  describe "POST create" do
-    describe "with valid params" do
-      it "creates a new Message" do
-        pending "must work the async messages"
-        expect {
-          post :create, :message => valid_attributes
-        }.to change(Message, :count).by(1)
-      end
+  describe "POST create", :focus => true do
+    it_behaves_like "MessagesController action"
+    subject{post :create, :chatroom_id => chatroom.id, :message => {:text => 'new message'}, :format => 'js'}
+    it "creates a new Message" do
+      expect{subject}.to change{Message.count}.by(1)
+    end
 
-      it "assigns a newly created message as @message" do
-        pending "must work the async messages"
-        post :create, :message => valid_attributes
-        assigns(:message).should be_a(Message)
-        assigns(:message).should be_persisted
-      end
+    it "assigns a newly created message as @message" do
+      subject
+      assigns(:message).should be_a(Message)
+      assigns(:message).should be_persisted
     end
   end
 end

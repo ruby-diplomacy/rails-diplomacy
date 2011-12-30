@@ -1,5 +1,7 @@
 FactoryGirl.define do
-  sequence :nationality {|n| "nationality #{n}"}
+  sequence :nationality do |n| 
+    "nationality #{n}"
+  end
 
   factory :unit do
     nationality

@@ -6,18 +6,20 @@ class MessagesController < ApplicationController
   before_filter :user_must_belong_to_chatroom
   before_filter :get_power
 
+  respond_to :js
+
   def index
     @messages = @chatroom.messages
   end
 
   def create
-    @user = logged_user
     @message = Message.new(params[:message])
-    @message.power = @user.power_for_game(@message.game)
+    @message.power = @power
+    @message.chatroom = @chatroom
     if @message.save
       flash[:notice] = 'Message was successfully created'
-    end
     respond_with @message
+    end
   end
 
   private

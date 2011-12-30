@@ -3,7 +3,7 @@
   <%= render chatroom.messages %>
 </ul>
 
-<%= form_for([chatroom, chatroom.messages.build], :remote => true) do |f| %>
+<%= form_for([chatroom, chatroom.messages.new], :remote => true) do |f| %>
   <%= f.text_field :text %>
   <%= f.hidden_field :chatroom_id %>
   <%= f.submit "Send" %>

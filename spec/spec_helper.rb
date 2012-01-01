@@ -4,13 +4,8 @@ Spork.prefork do
   ENV["RAILS_ENV"] ||= 'test'
   require File.expand_path("../../config/environment", __FILE__)
   require 'rspec/rails'
-  require 'rspec/autorun'
   require 'capybara/rails'
-
-  # Requires supporting ruby files with custom matchers and macros, etc,
-  # in spec/support/ and its subdirectories.
-  Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
-  Dir[Rails.root.join("spec/factories/**/*.rb")].each {|f| require f}
+  require 'factory_girl'
 
   RSpec.configure do |config|
     # == Mock Framework
@@ -23,6 +18,7 @@ Spork.prefork do
     config.mock_with :rspec
     config.filter_run :focus => true
     config.run_all_when_everything_filtered = true
+    
 
     # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
     # config.fixture_path = "#{::Rails.root}/spec/fixtures"
@@ -36,8 +32,9 @@ Spork.prefork do
     # automatically. This will be the default behavior in future versions of
     # rspec-rails.
     config.infer_base_class_for_anonymous_controllers = false
+     # clear out the models preloaded by dm-rails
 
-    config.before(:suite) do 
+    config.before(:suite) do
       DatabaseCleaner.strategy = :transaction
       DatabaseCleaner.clean_with(:truncation)
     end
@@ -50,6 +47,14 @@ Spork.prefork do
       DatabaseCleaner.clean
     end
   end
+
+  ActiveSupport::Dependencies.clear
+end
+
+Spork.each_run do
+  Rails::DataMapper.preload_models(RailsDiplomacy::Application)
+  Dir[Rails.root.join("spec/{support,factories}/**/*.rb")].each {|f| require f}
+  DataMapper.auto_migrate!
 end
 
 

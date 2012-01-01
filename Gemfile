@@ -56,7 +56,7 @@ group :development do
   gem 'pry-rails'
   gem 'rspec-rails'
   gem 'watchr'
-  gem 'spork'
+  gem 'spork', :git => "git://github.com/sporkrb/spork.git"
   gem 'foreman'
 end
 
@@ -65,7 +65,7 @@ group :test do
   gem 'turn', :require => false
   gem 'rspec'
   gem 'rspec-rails'
-  gem 'factory_girl'
+  gem 'factory_girl' , :require => false
   gem 'database_cleaner'
   gem 'capybara'
 end

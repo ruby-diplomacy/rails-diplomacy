@@ -5,38 +5,23 @@ class ChatroomsController < ApplicationController
   respond_to :html
   def index
     @chatrooms = Chatroom.all
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @chatrooms }
-    end
   end
 
   # GET /chatrooms/1
   # GET /chatrooms/1.json
   def show
     @chatroom = Chatroom.get(params[:id].to_i)
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.json { render json: @chatroom }
-    end
   end
 
   # GET /chatrooms/new
   # GET /chatrooms/new.json
   def new
     @chatroom = Chatroom.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @chatroom }
-    end
   end
 
   # GET /chatrooms/1/edit
   def edit
-    @chatroom = Chatroom.find(params[:id])
+    @chatroom = Chatroom.get(params[:id])
   end
 
   # POST /chatrooms
@@ -58,7 +43,7 @@ class ChatroomsController < ApplicationController
   # PUT /chatrooms/1
   # PUT /chatrooms/1.json
   def update
-    @chatroom = Chatroom.first(params[:id])
+    @chatroom = Chatroom.get(params[:id])
 
     respond_to do |format|
       if @chatroom.update_attributes(params[:chatroom])

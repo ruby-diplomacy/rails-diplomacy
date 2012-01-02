@@ -22,6 +22,7 @@ describe GamesController do
     context "when given an invalid game id" do
       it "should return 404" do
         get :show, :id => Game.last.id + 40
+        response.status.should == 404
       end
     end
   end

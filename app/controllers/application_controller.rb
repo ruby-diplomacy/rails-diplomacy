@@ -18,10 +18,14 @@ class ApplicationController < ActionController::Base
   end
 
   def record_not_found
-    raise ActionController::RoutingError.new('Not Found!')
+    render_error(404)
   end
 
   def user_not_authorized
-    render :file => 'public/401.html', :status => :unauthorized
+    render_error(401)
+  end
+
+  def render_error(code)
+    render :file => "public/#{code}.html", :status => code
   end
 end

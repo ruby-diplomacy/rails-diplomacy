@@ -2,19 +2,19 @@ require 'spec_helper'
 
 
 describe ChatroomsController do
-  let(:chatroom) {Factory.create :chatroom}
+  include_context "chat controller"
 
   describe "GET index" do
-    it_should_behave_like "chat controller action"
+
     it "assigns all chatrooms as @chatrooms" do
-      chatroom = Chatroom.create! valid_attributes
       get :index
       assigns(:chatrooms).should eq([chatroom])
     end
   end
 
-  describe "GET show" do
+  describe "GET show", :focus => true do
     it_should_behave_like "chat controller action"
+
     it "assigns the requested chatroom as @chatroom" do
       get :show, :id => chatroom.id
       assigns(:chatroom).should eq(chatroom)

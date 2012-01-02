@@ -20,7 +20,6 @@ class ChatroomsController < ApplicationController
   # POST /chatrooms
   # POST /chatrooms.json
   def create
-    debugger
     @chatroom = Chatroom.new(params[:chatroom])
     @chatroom.save
   end

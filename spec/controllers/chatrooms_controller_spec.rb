@@ -2,134 +2,90 @@ require 'spec_helper'
 
 
 describe ChatroomsController do
-  include_context "chat controller"
+  let!(:game) {Factory.create(:game)}
+  let!(:chatroom) {Factory.create(:chatroom, :game => game)}
+  let!(:user) {Factory.create(:user)}
+  let!(:power) {game.powers.first} 
+  let(:malicious){Factory.create :user}
+  let!(:message) {Factory.create(:message, :power => power, :chatroom => chatroom, :text => 'Hello there!')}
+  let(:prefix) {'game_'}
 
-  describe "GET index" do
+  before {
+    game.assign_user(user, power)
+    chatroom.powers << game.powers.first
+    chatroom.save
+  }
 
-    it "assigns all chatrooms as @chatrooms" do
-      get :index
+
+  describe "GET index" do 
+
+    it "should return 401 Unauthorized if the user is not in the given game" do
+      controller.should_receive(:logged_user).and_return(malicious)
+      get :index, :game_id => game.id, :name_prefix => prefix
+      response.status.should == 401
+    end
+
+    it "should return 404 without game_id" do
+      expect{get :index, :name_prefix => prefix}.to raise_error(ActionController::RoutingError)
+    end
+
+    it "assigns all user chatrooms as @chatrooms" do
+      get :index, :game_id => chatroom.id, :name_prefix => prefix
       assigns(:chatrooms).should eq([chatroom])
     end
   end
 
-  describe "GET show", :focus => true do
-    it_should_behave_like "chat controller action"
-
-    it "assigns the requested chatroom as @chatroom" do
-      get :show, :id => chatroom.id
-      assigns(:chatroom).should eq(chatroom)
-    end
-  end
-
-  describe "GET new" do
-    it "assigns a new chatroom as @chatroom" do
-      get :new
-      assigns(:chatroom).should be_a_new(Chatroom)
-    end
-  end
-
-  describe "GET edit" do
-    it "assigns the requested chatroom as @chatroom" do
-      chatroom = Chatroom.create! valid_attributes
-      get :edit, :id => chatroom.id
-      assigns(:chatroom).should eq(chatroom)
-    end
-  end
-
   describe "POST create" do
-    describe "with valid params" do
-      it "creates a new Chatroom" do
-        expect {
-          post :create, :chatroom => valid_attributes
-        }.to change(Chatroom, :count).by(1)
-      end
 
-      it "assigns a newly created chatroom as @chatroom" do
-        post :create, :chatroom => valid_attributes
-        assigns(:chatroom).should be_a(Chatroom)
-        assigns(:chatroom).should be_persisted
-      end
-
-      it "redirects to the created chatroom" do
-        post :create, :chatroom => valid_attributes
-        response.should redirect_to(Chatroom.last)
-      end
+    it "should return 401 Unauthorized if the user is not in the given game" do
+      controller.should_receive(:logged_user).and_return(malicious)
+      post :create, :game_id => game.id, :name_prefix => prefix
+      response.status.should == 401
     end
 
-    describe "with invalid params" do
-      it "assigns a newly created but unsaved chatroom as @chatroom" do
-        # Trigger the behavior that occurs when invalid params are submitted
-        Chatroom.any_instance.stub(:save).and_return(false)
-        post :create, :chatroom => {}
-        assigns(:chatroom).should be_a_new(Chatroom)
-      end
+    it "should return 404 without game_id" do
+      expect{post :create, :name_prefix => prefix}.to raise_error(ActionController::RoutingError)
+    end
 
-      it "re-renders the 'new' template" do
-        # Trigger the behavior that occurs when invalid params are submitted
-        Chatroom.any_instance.stub(:save).and_return(false)
-        post :create, :chatroom => {}
-        response.should render_template("new")
-      end
+    subject{post :create, :game_id => game.id, :chatroom => {:game_id => game.id}, :name_prefix => prefix}
+
+    it "creates a new Message" do
+      expect{subject}.to change{Chatroom.count}.by(1)
+    end
+
+    it "assigns a newly created message as @chatrrom" do
+      subject
+      assigns(:chatroom).should be_a(Chatroom)
+      assigns(:chatroom).should be_persisted
     end
   end
 
-  describe "PUT update" do
-    describe "with valid params" do
-      it "updates the requested chatroom" do
-        chatroom = Chatroom.create! valid_attributes
-        # Assuming there are no other chatrooms in the database, this
-        # specifies that the Chatroom created on the previous line
-        # receives the :update_attributes message with whatever params are
-        # submitted in the request.
-        Chatroom.any_instance.should_receive(:update_attributes).with({'these' => 'params'})
-        put :update, :id => chatroom.id, :chatroom => {'these' => 'params'}
-      end
-
-      it "assigns the requested chatroom as @chatroom" do
-        chatroom = Chatroom.create! valid_attributes
-        put :update, :id => chatroom.id, :chatroom => valid_attributes
-        assigns(:chatroom).should eq(chatroom)
-      end
-
-      it "redirects to the chatroom" do
-        chatroom = Chatroom.create! valid_attributes
-        put :update, :id => chatroom.id, :chatroom => valid_attributes
-        response.should redirect_to(chatroom)
-      end
+  describe "GET show" do
+    it "should return 401 Unauthorized if the user is not in the given game" do
+      controller.should_receive(:logged_user).and_return(malicious)
+      get :show, :game_id => game.id,  :name_prefix => prefix, :id => chatroom.id
+      response.status.should == 401
+    end 
+ 
+    it "should return 404 if the user is not in the given chatroom" do
+      controller.should_receive(:logged_user).and_return(malicious)
+      game.assign_user(malicious, game.powers.last)
+      get :show, :game_id => game.id,  :name_prefix => prefix, :id => chatroom.id
+      response.status.should == 404
     end
 
-    describe "with invalid params" do
-      it "assigns the chatroom as @chatroom" do
-        chatroom = Chatroom.create! valid_attributes
-        # Trigger the behavior that occurs when invalid params are submitted
-        Chatroom.any_instance.stub(:save).and_return(false)
-        put :update, :id => chatroom.id, :chatroom => {}
-        assigns(:chatroom).should eq(chatroom)
-      end
+    it "should return 404 without chatroom_id" do
+      expect{get :show, :game_id => game.id, :name_prefix => prefix}.to raise_error(ActionController::RoutingError)
+    end
 
-      it "re-renders the 'edit' template" do
-        chatroom = Chatroom.create! valid_attributes
-        # Trigger the behavior that occurs when invalid params are submitted
-        Chatroom.any_instance.stub(:save).and_return(false)
-        put :update, :id => chatroom.id, :chatroom => {}
-        response.should render_template("edit")
-      end
+    it "should return 404 without game_id" do
+      expect{get :show, :id => chatroom.id, :name_prefix => prefix}.to raise_error(ActionController::RoutingError)
+    end
+
+    it 'get the requested chatroom' do
+      get :show, :game_id => game.id,  :name_prefix => prefix, :id => chatroom.id
+      assigns(:chatroom).should == chatroom
     end
   end
-
-  describe "DELETE destroy" do
-    it "destroys the requested chatroom" do
-      chatroom = Chatroom.create! valid_attributes
-      expect {
-        delete :destroy, :id => chatroom.id
-      }.to change(Chatroom, :count).by(-1)
-    end
-
-    it "redirects to the chatrooms list" do
-      chatroom = Chatroom.create! valid_attributes
-      delete :destroy, :id => chatroom.id
-      response.should redirect_to(chatrooms_url)
-    end
-  end
-
 end
+

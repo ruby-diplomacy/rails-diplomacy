@@ -1,74 +1,53 @@
-class ChatroomsController < ChatController
+class ChatroomsController < ApplicationController
   before_filter :require_login
-
+  before_filter :get_game
+  before_filter :user_must_belong_to_game
 
   # GET /chatrooms
   # GET /chatrooms.json
   #
   respond_to :html
   def index
-    @chatrooms = Chatroom.all
+    @chatrooms = chatrooms
   end
 
   # GET /chatrooms/1
   # GET /chatrooms/1.json
   def show
-    @chatroom = Chatroom.get(params[:id])
-    user_must_belong_to_chatroom
-  end
-
-  # GET /chatrooms/new
-  # GET /chatrooms/new.json
-  def new
-    @chatroom = Chatroom.new
-  end
-
-  # GET /chatrooms/1/edit
-  def edit
-    @chatroom = Chatroom.get(params[:id])
+    @chatroom = chatrooms.get!(params[:id])
   end
 
   # POST /chatrooms
   # POST /chatrooms.json
   def create
+    debugger
     @chatroom = Chatroom.new(params[:chatroom])
-
-    respond_to do |format|
-      if @chatroom.save
-        format.html { redirect_to @chatroom, notice: 'Chatroom was successfully created.' }
-        format.json { render json: @chatroom, status: :created, location: @chatroom }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @chatroom.errors, status: :unprocessable_entity }
-      end
-    end
+    @chatroom.save
   end
 
-  # PUT /chatrooms/1
-  # PUT /chatrooms/1.json
-  def update
-    @chatroom = Chatroom.get(params[:id])
 
-    respond_to do |format|
-      if @chatroom.update_attributes(params[:chatroom])
-        format.html { redirect_to @chatroom, notice: 'Chatroom was successfully updated.' }
-        format.json { head :ok }
-      else
-        format.html { render action: "edit" }
-        format.json { render json: @chatroom.errors, status: :unprocessable_entity }
-      end
-    end
+  private
+
+  def chatrooms 
+    Chatroom.game_user(@game, @user)
   end
 
-  # DELETE /chatrooms/1
-  # DELETE /chatrooms/1.json
-  def destroy
-    @chatroom = Chatroom.first(params[:id])
-    @chatroom.destroy
-
-    respond_to do |format|
-      format.html { redirect_to chatrooms_url }
-      format.json { head :ok }
-    end
+  def get_game
+    @game = Game.get(params[:game_id])
+    raise ActionController::RoutingError.new("must supply a valid game id") if @game.nil?
+    @game
   end
+
+  def get_power
+    @power = @game.power_for_user @user
+  end
+
+  def authorized?
+    @game.users.include? @user
+  end
+
+  def user_must_belong_to_game
+    raise User::NotAuthorizedError unless authorized? 
+  end
+
 end

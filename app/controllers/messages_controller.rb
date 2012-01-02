@@ -1,4 +1,4 @@
-class MessagesController < ChatController 
+class MessagesController < ApplicationController
   
   before_filter :require_login
   before_filter :get_chatroom
@@ -23,5 +23,24 @@ class MessagesController < ChatController
       flash[:notice] = 'Message was successfully created'
     respond_with @message
     end
+  end 
+
+  private 
+  def get_chatroom
+    @chatroom = Chatroom.get(params[:chatroom_id])
+    raise ActionController::RoutingError.new("must supply a valid chatroom id!") if @chatroom.nil?
+    @chatroom
+  end
+
+  def get_power
+    @power = @user.power_for_chatroom(@chatroom)
+  end
+
+  def authorized?
+    @chatroom.powers.include? get_power
+  end
+
+  def user_must_belong_to_chatroom
+    raise User::NotAuthorizedError unless authorized?
   end
 end

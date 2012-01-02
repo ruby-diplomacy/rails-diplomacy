@@ -1,5 +1,9 @@
 class User 
   include DataMapper::Resource
+
+  class NotAuthorizedError < Exception
+  end
+
   property :id, Serial
   property :username, String, :required => true
 
@@ -7,12 +11,9 @@ class User
   has n, :games, :through => :user_assignments
   has n, :powers, :through => :user_assignments
 
-  def assign_power_for_game(game, power = nil)
-    game.assign_user(self, power)
-  end
-
   def power_for_chatroom(c)
-    self.user_assignments.first(:game => c.game).power
+    assignment = self.user_assignments.first(:game => c.game)
+    assignment.power if assignment
   end
 
 end

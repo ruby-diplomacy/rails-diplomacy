@@ -13,6 +13,11 @@ describe User do
     it "should return the assigned power for the user" do
       subject.power_for_chatroom(chatroom).should == power
     end
+
+    it "should return nil if the user is not in the game" do
+      chatroom  = Factory.build :chatroom
+      subject.power_for_chatroom(chatroom).should be_nil
+    end
   end
   
 end

@@ -1,6 +1,7 @@
 require 'spork'
 
 Spork.prefork do
+
   ENV["RAILS_ENV"] ||= 'test'
   require File.expand_path("../../config/environment", __FILE__)
   require 'rspec/rails'
@@ -57,8 +58,3 @@ Spork.each_run do
   DataMapper.auto_migrate!
 end
 
-
-Spork.each_run do
-  # This code will be run each time you run your specs.
-
-end

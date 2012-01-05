@@ -37,5 +37,9 @@ module Diplomacy
     def add_border(name1, name2, type)
       add_border_by_object(areas[name1], areas[name2], type)
     end
+    
+    def neighbours?(area1, area2, type)
+      @areas[area1].borders[type].member? @areas[area2]
+    end
   end
 end

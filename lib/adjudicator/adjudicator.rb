@@ -139,9 +139,6 @@ module Diplomacy
         # get all moves to the same destination
         some_deps = @orders.moves_by_dst(order.dst, skip_me=true, me=wrapped_order)
         
-        # remove this move from the list, it will cause an endless loop - probably solved above
-        # dependencies.concat(some_deps.reject {|dep| dep.equal? wrapped_order})
-        
         # get all supports to the destination
         dependencies.concat(@orders.supports_by_dst(order.dst))
         
@@ -175,19 +172,7 @@ module Diplomacy
       
       order = wrapped_order.order
       case order
-      when Move
-        # check convoy path
-        related_convoys = @orders.convoys_for_move(order)
-        
-        # this checks if ANY convoy fails, which isn't enough for eg. multiple 
-        # convoy paths. Need to seperate into paths and check each one. 
-        related_convoys.each do |convoy|
-          if convoy.status == OrderWrapper::FAILURE
-            wrapped_order.status = OrderWrapper::FAILURE
-            return
-          end
-        end
-        
+      when Move        
         # check for head to head battle
         head_to_head_move = nil
         
@@ -264,7 +249,50 @@ module Diplomacy
       end
     end
     
+    def check_path(move)
+      return true if @map.neighbours? move.unit_area, move.dst, Area::LAND_BORDER or @map.neighbours? move.unit_area, move.dst, Area::SEA_BORDER
+      
+      # check convoy path
+      related_convoys = @orders.convoys_for_move(move)
+      
+      successful_convoys = related_convoys.reject {|convoy| convoy.status == OrderWrapper::FAILURE}
+      
+      # see if remaining convoy orders form a path
+      check_path_recursive(move, successful_convoys, [move.unit_area])
+    end
+    
+    def check_path_recursive(move, unused_convoys, last_reached_areas)
+      @@log.debug "unused_convoys: #{unused_convoys}, last_reached_areas: #{last_reached_areas}"
+      return false if unused_convoys.empty?
+      
+      next_reached_areas = []
+      
+      last_reached_areas.each do |area|
+        # if we have reached some area bordering the target area, there is a valid path
+        return true if @map.neighbours?(area, move.dst, Area::SEA_BORDER)
+        
+        # collect all convoy areas that border the last reached areas
+        # delete the corresponding convoys
+        unused_convoys.each do |convoy|
+          neighbours = @map.neighbours?(area, convoy.order.unit_area, Area::SEA_BORDER)
+          @@log.debug "neighbours: #{convoy.order.unit_area}, #{area}, #{neighbours}"
+          if @map.neighbours?(area, convoy.order.unit_area, Area::SEA_BORDER) and (not next_reached_areas.member? convoy.order.unit_area)
+            next_reached_areas << convoy.order.unit_area
+            unused_convoys.delete(convoy)
+          end
+        end
+      end
+      
+      # areas in next_reached_areas might not be unique
+      next_reached_areas.uniq!
+      
+      check_path_recursive(move, unused_convoys, next_reached_areas)
+    end
+    
     def calculate_attack_strength(wrapped_move)
+      # if the move path is not successful, strength is 0
+      return 0 unless check_path(wrapped_move.order)
+      
       strength = 1
       
       unit_at_dst = @state.area_unit(wrapped_move.order.dst)
@@ -316,8 +344,8 @@ module Diplomacy
     end
     
     def calculate_prevent_strength(wrapped_move)
-      
-      # TODO path
+      # if the move path is not successful, strength is 0
+      return 0 unless check_path(wrapped_move.order)
       
       strength = 1
       supports = @orders.supports_by_dst(wrapped_move.order.dst)

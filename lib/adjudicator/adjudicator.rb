@@ -9,6 +9,7 @@ module Diplomacy
     attr_accessor :orders
     attr_accessor :moves
     attr_accessor :supports
+    attr_accessor :supportholds
     attr_accessor :holds
     attr_accessor :convoys
     
@@ -85,6 +86,7 @@ module Diplomacy
     @@log = Logger.new( 'adjudicator.log', 'daily' )
     
     attr_accessor :orders
+    attr_accessor :map
     
     def initialize(map)
       @map = map
@@ -186,7 +188,7 @@ module Diplomacy
         if not head_to_head_move.nil?
           # there is a head to head battle
           defend_prevent_strengths = [calculate_defend_strength(head_to_head_move)]
-          if not (competing_moves = @moves_by_dst[order.dst].reject {|move| move.equal? wrapped_order}).nil?
+          if not (competing_moves = @orders.moves_by_dst(order.dst).reject {|move| move.equal? wrapped_order}).nil?
             competing_moves.each do |competing_move|
               defend_prevent_strengths << calculate_prevent_strength(competing_move)
             end
@@ -217,7 +219,7 @@ module Diplomacy
           : wrapped_order.status = OrderWrapper::FAILURE
         end
         
-      when Support        
+      when Support, SupportHold
         # get all moves against this area
         moves_to_area = @orders.moves_by_dst(order.unit_area)
         

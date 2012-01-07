@@ -3,7 +3,6 @@ module Diplomacy
   class Area
     LAND_BORDER = 1
     SEA_BORDER = 2
-    COAST_BORDER = 3
 
     attr_accessor :name, :borders, :abbrv
     attr_accessor :supply_center
@@ -11,7 +10,7 @@ module Diplomacy
     def initialize(name, abbrv)
       @name = name
       @abbrv = abbrv
-      @borders = {}
+      @borders = {LAND_BORDER => [], SEA_BORDER => []}
     end
 
     def add_border(area, border_type)

@@ -38,6 +38,10 @@ module Diplomacy
   end
 
   class GameState < Hash
+    def initialize
+      self.default = AreaState.new
+    end
+    
     def area_state(area)
       self[area.abbrv]
     end

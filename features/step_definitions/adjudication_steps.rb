@@ -16,9 +16,11 @@ end
 
 Then /^the "([^"]*)" should be correct\.$/ do |adjudication|
   adjudication.length.should == @adjudicated_orders.length
+  @actual_adjudication = ''
   
   # check orders
   adjudication.length.times do |index|
+    @actual_adjudication << status_to_s(@adjudicated_orders[index].status)
     case adjudication[index]
     when 'S'
       @adjudicated_orders[index].status.should == Diplomacy::OrderWrapper::SUCCESS
@@ -26,5 +28,9 @@ Then /^the "([^"]*)" should be correct\.$/ do |adjudication|
       @adjudicated_orders[index].status.should == Diplomacy::OrderWrapper::FAILURE
     end
   end
+end
+
+After do |scenario|
+  puts "Actual adjudication (until failed assertion): #{@actual_adjudication}" if scenario.failed?
 end
 

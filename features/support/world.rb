@@ -70,7 +70,7 @@ module DiplomacyWorld
     end
     
     # try to parse it as a support hold
-    /^[AF](?'unit_area'\w{3})S[AF](?'dst'\w{3})H$/ =~ orderblob
+    /^[AF](?'unit_area'\w{3})S[AF](?'dst'\w{3})$/ =~ orderblob
     if not unit_area.nil?
       unit = gamestate[unit_area.to_sym].unit unless unit_area.nil?
       return Diplomacy::SupportHold.new(unit, unit_area.to_sym, dst.to_sym)
@@ -81,6 +81,17 @@ module DiplomacyWorld
     if not unit_area.nil?
       unit = gamestate[unit_area.to_sym].unit unless unit_area.nil?
       return Diplomacy::Convoy.new(unit, unit_area.to_sym, src.to_sym, dst.to_sym)
+    end
+  end
+  
+  def status_to_s(status)
+    case status
+    when Diplomacy::OrderWrapper::SUCCESS
+      return 'S'
+    when Diplomacy::OrderWrapper::FAILURE
+      return 'F'
+    when Diplomacy::OrderWrapper::UNRESOLVED
+      return 'U'
     end
   end
 end

@@ -238,9 +238,13 @@ module Diplomacy
           end
         end
           
-        # no moves have cut this support, so it succeeds
+        # no moves have cut this support, so it succeeds (with exception below)
         wrapped_order.status = OrderWrapper::SUCCESS
         
+        # support holds fail if the supported unit moves
+        if SupportHold === order and not @orders.moves_by_origin(order.dst).nil?
+          wrapped_order.status = OrderWrapper::FAILURE
+        end
       when Hold
         # Hold always succeeds
         wrapped_order.status = OrderWrapper::SUCCESS

@@ -151,6 +151,9 @@ module Diplomacy
         # get all supports to the destination
         dependencies.concat(@orders.supports_by_dst(order.dst))
         
+        # get all support holds to the destination
+        dependencies.concat(@orders.supportholds_to(order.dst))
+        
         # get the move leaving from the destination - can only be one or zero
         dep_move = @orders.moves_by_origin(order.dst)
         
@@ -268,7 +271,9 @@ module Diplomacy
       # check convoy path
       related_convoys = @orders.convoys_for_move(move)
       
-      successful_convoys = related_convoys.reject {|convoy| convoy.status == OrderWrapper::FAILURE}
+      @@log.debug "related convoys: #{related_convoys}"
+      
+      successful_convoys = related_convoys.reject {|convoy| convoy.status.eql? OrderWrapper::FAILURE}
       
       # see if remaining convoy orders form a path
       check_path_recursive(move, successful_convoys, [move.unit_area])
@@ -276,14 +281,17 @@ module Diplomacy
     
     def check_path_recursive(move, unused_convoys, last_reached_areas)
       @@log.debug "unused_convoys: #{unused_convoys}, last_reached_areas: #{last_reached_areas}"
+      
+      last_reached_areas.each do |area|
+        # if we have reached some area bordering the target area, there is a valid path
+        return true if @map.neighbours?(area, move.dst, Area::SEA_BORDER)
+      end
+      
       return false if unused_convoys.empty?
       
       next_reached_areas = []
       
       last_reached_areas.each do |area|
-        # if we have reached some area bordering the target area, there is a valid path
-        return true if @map.neighbours?(area, move.dst, Area::SEA_BORDER)
-        
         # collect all convoy areas that border the last reached areas
         # delete the corresponding convoys
         unused_convoys.each do |convoy|
@@ -295,6 +303,8 @@ module Diplomacy
           end
         end
       end
+      
+      @@log.debug "next_reached_areas: #{next_reached_areas}"
       
       # areas in next_reached_areas might not be unique
       next_reached_areas.uniq!

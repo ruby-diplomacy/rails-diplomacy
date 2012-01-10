@@ -69,8 +69,15 @@ module Diplomacy
     end
     
     def moves_by_origin(area)
-      # can only exist one at max, so detect is enough
-      @moves[area].detect { |move| move.order.unit_area.eql? area }
+      @moves.values.each do |moves_for_area|
+        # only one at most can exist, so detect is enough
+        if not (ret = moves_for_area.detect { |move| move.order.unit_area.eql? area }).nil?
+          return ret
+        end
+      end
+      
+      # no compyling move was found, return nil
+      return nil
     end
     
     def hold_in(area)

@@ -244,9 +244,17 @@ module Diplomacy
         # no moves have cut this support, so it succeeds (with exception below)
         wrapped_order.status = OrderWrapper::SUCCESS
         
-        # support holds fail if the supported unit moves
-        if SupportHold === order and not @orders.moves_by_origin(order.dst).nil?
-          wrapped_order.status = OrderWrapper::FAILURE
+        if SupportHold === order 
+          # support holds fail if the supported unit moves
+          wrapped_order.status = OrderWrapper::FAILURE if not @orders.moves_by_origin(order.dst).nil?
+        else # Support === order
+          supported_move = @orders.moves_by_origin(order.src)
+          
+          # supports fail if there is no such move, or if the move of the 
+          # unit in the target area moves elsewhere
+          if supported_move == nil or not supported_move.order.dst.eql? order.dst
+            wrapped_order.status = OrderWrapper::FAILURE
+          end
         end
       when Hold
         # Hold always succeeds

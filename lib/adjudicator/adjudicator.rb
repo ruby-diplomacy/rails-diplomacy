@@ -323,7 +323,18 @@ module Diplomacy
       # use this to determine if unit leaving - can only be zero or one
       dst_move = @orders.moves_by_origin(wrapped_move.order.dst)
       
-      if unit_at_dst != nil and (not dst_move.nil?) and dst_move.status != OrderWrapper::SUCCESS
+      if unit_at_dst == nil or ( (not dst_move.nil?) and dst_move.status == OrderWrapper::SUCCESS )
+        # destination is empty or the unit at the destination successfully moves away
+        supports = @orders.supports_by_dst(wrapped_move.order.dst)
+        
+        supports.each do |support|
+          if support.order.src == wrapped_move.order.unit_area and 
+              support.status == OrderWrapper::SUCCESS 
+            strength += 1
+          end
+        end
+      else
+        # destination is not empty and didn't move away
         if unit_at_dst.nationality == wrapped_move.order.nationality
           return 0 # no friendly fire in this game
         else
@@ -335,16 +346,6 @@ module Diplomacy
                 support.status == OrderWrapper::SUCCESS 
               strength += 1
             end
-          end
-          
-        end
-      else # destination is empty or the unit at the destination successfully moves away
-        supports = @orders.supports_by_dst(wrapped_move.order.dst)
-        
-        supports.each do |support|
-          if support.order.src == wrapped_move.order.unit_area and 
-              support.status == OrderWrapper::SUCCESS 
-            strength += 1
           end
         end
       end

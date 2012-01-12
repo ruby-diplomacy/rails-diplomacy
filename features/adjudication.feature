@@ -30,3 +30,24 @@ Feature: adjudicator resolves orders
     | Ger:ABer,FKie,AMun Rus:AWar | ABer-Pru,FKie-Ber,AMunSFKie-Ber,AWar-Pru | FFSF |
     | Aus:FTri,AVie Ita:AVen | FTriH,AVieSAVen-Tri,AVen-Tri | SSF |
     | Aus:FTri,AVie Ita:AVen,FApu | FTri-Adr,AVieSAVen-Tri,AVen-Tri,FApu-Adr | FSFF |
+    | Aus:FTri,AVie Ita:AVen,ATyr,FAdr | FTriH,AVieSAVen-Tri,AVen-Tri,ATyrSAVen-Tri,FAdrSAVen-Tri | SSSSS |
+    | Rus:FCon,FBla Tur:FAnk | FConSFBla-Ank,FBla-Ank,FAnk-Con | SSF |
+    | Eng:ALon,FNth Fra:FEng,ABel | ALonH,FNthCABel-Lon,FEngSABel-Lon,ABel-Lon | SSSS |
+    | Rus:FCon,FBla Tur:FAnk,ASmy,AArm | FConSFBla-Ank,FBla-Ank,FAnk-Con,ASmySFAnk-Con,AArm-Ank | FFSSF |
+    | Rus:FCon,FBla,ABul Tur:FAnk,ASmy,AArm | FConSFBla-Ank,FBla-Ank,ABulSFCon,FAnk-Con,ASmySFAnk-Con,AArm-Ank | SSSSSS |
+    | Rus:FCon,FBla,ASmy Tur:FAnk | FConSFBla-Ank,FBla-Ank,ASmySFAnk-Con,FAnk-Con | SSSF |
+    | Eng:FLon,FNth,AYor Fra:FEng | FLonSFNth-Eng,FNth-Eng,AYor-Lon,FEngH | SSFS |
+    | Aus:FTri Ita:AVen,ATyr Ger:AMun Rus:ASil,ABer | FTriH,AVen-Tri,ATyrSAVen-Tri,AMun-Tyr,ASil-Mun,ABerSASil-Mun | SFFFSS |
+    | Ger:FKie,ABur Rus:AMun,ABer | FKie-Mun,ABurSFKie-Mun,AMun-Kie,ABerSAMun-Kie | FFSS |
+   #| Ita:Lyo,FWes Fra:Spa(nc),FMar | FLyo-Spa(sc),FWesSFLyo-Spa(sc),FSpa(nc)-Lyo,FMarSFSpa(nc)-Lyo | SSFF | TODO coasts
+   #| Fra:AMar,FSpa(sc)... 
+    | Ger:ABer,FKie Rus:FBal,APru | ABerSAPru,FKieSABer,FBalSAPru-Ber,APru-Ber | FSSF | 
+    | Ger:ABer,FKie Rus:FBal,APru | ABerSAPru-Sil,FKieSABer,FBalSAPru-Ber,APru-Ber | FSSF |
+    | Eng:FSwe,FDen Ger:ABer Rus:FBal,FPru | FSwe-Bal,FDenSFSwe-Bal,ABerH,FBalCABer-Lvn,FPruSFBal | FSSFS |
+    | Aus:ABud Rus:FRum Tur:FBla,ABul | ABudSFRum,FRum-Hol,FBla-Rum,ABulSFBla-Rum | SFFS |
+   #| Aus:ABud Rus:FRum Tur:FBla,ABul | ABudSFRum,FRum-Bul(sc),FBla-Rum,ABulSFBla-Rum | SFFS | perhaps without meaning for us, no corrections will ever be made
+   #| Ita:Aeg Rus:FCon...
+    | Aus:ARum Tur:FBla | ARum-Arm,FBlaSARum-Arm | FS |
+    | Eng:FEdi,ALiv Fra:FLon Ger:AYor | FEdiSALiv-Yor,ALiv-Yor,FLonSAYor,AYor-Hol | SSSF |
+    | Aus:ASer,AVie Rus:AGal Tur:ABul | ASer-Bud,AVie-Bud,AGalSASer-Bud,ABul-Ser | SFSS |
+    | Ger:ABer,ASil,FBal Ita:APru Rus:AWar,ALvn | ABer-Pru,ASilSABer-Pru,FBalSABer-Pru,APruSALvn-Pru,AWarSALvn-Pru,ALvn-Pru | SSSFSF |

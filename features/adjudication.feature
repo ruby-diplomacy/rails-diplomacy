@@ -66,3 +66,11 @@ Feature: adjudicator resolves orders
     | Ger:ABer,FKie,AMun | ABer-Kie,FKie-Ber,AMunSABer-Kie | FFS |
     | Ger:ABer,AMun Eng:FKie | ABer-Kie,AMunSFKie-Ber,FKie-Ber | FSF |
     | Ger:FHol,FHel,FSka Fra:FNth,FBel Eng:FEdi,FYor,FNor Aus:AKie,ARuh | FHol-Nth,FHelSFHol-Nth,FSkaSFHol-Nth,FNth-Hol,FBelSFNth-Hol,FEdiSFNor-Nth,FYorSFNor-Nth,FNor-Nth,AKieSARuh-Hol,ARuh-Hol | FSSFSSSFSF |
+    
+  Scenarios: Diplomacy Adjudicator Test Cases - Convoys
+    | currentstate | orders | adjudication |
+   #| 6.F.1
+    | Eng:FEng,ALon Fra:APar | FEngCALon-Bre,ALon-Bre,APar-Bre | SFF |
+    | Eng:FEng,ALon,FMAO Fra:APar | FEngCALon-Bre,ALon-Bre,FMAOSALon-Bre,APar-Bre | SSSF |
+    | Eng:FNth,ALon Ger:FSka | FNthCALon-Hol,ALon-Hol,FSka-Nth | SSF |
+    | Eng:FNth,ALon Fra:FEng,FBel Ger:FSka,FDen | FNthCALon-Hol,ALon-Hol,FEng-Nth,FBelSFEng-Nth,FSka-Nth,FDenSFSka-Nth | SSFSFS |

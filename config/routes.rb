@@ -1,9 +1,12 @@
 RailsDiplomacy::Application.routes.draw do
 
   resources :users
-  resources :games 
-  resources :chatrooms do
-    resources :messages
+  resources :games do
+    resources :chatrooms, :name_prefix => 'game_'
+  end
+
+  resources :chatrooms do |chatrooms|
+    resources :messages, :name_prefix => 'chatroom_'
   end
 
   # The priority is based upon order of creation:

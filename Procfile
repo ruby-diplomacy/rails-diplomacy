@@ -1,2 +1,1 @@
-spork: spork
-watchr: watchr .watchr
+spork: bundle exec spork

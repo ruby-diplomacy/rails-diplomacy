@@ -1,23 +1,46 @@
 class MessagesController < ApplicationController
+  
+  before_filter :require_login
+  before_filter :get_chatroom
+  before_filter :user_must_belong_to_chatroom
+  before_filter :get_power
+
+
   # GET /messages
   # GET /messages.json
-  respond_to :js, :json
+
+  respond_to :js
 
   def index
-    debugger
-    @user = logged_user
-    chatroom_id = params[:chatroom]
-    limit = params[:limit] 
+    @messages = @chatroom.messages
   end
 
   def create
-    debugger
-    @user = logged_user
     @message = Message.new(params[:message])
-    @message.power = @user.power_for_game(@message.game)
+    @message.power = @power
+    @message.chatroom = @chatroom
     if @message.save
       flash[:notice] = 'Message was successfully created'
-    end
     respond_with @message
+    end
+  end 
+
+  private 
+  def get_chatroom
+    @chatroom = Chatroom.get(params[:chatroom_id])
+    raise ActionController::RoutingError.new("must supply a valid chatroom id!") if @chatroom.nil?
+    @chatroom
+  end
+
+  def get_power
+    @power = @user.power_for_chatroom(@chatroom)
+  end
+
+  def authorized?
+    @chatroom.powers.include? get_power
+  end
+
+  def user_must_belong_to_chatroom
+    raise User::NotAuthorizedError unless authorized?
   end
 end

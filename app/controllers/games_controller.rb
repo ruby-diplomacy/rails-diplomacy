@@ -1,4 +1,5 @@
 class GamesController < ApplicationController
+
   def index
     @games = Game.all
     respond_to do |format|
@@ -8,7 +9,7 @@ class GamesController < ApplicationController
   end
 
   def show
-    @game = Game.first(params[:id])
+    @game = Game.get!(params[:id])
     respond_to do |format|
       format.html
       format.json {render json: @game}

@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-RAILS_VERSION = '~> 3.1.1'
+RAILS_VERSION = '~> 3.1.2'
 DM_VERSION = '~> 1.2.0'
 gem 'activesupport',      RAILS_VERSION, :require => 'active_support'
 gem 'actionpack',         RAILS_VERSION, :require => 'action_pack'
@@ -36,7 +36,7 @@ gem 'less-rails-bootstrap'
 group :assets do
   gem 'sass-rails',   '~> 3.1.4'
   gem 'coffee-rails', '~> 3.1.1'
-  gem 'uglifier', '>= 1.0.3'
+  gem 'uglifier'
 end
 
 gem 'jquery-rails'
@@ -56,7 +56,7 @@ group :development do
   gem 'pry-rails'
   gem 'rspec-rails'
   gem 'watchr'
-  gem 'spork'
+  gem 'spork', :git => "git://github.com/sporkrb/spork.git"
   gem 'foreman'
 end
 
@@ -67,7 +67,7 @@ group :test do
   gem 'rspec-rails'
   gem 'cucumber'
   gem 'cucumber-rails'
-  gem 'factory_girl'
+  gem 'factory_girl' , :require => false
   gem 'database_cleaner'
   gem 'capybara'
 end

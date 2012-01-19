@@ -86,11 +86,11 @@ module DiplomacyWorld
   
   def status_to_s(status)
     case status
-    when Diplomacy::OrderWrapper::SUCCESS
+    when Diplomacy::SUCCESS
       return 'S'
-    when Diplomacy::OrderWrapper::FAILURE
+    when Diplomacy::FAILURE
       return 'F'
-    when Diplomacy::OrderWrapper::UNRESOLVED
+    when Diplomacy::UNRESOLVED
       return 'U'
     end
   end

@@ -23,9 +23,9 @@ Then /^the "([^"]*)" should be correct\.$/ do |adjudication|
     @actual_adjudication << status_to_s(@adjudicated_orders[index].status)
     case adjudication[index]
     when 'S'
-      @adjudicated_orders[index].status.should == Diplomacy::OrderWrapper::SUCCESS
+      @adjudicated_orders[index].status.should == Diplomacy::SUCCESS
     when 'F'
-      @adjudicated_orders[index].status.should == Diplomacy::OrderWrapper::FAILURE
+      @adjudicated_orders[index].status.should == Diplomacy::FAILURE
     end
   end
 end

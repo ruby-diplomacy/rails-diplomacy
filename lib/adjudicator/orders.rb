@@ -4,13 +4,17 @@ require_relative 'state'
 require_relative '../graph/graph'
 
 module Diplomacy 
+  UNRESOLVED = 0
+  SUCCESS = 1
+  FAILURE = 2
 
   class GenericOrder
-    attr_accessor :unit, :unit_area, :dst
+    attr_accessor :unit, :unit_area, :dst, :status
     def initialize(unit, unit_area, dst)
       @unit = unit
       @unit_area = unit_area
       @dst = dst
+      @status = Diplomacy::UNRESOLVED
     end
     # affected area
     def affected
@@ -19,6 +23,22 @@ module Diplomacy
     
     def nationality
       unit.nationality
+    end
+    
+    def unresolved?
+      @status == UNRESOLVED
+    end
+    
+    def status_readable
+      case @status
+      when 0
+        stat_str = :UNRESOLVED
+      when 1
+        stat_str = :SUCCESS
+      when 2
+        stat_str = :FAILURE
+      end
+      return order.to_s+", "+stat_str.to_s
     end
     
     def prefix
@@ -70,38 +90,6 @@ module Diplomacy
     
     def to_s
       "#{prefix} C #{@src} -> #{@dst}"
-    end
-  end
-  
-  class OrderWrapper
-    UNRESOLVED = 0
-    SUCCESS = 1
-    FAILURE = 2
-    
-    attr_accessor :order
-    attr_accessor :status
-    attr_accessor :depends_on
-    
-    def initialize(order)
-      @order = order
-      @status = UNRESOLVED
-      @depends_on = []
-    end
-    
-    def unresolved?
-      @status == UNRESOLVED
-    end
-    
-    def to_s
-      case @status
-      when 0
-        stat_str = :UNRESOLVED
-      when 1
-        stat_str = :SUCCESS
-      when 2
-        stat_str = :FAILURE
-      end
-      return order.to_s+", "+stat_str.to_s
     end
   end
 end

@@ -99,29 +99,28 @@ module Diplomacy
       @map = map
     end
 
-    def validate_orders(state, orders)
+    def validate_orders!(state, orders)
       puts 'FIXME: VALIDATE ORDERS'
       true
     end
 
-    def resolve(state, orders)
-      return unless validate_orders(state, orders)
+    def resolve!(state, orders)
+      return unless validate_orders!(state, orders)
       
       @state = state
-      
-      results = {}
-      new_state = GameState.new
       
       @orders = OrderCollection.new(orders)
       
       @orders.each do |order|
-        resolve_order(order)
+        resolve_order!(order)
       end
+      
+      new_state = GameState.new
       
       return new_state,@orders.orders
     end
     
-    def resolve_order(wrapped_order)
+    def resolve_order!(wrapped_order)
       if not wrapped_order.unresolved?
         return
       end
@@ -129,11 +128,11 @@ module Diplomacy
       dependencies = get_dependencies(wrapped_order)
       
       dependencies.each do |dependency|
-        resolve_order(dependency) # TODO avoid infinite loops
+        resolve_order!(dependency) # TODO avoid infinite loops
       end
       
       # sets order status
-      adjudicate(wrapped_order, dependencies)
+      adjudicate!(wrapped_order, dependencies)
       @@log.debug "Decided: #{wrapped_order.status}"
     end
     
@@ -179,7 +178,7 @@ module Diplomacy
       dependencies
     end
     
-    def adjudicate(wrapped_order, dependencies)
+    def adjudicate!(wrapped_order, dependencies)
       @@log.debug "Adjudicating #{wrapped_order.order}"
       
       order = wrapped_order.order

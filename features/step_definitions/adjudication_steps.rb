@@ -11,7 +11,7 @@ When /^I adjudicate a set of "([^"]*)"$/ do |orderblob|
   parse_orders(orderblob)
   
   # adjudicate orders
-  new_state, @adjudicated_orders = adjudicator.resolve(gamestate, orders)
+  new_state, @adjudicated_orders = adjudicator.resolve!(gamestate, orders)
 end
 
 Then /^the "([^"]*)" should be correct\.$/ do |adjudication|

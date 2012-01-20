@@ -88,7 +88,7 @@ module Diplomacy
   end
   
   class Adjudicator
-    @@log = Logger.new( 'adjudicator.log', 'daily' )
+    @@log = Logger.new( Rails.root + 'log/adjudicator.log', 'daily' )
     
     attr_accessor :orders
     attr_accessor :map

@@ -5,85 +5,39 @@ require_relative 'state'
 require_relative '../graph/graph'
 
 module Diplomacy
-  class OrderCollection
-    attr_accessor :orders
-    attr_accessor :moves
-    attr_accessor :supports
-    attr_accessor :supportholds
-    attr_accessor :holds
-    attr_accessor :convoys
+  class Validator
+    def initialize(map, order_list)
+      @map = map
+      @orders = OrderCollection.new(order_list)
+    end
     
-    def initialize(orders)
-      @orders = []
-      @moves = {}
-      @supports = {}
-      @holds = {}
-      @supportholds = {}
-      @convoys = {}
+    def validate_orders
+      @orders.each do |order|
+        fail_if_invalid!(order)
+      end
       
-      # create wrappers and categorize orders
-      orders.each do |order|
-        case order
-        when Move
-          (self.moves[order.dst] ||= Array.new) << order
-        when Support
-          (self.supports[order.dst] ||= Array.new) << order
-        when Hold 
-          (self.holds[order.dst] ||= Array.new) << order
-        when SupportHold
-          (self.supportholds[order.dst] ||= Array.new) << order
-        when Convoy
-          (self.convoys[order.dst] ||= Array.new) << order
+      @orders
+    end
+    
+    def fail_if_invalid!(order)
+      case order
+      when Move
+        order.status = FAILURE if order.unit.is_fleet? && (not valid_move? (order))
+      when Support
+        unless valid_move?(order) # works fine for support validity, too
+          order.status = FAILURE
         end
-        @orders << order
       end
     end
     
-    def each(&blk)
-      @orders.each(&blk)
-    end
-    
-    def convoys_for_move(move)
-      convoys_to_area = @convoys[move.dst]
-      if convoys_to_area.nil?
-        return []
-      end
-      
-      return convoys_to_area.find_all { |convoy| convoy.src.eql? move.unit_area }
-    end
-    
-    def moves_by_dst(area, skip_me=false, me=nil)
-      moves = @moves[area] || []
-      
-      if skip_me
-        moves.reject {|move| move.equal? me}
+    def valid_move?(move)
+      if move.unit.is_army? && @map.neighbours?(move.unit_area, move.dst, Area::LAND_BORDER)
+        return true
+      elsif move.unit.is_fleet? && @map.neighbours?(move.unit_area, move.dst, Area::SEA_BORDER)
+        return true
       else
-        moves
+        return false
       end
-    end
-    
-    def supports_by_dst(area)
-      supports = @supports[area] || []
-    end
-    
-    def moves_by_origin(area)
-      @moves.values.each do |moves_for_area|
-        # only one at most can exist, so detect is enough
-        if not (ret = moves_for_area.detect { |move| move.unit_area.eql? area }).nil?
-          return ret
-        end
-      end
-      
-      # no compyling move was found, return nil
-      return nil
-    end
-    
-    def hold_in(area)
-      hold = @holds[area] || []
-    end
-    
-    def supportholds_to(area)
-      supports = @supportholds[area] || []
     end
   end
   
@@ -97,17 +51,11 @@ module Diplomacy
       @map = map
     end
 
-    def validate_orders!(state, orders)
-      puts 'FIXME: VALIDATE ORDERS'
-      true
-    end
-
-    def resolve!(state, orders)
-      return unless validate_orders!(state, orders)
+    def resolve!(state, unchecked_orders)
+      validator = Validator.new(@map, unchecked_orders)
+      @orders = validator.validate_orders
       
       @state = state
-      
-      @orders = OrderCollection.new(orders)
       
       @orders.each do |order|
         resolve_order!(order)

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "chatroom/show.html.erb" :js => true do
+describe "chatroom/show.html.erb", :js => true do
   let(:game) {Factory.create :game}
   let(:user) {Factory.create :user}
   

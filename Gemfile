@@ -41,6 +41,8 @@ end
 
 gem 'jquery-rails'
 
+gem 'less-rails-bootstrap'
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
@@ -56,6 +58,8 @@ group :development do
   gem 'pry-rails'
   gem 'rspec-rails'
   gem 'watchr'
+  gem 'guard-rspec'
+  gem 'libnotify', :platforms => :mri_19
   gem 'spork', :git => "git://github.com/sporkrb/spork.git"
   gem 'foreman'
 end

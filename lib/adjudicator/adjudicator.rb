@@ -22,7 +22,13 @@ module Diplomacy
     def fail_if_invalid!(order)
       case order
       when Move
-        order.status = FAILURE if order.unit.is_fleet? && (not valid_move? (order))
+        # if sea unit, can't be convoyed, move must be valid
+        order.fail if order.unit.is_fleet? && (not valid_move?(order))
+        
+        # if land unit, invalid move might be part of a convoy
+        if order.unit.is_army? && !valid_move?(order) && @orders.convoys_for_move(order).empty?
+          order.fail
+        end
       when Support
         unless valid_move?(order) # works fine for support validity, too
           order.fail

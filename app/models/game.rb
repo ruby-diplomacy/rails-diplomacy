@@ -9,11 +9,15 @@ class Game
   has n, :users, :through => :user_assignments
   belongs_to :variant
   has n, :powers, :through => :variant
+  has n, :chatrooms
 
   def assign_user(user, power = nil)
-    u = self.user_assignments.first_or_create(:user => user)
+    u = self.user_assignments.first_or_create(:game => self, :user => user)
     u.power = power if power
-    self.save
+    u.save
+    user.reload
+
+    [user, power]
   end
 
 

@@ -21,6 +21,7 @@ class ApplicationController < ActionController::Base
     render_error(404)
   end
 
+  # FIXME: authentication
   def user_not_authorized
     render_error(401)
   end

@@ -6,6 +6,7 @@ describe "messages/show.html.erb" do
   end
 
   it "renders attributes in <p>" do
+    pending
     render
   end
 end

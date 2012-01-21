@@ -9,6 +9,7 @@ describe "messages/index.html.erb" do
   end
 
   it "renders a list of messages" do
+    pending
     render
   end
 end

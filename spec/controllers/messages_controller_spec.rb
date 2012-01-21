@@ -12,18 +12,13 @@ describe MessagesController do
 
   before {
     game.assign_user(user, power)
-    chatroom.powers << game.powers.first
+    chatroom.add_power(power)
     chatroom.save
+    MessagesController.any_instance.stub(:logged_user) {user}
   }
 
 
-  describe "GET index", :focus => true do 
-
-    it "should return 401 Unauthorized if the user is not in the given chatroom" do
-      controller.should_receive(:logged_user).and_return(malicious)
-      get :index, :chatroom_id => chatroom.id, :name_prefix => prefix
-      response.status.should == 401
-    end
+  describe "GET index" do
 
     it "should return 404 without chatroom_id" do
       expect{get :index}.to raise_error(ActionController::RoutingError)

@@ -6,11 +6,13 @@ describe Chatroom do
   let(:user2) {Factory.create(:user)}
   let(:power1) {game.powers.first}
   let(:power2) {game.powers.last}
-  let(:chatroom) {Factory.create(:chatroom, :game => game, :powers => [power1, power2] )}
+  let(:chatroom) {Factory.create(:chatroom, :game => game )}
 
   before do
     game.assign_user(user1, power1)
     game.assign_user(user2, power2)
+
+    chatroom.add_power(power1)
   end
 
   describe "instance methods" do 
@@ -18,10 +20,14 @@ describe Chatroom do
     subject {chatroom}
     describe "#user" do
       it "should return the chatroom users" do 
+        subject.add_powers(game.powers)
         subject.users.count.should == 2
         subject.users.should include(user1)
-        subject.users.should include(user1)
+        subject.users.should include(user2)
       end
+    end
+
+    it "should add a power" do
     end
   end
 
@@ -31,6 +37,6 @@ describe Chatroom do
         Chatroom.game_user(game, user1).should == [chatroom]
       end
     end
-
   end
+
 end

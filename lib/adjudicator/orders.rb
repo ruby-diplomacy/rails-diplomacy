@@ -21,12 +21,28 @@ module Diplomacy
       dst
     end
     
+    def succeed
+      @status = SUCCESS
+    end
+    
+    def fail
+      @status = FAILURE
+    end
+    
     def nationality
       unit.nationality
     end
     
     def unresolved?
       @status == UNRESOLVED
+    end
+    
+    def failed?
+      @status == FAILURE
+    end
+    
+    def succeeded?
+      @status == SUCCESS
     end
     
     def status_readable

@@ -25,7 +25,7 @@ module Diplomacy
         order.status = FAILURE if order.unit.is_fleet? && (not valid_move? (order))
       when Support
         unless valid_move?(order) # works fine for support validity, too
-          order.status = FAILURE
+          order.fail
         end
       end
     end
@@ -150,8 +150,7 @@ module Diplomacy
           defend_prevent_strengths.sort!
           
           attack_strength > defend_prevent_strengths[-1] ? 
-            order.status = SUCCESS 
-          : order.status = FAILURE
+            order.succeed : order.fail
             
         else
           # there is no head to head battle
@@ -168,8 +167,7 @@ module Diplomacy
           @@log.debug "#{attack_strength}, #{hold_prevent_strengths}"
           
           attack_strength > hold_prevent_strengths[-1] ? 
-            order.status = SUCCESS 
-          : order.status = FAILURE
+            order.succeed : order.fail
         end
         
       when Support, SupportHold
@@ -179,40 +177,40 @@ module Diplomacy
         moves_to_area.each do |move|
           if order.nationality != move.nationality and
               move.unit_area != order.dst
-            order.status = FAILURE
+            order.fail
             return 
           end
         end
           
         # no moves have cut this support, so it succeeds (with exception below)
-        order.status = SUCCESS
+        order.succeed
         
         if SupportHold === order 
           # support holds fail if the supported unit moves
-          order.status = FAILURE if not @orders.moves_by_origin(order.dst).nil?
+          order.fail if not @orders.moves_by_origin(order.dst).nil?
         else # Support === order
           supported_move = @orders.moves_by_origin(order.src)
           
           # supports fail if there is no such move, or if the move of the 
           # unit in the target area moves elsewhere
           if supported_move == nil or not supported_move.dst.eql? order.dst
-            order.status = FAILURE
+            order.fail
           end
         end
       when Hold
         # Hold always succeeds
-        order.status = SUCCESS
+        order.succeed
       when Convoy
         intercepting_moves = @orders.moves_by_dst(order.unit_area)
         
         intercepting_moves.each do |move|
-          if move.status == SUCCESS
-            order.status = FAILURE
+          if move.succeeded?
+            order.fail
             return
           end
         end
         
-        order.status = SUCCESS
+        order.succeed
       end
     end
     
@@ -274,13 +272,13 @@ module Diplomacy
       # use this to determine if unit leaving - can only be zero or one
       dst_move = @orders.moves_by_origin(move.dst)
       
-      if unit_at_dst == nil or ( (not dst_move.nil?) and dst_move.status == SUCCESS )
+      if unit_at_dst == nil or ( (not dst_move.nil?) and dst_move.succeeded? )
         # destination is empty or the unit at the destination successfully moves away
         supports = @orders.supports_by_dst(move.dst)
         
         supports.each do |support|
           if support.src == move.unit_area and 
-              support.status == SUCCESS 
+              support.succeeded?
             strength += 1
           end
         end
@@ -294,7 +292,7 @@ module Diplomacy
           supports.each do |support|
             if support.src == move.unit_area and 
                 support.nationality != unit_at_dst.nationality and 
-                support.status == SUCCESS 
+                support.succeeded?
               strength += 1
             end
           end
@@ -310,7 +308,7 @@ module Diplomacy
       
       supports.each do |support|
         if support.src == move.unit_area and 
-            support.status == SUCCESS 
+            support.succeeded?
           strength += 1
         end
       end
@@ -328,7 +326,7 @@ module Diplomacy
       # FIXME some ambiguity regarding prevent strength and defend strength
       supports.each do |support|
         if support.src == move.unit_area and 
-            support.status == SUCCESS 
+            support.succeeded?
           strength += 1
         end
       end
@@ -342,15 +340,15 @@ module Diplomacy
         dst_move = @orders.moves_by_origin(area)
         
         if (not dst_move.nil?) # unit was ordered to move
-          strength = 0 if dst_move.status != SUCCESS
-          strength = 1 if dst_move.status != FAILURE
+          strength = 0 if dst_move.failed?
+          strength = 1 if dst_move.succeeded?
         else # unit was ordered something supportable
           strength = 1
           
           supports = @orders.supportholds_to(area)
           
           supports.each do |support|
-            strength += 1 if support.status == SUCCESS 
+            strength += 1 if support.succeeded?
           end
         end
       else # there is no unit

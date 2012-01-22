@@ -6,15 +6,19 @@ class User < ActiveRecord::Base
   has_many :powers, :through => :user_assignments
 
   validates :username, :length => {
-          :minimum => 5, 
+          :minimum => 4, 
           :maximum => 24,
-          :wrong_length => 'username must be between 5 and 24 characters'
+          :wrong_length => 'username must be between 4 and 24 characters'
         }
 
 
   def power_for_chatroom(c)
-    ass = UserAssignment.first(:user_id => self.id, :game_id => c.game.id)
-    assignment.power if assignment
+    power_for_game(c.game)
+  end
+
+  def power_for_game(g)
+    ass = self.user_assignments.where(:game_id => g.id).first
+    ass.power if ass
   end
 
 end

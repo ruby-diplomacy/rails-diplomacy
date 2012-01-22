@@ -9,7 +9,7 @@ class GamesController < ApplicationController
   end
 
   def show
-    @game = Game.get!(params[:id])
+    @game = Game.find(params[:id])
     respond_to do |format|
       format.html
       format.json {render json: @game}

@@ -27,7 +27,7 @@ class MessagesController < ApplicationController
 
   private 
   def get_chatroom
-    @chatroom = Chatroom.get(params[:chatroom_id])
+    @chatroom = Chatroom.find(params[:chatroom_id])
     raise ActionController::RoutingError.new("must supply a valid chatroom id!") if @chatroom.nil?
     @chatroom
   end

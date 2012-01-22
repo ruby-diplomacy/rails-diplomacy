@@ -6,7 +6,7 @@ describe ChatroomPowerAssociation do
   
   it "should not have the same power twice" do
     expect{ChatroomPowerAssociation.create(:chatroom => chatroom, :power => power)}.to change{ChatroomPowerAssociation.count}.from(0).to(1)
-    expect{ChatroomPowerAssociation.create(:chatroom => chatroom, :power => power)}.to raise_error(DataObjects::IntegrityError)
+    expect{ChatroomPowerAssociation.create(:chatroom => chatroom, :power => power)}.to_not change{ChatroomPowerAssociation.count}
   end
 
   it "should not allow powers from other games" do

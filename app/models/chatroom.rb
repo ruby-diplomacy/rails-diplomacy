@@ -4,12 +4,14 @@ class Chatroom < ActiveRecord::Base
   has_many :powers, :through => :chatroom_power_associations
   has_many :messages
 
-  def users
-   self.powers.user_assignments.users
-  end
+  validates_presence_of :game_id
+  scope :power_game, ->(power, game) {
+    joins(:chatroom_power_associations).where('chatroom_power_associations.power_id = ? AND chatrooms.game_id = ?', power.id, game.id)
+  }
 
-  def self.game_user(game, user)
-    all(:game => game, :powers => [:id => game.power_for_user(user).id])
+  def users
+    ids = UserAssignment.where(:game_id => game.id, :power_id => powers.map(&:id)).pluck(:id)
+    User.find(ids)
   end
 
   def add_power(power)
@@ -17,14 +19,14 @@ class Chatroom < ActiveRecord::Base
     self.reload
   end
 
-  def add_powers(powers)
-    powers.each {|p| _add_power(p)}
+  def add_powers(ps)
+    ps.each {|p| _add_power(p)}
     self.reload
   end
 
   private
   def _add_power(power)
-    ChatroomPowerAssociation.first_or_create(:chatroom_id => self.id, :power_id => power.id)
+    c = ChatroomPowerAssociation.where(:chatroom_id => self.id, :power_id => power.id).first_or_create
   end
 
 end

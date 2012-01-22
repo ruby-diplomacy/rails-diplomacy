@@ -6,19 +6,23 @@ class Game < ActiveRecord::Base
   has_many :powers, :through => :variant
   has_many :chatrooms
 
-  def assign_user(user, power = nil)
-    u = self.user_assignments.first_or_create(:game => self, :user => user)
-    u.power = power if power
-    u.save
-    user.reload
+  validates_presence_of :variant_id
 
-    [user, power]
+  def assign_user(user, power = nil)
+    ua = self.user_assignments.where(:user_id => user.id).first_or_create
+    if power
+      ua.power = power
+      ua.save
+    end
+
+    ua
   end
 
 
   def power_for_user(user)
     self.user_assignments(:user => user).first.power
   end
+
 
 end
 # == Schema Information

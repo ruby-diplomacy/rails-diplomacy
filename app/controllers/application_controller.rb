@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   
 
   rescue_from User::NotAuthorizedError, :with  => :user_not_authorized
+  rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
   protect_from_forgery
 
   # FIXME: stub

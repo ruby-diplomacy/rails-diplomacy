@@ -21,7 +21,8 @@ describe MessagesController do
   describe "GET index" do
 
     it "should return 404 without chatroom_id" do
-      expect{get :index}.to raise_error(ActionController::RoutingError)
+      get :index
+      response.status.should == 404
     end
 
     it "assigns all messages as @messages" do

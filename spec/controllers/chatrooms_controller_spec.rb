@@ -74,12 +74,9 @@ describe ChatroomsController do
       response.status.should == 404
     end
 
-    it "should return 404 without chatroom_id" do
-      expect{get :show, :game_id => game.id, :name_prefix => prefix}.to raise_error(ActionController::RoutingError)
-    end
-
-    it "should return 404 without game_id" do
-      expect{get :show, :id => chatroom.id, :name_prefix => prefix}.to raise_error(ActionController::RoutingError)
+    it "should return 404 without chatroom_id", :focus => true do
+      get :show, :game_id => game.id, :name_prefix => prefix
+      response.status.should == 404
     end
 
     it 'get the requested chatroom' do

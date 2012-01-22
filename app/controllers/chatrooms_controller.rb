@@ -14,7 +14,7 @@ class ChatroomsController < ApplicationController
   # GET /chatrooms/1
   # GET /chatrooms/1.json
   def show
-    @chatroom = chatrooms.get!(params[:id])
+    @chatroom = chatrooms.find(params[:id])
   end
 
   # POST /chatrooms
@@ -27,14 +27,16 @@ class ChatroomsController < ApplicationController
 
   private
 
-  def chatrooms 
-    Chatroom.game_user(@game, @user)
+  def chatrooms
+    power = @user.power_for_game(@game)
+    raise ActiveRecord::RecordNotFound if power.nil?
+    Chatroom.power_game(power, @game)
   end
 
   def get_game
-    @game = Game.get(params[:game_id])
-    raise ActionController::RoutingError.new("must supply a valid game id") if @game.nil?
-    @game
+    raise ActionController::RoutingError.new("must supply a valid game id") if params[:game_id].nil?
+   
+    @game = Game.find(params[:game_id])
   end
 
   def get_power

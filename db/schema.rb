@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120121171014) do
+ActiveRecord::Schema.define(:version => 20120122123558) do
 
   create_table "chatroom_power_associations", :id => false, :force => true do |t|
     t.integer "chatroom_id"
@@ -38,12 +38,9 @@ ActiveRecord::Schema.define(:version => 20120121171014) do
 
   create_table "messages", :force => true do |t|
     t.string  "text",        :limit => 50
-    t.integer "power_id",                  :null => false
-    t.integer "chatroom_id",               :null => false
+    t.integer "power_id"
+    t.integer "chatroom_id"
   end
-
-  add_index "messages", ["chatroom_id"], :name => "index_messages_chatroom"
-  add_index "messages", ["power_id"], :name => "index_messages_power"
 
   create_table "powers", :force => true do |t|
     t.string  "name",       :limit => 50, :null => false

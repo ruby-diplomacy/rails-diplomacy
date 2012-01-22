@@ -1,9 +1,7 @@
-require 'dm-rails/middleware/identity_map'
 
 class ApplicationController < ActionController::Base
-  use Rails::DataMapper::Middleware::IdentityMap
+  
 
-  rescue_from DataMapper::ObjectNotFoundError, :with => :record_not_found
   rescue_from User::NotAuthorizedError, :with  => :user_not_authorized
   protect_from_forgery
 

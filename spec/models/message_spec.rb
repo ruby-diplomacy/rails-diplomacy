@@ -11,3 +11,13 @@ describe Message do
     end
   end
 end
+# == Schema Information
+#
+# Table name: messages
+#
+#  id          :integer         not null, primary key
+#  text        :string(50)
+#  power_id    :integer         not null
+#  chatroom_id :integer         not null
+#
+

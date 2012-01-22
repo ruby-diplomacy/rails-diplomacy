@@ -45,6 +45,7 @@ group :development do
   gem 'libnotify', :platforms => :mri_19
   gem 'spork', :git => "git://github.com/sporkrb/spork.git"
   gem 'foreman'
+  gem 'annotate', :git => 'git://github.com/ctran/annotate_models.git'
 end
 
 group :test do
@@ -54,7 +55,8 @@ group :test do
   gem 'rspec-rails'
   gem 'cucumber'
   gem 'cucumber-rails'
-  gem 'factory_girl' , :require => false
+  gem 'factory_girl_rails'
   gem 'database_cleaner'
   gem 'capybara'
+  gem 'shoulda'
 end

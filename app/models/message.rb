@@ -1,13 +1,19 @@
-class Message
-  include DataMapper::Resource
+class Message < ActiveRecord::Base
 
-  property :id, Serial
-  property :text, String
   belongs_to :power
   belongs_to :chatroom
-  has 1, :game, {:through => :chatroom}
 
   def game
     self.chatroom.game
   end
 end
+# == Schema Information
+#
+# Table name: messages
+#
+#  id          :integer         not null, primary key
+#  text        :string(50)
+#  power_id    :integer         not null
+#  chatroom_id :integer         not null
+#
+

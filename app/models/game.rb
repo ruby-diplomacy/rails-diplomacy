@@ -1,15 +1,10 @@
-class Game
-  include DataMapper::Resource
-  property :id, Serial
-  property :title, String, :required => true
-  property :status, Integer, :required => true, :default => 0
-  property :start_time, DateTime
+class Game < ActiveRecord::Base
 
-  has n, :user_assignments
-  has n, :users, :through => :user_assignments
+  has_many :user_assignments
+  has_many :users, :through => :user_assignments
   belongs_to :variant
-  has n, :powers, :through => :variant
-  has n, :chatrooms
+  has_many :powers, :through => :variant
+  has_many :chatrooms
 
   def assign_user(user, power = nil)
     u = self.user_assignments.first_or_create(:game => self, :user => user)
@@ -26,3 +21,14 @@ class Game
   end
 
 end
+# == Schema Information
+#
+# Table name: games
+#
+#  id         :integer         not null, primary key
+#  title      :string(50)      not null
+#  status     :integer         default(0), not null
+#  start_time :datetime
+#  variant_id :integer         not null
+#
+

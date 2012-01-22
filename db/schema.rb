@@ -11,15 +11,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 0) do
+ActiveRecord::Schema.define(:version => 20120121171014) do
 
-  create_table "chatroom_power_associations", :primary_key => "chatroom_id", :force => true do |t|
-    t.integer "power_id", :null => false
-    t.integer "game_id",  :null => false
+  create_table "chatroom_power_associations", :id => false, :force => true do |t|
+    t.integer "chatroom_id"
+    t.integer "power_id",    :null => false
   end
 
   add_index "chatroom_power_associations", ["chatroom_id"], :name => "index_chatroom_power_associations_chatroom"
-  add_index "chatroom_power_associations", ["game_id"], :name => "index_chatroom_power_associations_game"
   add_index "chatroom_power_associations", ["power_id"], :name => "index_chatroom_power_associations_power"
 
   create_table "chatrooms", :force => true do |t|
@@ -29,10 +28,10 @@ ActiveRecord::Schema.define(:version => 0) do
   add_index "chatrooms", ["game_id"], :name => "index_chatrooms_game"
 
   create_table "games", :force => true do |t|
-    t.string    "title",      :limit => 50,                :null => false
-    t.integer   "status",                   :default => 0, :null => false
-    t.timestamp "start_time"
-    t.integer   "variant_id",                              :null => false
+    t.string   "title",      :limit => 50,                :null => false
+    t.integer  "status",                   :default => 0, :null => false
+    t.datetime "start_time"
+    t.integer  "variant_id",                              :null => false
   end
 
   add_index "games", ["variant_id"], :name => "index_games_variant"

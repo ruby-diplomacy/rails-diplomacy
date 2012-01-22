@@ -1,4 +1,10 @@
 GIT
+  remote: git://github.com/ctran/annotate_models.git
+  revision: 032565653b98e0790ddd8a070579566eb60a850c
+  specs:
+    annotate (2.4.1.beta1)
+
+GIT
   remote: git://github.com/sporkrb/spork.git
   revision: 5119287ae9550867ff66012936d228be4cb5a24c
   specs:
@@ -86,6 +92,9 @@ GEM
       multi_json (~> 1.0)
     factory_girl (2.5.0)
       activesupport
+    factory_girl_rails (1.6.0)
+      factory_girl (~> 2.5.0)
+      railties (>= 3.0.0)
     faye (0.7.1)
       cookiejar (>= 0.3.0)
       em-hiredis (>= 0.0.1)
@@ -204,6 +213,7 @@ GEM
       multi_json (~> 1.0.4)
       rubyzip
     sexp_processor (3.0.10)
+    shoulda (2.11.3)
     slop (2.1.0)
     sprockets (2.1.2)
       hike (~> 1.2)
@@ -236,13 +246,14 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  annotate!
   capybara
   coffee-rails (~> 3.2.1)
   cucumber
   cucumber-rails
   database_cleaner
   execjs
-  factory_girl
+  factory_girl_rails
   faye
   foreman
   guard-rspec
@@ -255,6 +266,7 @@ DEPENDENCIES
   rspec-rails
   ruby-debug19
   sass-rails (~> 3.2.3)
+  shoulda
   spork!
   sqlite3
   therubyracer

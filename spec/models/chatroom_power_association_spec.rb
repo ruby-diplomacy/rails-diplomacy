@@ -14,3 +14,11 @@ describe ChatroomPowerAssociation do
     expect{ChatroomPowerAssociation.create(:chatroom => chatroom, :power => game2.powers.first)}.not_to change{ChatroomPowerAssociation.count}
   end
 end
+# == Schema Information
+#
+# Table name: chatroom_power_associations
+#
+#  chatroom_id :integer
+#  power_id    :integer         not null
+#
+

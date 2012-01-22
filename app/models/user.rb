@@ -1,19 +1,28 @@
-class User 
-  include DataMapper::Resource
-
+class User < ActiveRecord::Base
   class NotAuthorizedError < Exception
   end
+  has_many :user_assignments
+  has_many :games, :through => :user_assignments
+  has_many :powers, :through => :user_assignments
 
-  property :id, Serial
-  property :username, String, :required => true
+  validates :username, :length => {
+          :minimum => 5, 
+          :maximum => 24,
+          :wrong_length => 'username must be between 5 and 24 characters'
+        }
 
-  has n, :user_assignments
-  has n, :games, :through => :user_assignments
-  has n, :powers, :through => :user_assignments
 
   def power_for_chatroom(c)
-    assignment = self.user_assignments.first(:game => c.game)
+    ass = UserAssignment.first(:user_id => self.id, :game_id => c.game.id)
     assignment.power if assignment
   end
 
 end
+# == Schema Information
+#
+# Table name: users
+#
+#  id       :integer         not null, primary key
+#  username :string(50)      not null
+#
+

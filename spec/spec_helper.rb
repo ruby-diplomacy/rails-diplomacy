@@ -6,8 +6,6 @@ Spork.prefork do
   require File.expand_path("../../config/environment", __FILE__)
   require 'rspec/rails'
   require 'capybara/rails'
-  require 'factory_girl'
-  Dir[Rails.root.join("spec/{support,factories}/**/*.rb")].each {|f| require f}
 
 
   RSpec.configure do |config|
@@ -50,12 +48,8 @@ Spork.prefork do
       DatabaseCleaner.clean
     end
   end
-
-  ActiveSupport::Dependencies.clear
 end
 
 Spork.each_run do
-      Rails::DataMapper.preload_models(RailsDiplomacy::Application)
-      DataMapper.auto_upgrade!
 end
 

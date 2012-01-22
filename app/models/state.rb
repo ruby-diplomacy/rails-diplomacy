@@ -1,8 +1,14 @@
-class State
-  include DataMapper::Resource
+class State < ActiveRecord::Base
 
-  property :id, Serial
-  property :turn, Integer, :required => true
-  property :state, String, :required => true
   belongs_to :game
 end
+# == Schema Information
+#
+# Table name: states
+#
+#  id      :integer         not null, primary key
+#  turn    :integer         not null
+#  state   :string(50)      not null
+#  game_id :integer         not null
+#
+

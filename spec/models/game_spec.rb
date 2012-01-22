@@ -28,3 +28,14 @@ describe Game do
 
 end
 
+# == Schema Information
+#
+# Table name: games
+#
+#  id         :integer         not null, primary key
+#  title      :string(50)      not null
+#  status     :integer         default(0), not null
+#  start_time :datetime
+#  variant_id :integer         not null
+#
+

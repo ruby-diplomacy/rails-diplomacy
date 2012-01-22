@@ -16,3 +16,13 @@ describe UserAssignment do
   end
 
 end
+# == Schema Information
+#
+# Table name: user_assignments
+#
+#  id       :integer         not null, primary key
+#  game_id  :integer         not null
+#  user_id  :integer         not null
+#  power_id :integer
+#
+

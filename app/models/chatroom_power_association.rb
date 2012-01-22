@@ -1,13 +1,12 @@
-class ChatroomPowerAssociation 
-  include DataMapper::Resource
-  belongs_to :chatroom, :key => true
-  belongs_to :power, :key => true
-
-  validates_with_method :check_power
-
-  def check_power
-    self.chatroom.game.powers.include? self.power
-  end
-
-
+class ChatroomPowerAssociation < ActiveRecord::Base
+  belongs_to :chatroom
+  belongs_to :power
 end
+# == Schema Information
+#
+# Table name: chatroom_power_associations
+#
+#  chatroom_id :integer
+#  power_id    :integer         not null
+#
+

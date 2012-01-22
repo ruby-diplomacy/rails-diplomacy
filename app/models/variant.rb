@@ -1,7 +1,13 @@
-class Variant 
-  include DataMapper::Resource
-  property :id, Serial
-  property :name, String, :required => true
-  has n, :games
-  has n, :powers
+class Variant < ActiveRecord::Base
+
+  has_many :games
+  has_many :powers
 end
+# == Schema Information
+#
+# Table name: variants
+#
+#  id   :integer         not null, primary key
+#  name :string(50)      not null
+#
+

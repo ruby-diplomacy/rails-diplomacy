@@ -1,10 +1,8 @@
-class Chatroom
-  include DataMapper::Resource
-  property :id, Serial
+class Chatroom < ActiveRecord::Base
   belongs_to :game
-  has n, :chatroom_power_associations
-  has n, :powers, :through => :chatroom_power_associations
-  has n, :messages
+  has_many :chatroom_power_associations
+  has_many :powers, :through => :chatroom_power_associations
+  has_many :messages
 
   def users
    self.powers.user_assignments.users
@@ -26,7 +24,15 @@ class Chatroom
 
   private
   def _add_power(power)
-    cp = self.chatroom_power_associations.first_or_create(:power => power)
+    ChatroomPowerAssociation.first_or_create(:chatroom_id => self.id, :power_id => power.id)
   end
 
 end
+# == Schema Information
+#
+# Table name: chatrooms
+#
+#  id      :integer         not null, primary key
+#  game_id :integer         not null
+#
+

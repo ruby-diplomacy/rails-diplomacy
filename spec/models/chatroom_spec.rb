@@ -40,3 +40,11 @@ describe Chatroom do
   end
 
 end
+# == Schema Information
+#
+# Table name: chatrooms
+#
+#  id      :integer         not null, primary key
+#  game_id :integer         not null
+#
+

@@ -24,17 +24,13 @@ module Diplomacy
       # create wrappers and categorize orders
       orders.each do |order|
         case order
-        when Move
-          (self.moves[order.dst] ||= Array.new) << order
-        when Support
-          (self.supports[order.dst] ||= Array.new) << order
-        when Hold 
-          (self.holds[order.dst] ||= Array.new) << order
-        when SupportHold
-          (self.supportholds[order.dst] ||= Array.new) << order
-        when Convoy
-          (self.convoys[order.dst] ||= Array.new) << order
+        when Move; (self.moves[order.dst] ||= Array.new) << order
+        when Support; (self.supports[order.dst] ||= Array.new) << order
+        when Hold ; (self.holds[order.dst] ||= Array.new) << order
+        when SupportHold;  (self.supportholds[order.dst] ||= Array.new) << order
+        when Convoy;  (self.convoys[order.dst] ||= Array.new) << order
         end
+
         @orders << order
       end
     end
@@ -45,21 +41,15 @@ module Diplomacy
     
     def convoys_for_move(move)
       convoys_to_area = @convoys[move.dst]
-      if convoys_to_area.nil?
-        return []
-      end
+      return [] if convoys_to_area.nil?
       
-      return convoys_to_area.find_all { |convoy| convoy.src.eql? move.unit_area }
+      convoys_to_area.find_all { |convoy| convoy.src.eql? move.unit_area }
     end
     
     def moves_by_dst(area, skip_me=false, me=nil)
       moves = @moves[area] || []
       
-      if skip_me
-        moves.reject {|move| move.equal? me}
-      else
-        moves
-      end
+      skip_me ?  moves.reject {|move| move.equal? me} : moves
     end
     
     def supports_by_dst(area)
@@ -118,14 +108,12 @@ module Diplomacy
       return new_state,@orders.orders
     end
     
+
+
     def resolve_order!(order)
-      if not order.unresolved?
-        return
-      end
+      return unless  order.unresolved?
       
-      dependencies = get_dependencies(order)
-      
-      dependencies.each do |dependency|
+      get_dependecies(order).each do |dependency|
         resolve_order!(dependency) # TODO avoid infinite loops
       end
       
@@ -133,6 +121,8 @@ module Diplomacy
       adjudicate!(order, dependencies)
       @@log.debug "Decided: #{order.status}"
     end
+
+
     
     def get_dependencies(order)
       dependencies = []
@@ -190,10 +180,10 @@ module Diplomacy
         
         @@log.debug "Has attack strength #{attack_strength}"
         
-        if not head_to_head_move.nil?
+        unless head_to_head_move.nil?
           # there is a head to head battle
           defend_prevent_strengths = [calculate_defend_strength(head_to_head_move)]
-          if not (competing_moves = @orders.moves_by_dst(order.dst).reject {|move| move.equal? order}).nil?
+          unless (competing_moves = @orders.moves_by_dst(order.dst).reject {|move| move.equal? order}).nil?
             competing_moves.each do |competing_move|
               defend_prevent_strengths << calculate_prevent_strength(competing_move)
             end
@@ -201,9 +191,7 @@ module Diplomacy
           
           defend_prevent_strengths.sort!
           
-          attack_strength > defend_prevent_strengths[-1] ? 
-            order.status = SUCCESS 
-          : order.status = FAILURE
+          (attack_strength > defend_prevent_strengths[-1]) ? order.status = SUCCESS : order.status = FAILURE
             
         else
           # there is no head to head battle
@@ -219,9 +207,7 @@ module Diplomacy
           
           @@log.debug "#{attack_strength}, #{hold_prevent_strengths}"
           
-          attack_strength > hold_prevent_strengths[-1] ? 
-            order.status = SUCCESS 
-          : order.status = FAILURE
+          (attack_strength > hold_prevent_strengths[-1]) ? order.status = SUCCESS : order.status = FAILURE
         end
         
       when Support, SupportHold
@@ -269,7 +255,7 @@ module Diplomacy
     end
     
     def check_path(move)
-      return true if @map.neighbours? move.unit_area, move.dst, Area::LAND_BORDER or @map.neighbours? move.unit_area, move.dst, Area::SEA_BORDER
+      return true if @map.neighbours?(move.unit_area, move.dst, Area::LAND_BORDER) or @map.neighbours?(move.unit_area, move.dst, Area::SEA_BORDER)
       
       # check convoy path
       related_convoys = @orders.convoys_for_move(move)

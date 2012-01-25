@@ -6,41 +6,56 @@ require_relative '../graph/graph'
 
 module Diplomacy
   class Validator
-    def initialize(map, order_list)
+    def initialize(state, map, order_list)
+      @state = state
       @map = map
       @orders = OrderCollection.new(order_list)
     end
     
     def validate_orders
       @orders.each do |order|
-        fail_if_invalid!(order)
+        order.fail unless valid_order?(order)
       end
       
       @orders
     end
     
-    def fail_if_invalid!(order)
+    def valid_order?(order)
       case order
       when Move
         # if sea unit, can't be convoyed, move must be valid
-        order.fail if order.unit.is_fleet? && (not valid_move?(order))
+        return false if order.unit.is_fleet? && (not valid_move?(order))
         
         # if land unit, invalid move might be part of a convoy
         if order.unit.is_army? && !valid_move?(order) && @orders.convoys_for_move(order).empty?
-          order.fail
+          return false
         end
       when Support
-        unless valid_move?(order) # works fine for support validity, too
-          order.fail
-        end
+        return false unless valid_move?(order) # works fine for support validity, too
+        
+        # check whether supported move is valid, as well - bit of a hack
+        m = Move.new(@state[order.src].unit, order.src, order.dst)
+        m.unit_area_coast = order.src_coast
+        m.dst_coast = order.dst_coast
+        return false unless valid_order?(m)
+      when Convoy
+        m = Move.new(@state[order.src].unit, order.src, order.dst)
+        m.unit_area_coast = order.src_coast
+        m.dst_coast = order.dst_coast
+        return false unless valid_order?(m)
       end
+      true
     end
     
     def valid_move?(move)
       if move.unit.is_army? && @map.neighbours?(move.unit_area, move.dst, Area::LAND_BORDER)
         return true
-      elsif move.unit.is_fleet? && @map.neighbours?(move.unit_area, move.dst, Area::SEA_BORDER)
-        return true
+      elsif move.unit.is_fleet?
+        # yuck - but it gets the job done
+        move.unit_area_coast.nil? ? from = move.unit_area : from = (move.unit_area.to_s + move.unit_area_coast.to_s).to_sym
+        move.dst_coast.nil? ? to = move.dst : to = (move.dst.to_s + move.dst_coast.to_s).to_sym
+        
+        return true if @map.neighbours?(from, to, Area::SEA_BORDER)
       else
         return false
       end
@@ -58,7 +73,7 @@ module Diplomacy
     end
 
     def resolve!(state, unchecked_orders)
-      validator = Validator.new(@map, unchecked_orders)
+      validator = Validator.new(state, @map, unchecked_orders)
       @orders = validator.validate_orders
       
       @state = state
@@ -74,6 +89,7 @@ module Diplomacy
     
     def resolve_order!(order)
       if not order.unresolved?
+        @@log.debug "#{order} already resolved: #{order.status_readable}"
         return
       end
       
@@ -85,7 +101,7 @@ module Diplomacy
       
       # sets order status
       adjudicate!(order, dependencies)
-      @@log.debug "Decided: #{order.status}"
+      @@log.debug "Decided: #{order.status_readable}"
     end
     
     def get_dependencies(order)

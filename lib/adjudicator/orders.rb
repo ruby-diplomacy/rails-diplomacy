@@ -54,7 +54,7 @@ module Diplomacy
       when 2
         stat_str = :FAILURE
       end
-      return order.to_s+", "+stat_str.to_s
+      return stat_str
     end
     
     def prefix
@@ -87,7 +87,7 @@ module Diplomacy
     end
     
     def to_s
-      "#{prefix} S #{@src.to_s} -> #{@dst}"
+      "#{prefix} S #{@src.to_s}#{@src_coast} -> #{@dst}#{dst_coast}"
     end
   end
 
@@ -98,7 +98,7 @@ module Diplomacy
   end
 
   class Convoy < GenericOrder
-    attr_accessor :src
+    attr_accessor :src, :src_coast
     def initialize(unit, unit_area, src, dst)
       super(unit, unit_area, dst)
       @src = src

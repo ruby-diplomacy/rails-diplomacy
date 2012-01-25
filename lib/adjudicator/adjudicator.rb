@@ -362,8 +362,8 @@ module Diplomacy
         dst_move = @orders.moves_by_origin(area)
         
         if (not dst_move.nil?) # unit was ordered to move
-          strength = 0 if dst_move.failed?
-          strength = 1 if dst_move.succeeded?
+          strength = 0 if dst_move.succeeded?
+          strength = 1 if dst_move.failed?
         else # unit was ordered something supportable
           strength = 1
           

@@ -6,17 +6,19 @@ module Diplomacy
 
     attr_accessor :name, :borders, :abbrv
     attr_accessor :supply_center
+    attr_accessor :coasts
 
     def initialize(name, abbrv)
       @name = name
       @abbrv = abbrv
       @borders = {LAND_BORDER => [], SEA_BORDER => []}
+      @coasts = []
     end
 
     def add_border(area, border_type)
       (borders[border_type] ||= Set.new) << area
     end
-
+    
     def is_supply?
       @supply_center
     end

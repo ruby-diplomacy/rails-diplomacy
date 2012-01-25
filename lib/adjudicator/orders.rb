@@ -9,7 +9,7 @@ module Diplomacy
   FAILURE = 2
 
   class GenericOrder
-    attr_accessor :unit, :unit_area, :dst, :status
+    attr_accessor :unit, :unit_area, :dst, :status, :unit_area_coast, :dst_coast
     def initialize(unit, unit_area, dst)
       @unit = unit
       @unit_area = unit_area
@@ -79,7 +79,7 @@ module Diplomacy
   end
 
   class Support < GenericOrder
-    attr_accessor :src
+    attr_accessor :src, :src_coast
 
     def initialize(unit, unit_area, src, dst)
       super(unit, unit_area, dst)

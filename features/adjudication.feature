@@ -8,6 +8,11 @@ Feature: adjudicator resolves orders
     When I adjudicate a set of "<orders>"
     Then the "<adjudication>" should be correct. 
     
+  Scenarios: Simple Tests
+    | currentstate | orders | adjudication |
+    | Rus:FStP(nc) | FStP(nc)-Bar | S |
+    | Rus:FStP(sc) | FStP(sc)-Bar | F |
+    
   Scenarios: Diplomacy Adjudicator Test Cases - Basic Checks
     | currentstate | orders | adjudication |
     | Eng:FNth | FNth-Pic | F |
@@ -47,7 +52,7 @@ Feature: adjudicator resolves orders
     | Eng:FLon,FNth,AYor Fra:FEng | FLonSFNth-Eng,FNth-Eng,AYor-Lon,FEngH | SSFS |
     | Aus:FTri Ita:AVen,ATyr Ger:AMun Rus:ASil,ABer | FTriH,AVen-Tri,ATyrSAVen-Tri,AMun-Tyr,ASil-Mun,ABerSASil-Mun | SFFFSS |
     | Ger:FKie,ABur Rus:AMun,ABer | FKie-Mun,ABurSFKie-Mun,AMun-Kie,ABerSAMun-Kie | FFSS |
-   #| Ita:Lyo,FWes Fra:Spa(nc),FMar | FLyo-Spa(sc),FWesSFLyo-Spa(sc),FSpa(nc)-Lyo,FMarSFSpa(nc)-Lyo | SSFF | TODO coasts
+    | Ita:FLyo,FWes Fra:FSpa(nc),FMar | FLyo-Spa(sc),FWesSFLyo-Spa(sc),FSpa(nc)-Lyo,FMarSFSpa(nc)-Lyo | SSFF |
    #| Fra:AMar,FSpa(sc)... 
     | Ger:ABer,FKie Rus:FBal,APru | ABerSAPru,FKieSABer,FBalSAPru-Ber,APru-Ber | FSSF | 
     | Ger:ABer,FKie Rus:FBal,APru | ABerSAPru-Sil,FKieSABer,FBalSAPru-Ber,APru-Ber | FSSF |

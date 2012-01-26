@@ -197,8 +197,8 @@ module Diplomacy
         moves_to_area = @orders.moves_by_dst(order.unit_area)
         
         moves_to_area.each do |move|
-          if order.nationality != move.nationality and
-              move.unit_area != order.dst
+          if order.nationality != move.nationality &&
+              move.unit_area != order.dst && check_path(move)
             order.fail
             return 
           end

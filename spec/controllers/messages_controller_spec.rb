@@ -11,15 +11,14 @@ describe MessagesController do
   let(:prefix) {'chatroom_'}
 
   before {
+    sign_in user
     game.assign_user(user, power)
     chatroom.add_power(power)
     chatroom.save
-    MessagesController.any_instance.stub(:logged_user) {user}
   }
 
 
   describe "GET index" do
-
     it "should return 404 without chatroom_id" do
       get :index
       response.status.should == 404

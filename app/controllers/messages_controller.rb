@@ -1,6 +1,6 @@
 class MessagesController < ApplicationController
   
-  before_filter :require_login
+  before_filter :authenticate_user!
   before_filter :get_chatroom
   before_filter :user_must_belong_to_chatroom
   before_filter :get_power
@@ -33,7 +33,7 @@ class MessagesController < ApplicationController
   end
 
   def get_power
-    @power = @user.power_for_chatroom(@chatroom)
+    @power = current_user.power_for_chatroom(@chatroom)
   end
 
   def authorized?

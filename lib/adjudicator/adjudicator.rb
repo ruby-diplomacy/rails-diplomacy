@@ -23,6 +23,9 @@ module Diplomacy
     def valid_order?(order)
       case order
       when Move
+        # can't move to own space
+        return false if order.dst.eql? order.unit_area
+        
         # if sea unit, can't be convoyed, move must be valid
         return false if order.unit.is_fleet? && (not valid_move?(order))
         
@@ -33,10 +36,8 @@ module Diplomacy
       when Support
         return false unless valid_move?(order) # works fine for support validity, too
         
-        # check whether supported move is valid, as well - bit of a hack
-        m = Move.new(@state[order.src].unit, order.src, order.dst)
-        m.unit_area_coast = order.src_coast
-        m.dst_coast = order.dst_coast
+        # check whether supported move is valid, as well
+        m = @orders.supported_move(order)
         return false unless valid_order?(m)
       when Convoy
         m = Move.new(@state[order.src].unit, order.src, order.dst)

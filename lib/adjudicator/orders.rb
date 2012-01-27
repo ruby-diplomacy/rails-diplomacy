@@ -170,6 +170,15 @@ module Diplomacy
       supports = @supports[area] || []
     end
     
+    def supported_move(support)
+      candidate = moves_by_origin(support.src)
+      if candidate && (candidate.dst.eql? support.dst)
+        return candidate
+      else
+        return nil
+      end
+    end
+    
     def moves_by_origin(area)
       @moves.values.each do |moves_for_area|
         # only one at most can exist, so detect is enough

@@ -19,7 +19,7 @@ Feature: adjudicator resolves orders
     | Eng:ALiv | ALiv-Iri | F |
     | Ger:FKie | FKie-Mun | F |
     | Ger:FKie | FKie-Kie | F |
-    | Eng:FNth,AYor,ALiv Ger:ALon,AWal | FNthCAYor-Yor,AYor-Yor,ALivSAYor-Yor,FLon-Yor,AWalSFLon-Yor | SFFSS |
+    | Eng:FNth,AYor,ALiv Ger:ALon,AWal | FNthCAYor-Yor,AYor-Yor,ALivSAYor-Yor,FLon-Yor,AWalSFLon-Yor | FFFSS |
    #| Eng:FLon | FLon-Nth | F | 6.A.6 The order is given by Germany, this makes no sense in our context
     | Eng:FLon,FNth | FLon-Bel,FNthCALon-Bel | FF |
     | Ita:AVen,ATyr Aus:FTri | AVen-Tri,ATyrSAVen-Tri,FTriSFTri | SSF |

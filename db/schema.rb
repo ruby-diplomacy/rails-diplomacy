@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120122123558) do
+ActiveRecord::Schema.define(:version => 20120127123216) do
 
   create_table "chatroom_power_associations", :id => false, :force => true do |t|
     t.integer "chatroom_id"
@@ -26,6 +26,14 @@ ActiveRecord::Schema.define(:version => 20120122123558) do
   end
 
   add_index "chatrooms", ["game_id"], :name => "index_chatrooms_game"
+
+  create_table "game_users", :force => true do |t|
+    t.integer  "game_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "power_id"
+  end
 
   create_table "games", :force => true do |t|
     t.string   "title",      :limit => 50,                :null => false
@@ -71,8 +79,21 @@ ActiveRecord::Schema.define(:version => 20120122123558) do
   add_index "user_assignments", ["user_id"], :name => "index_user_assignments_user"
 
   create_table "users", :force => true do |t|
-    t.string "username", :limit => 50, :null => false
+    t.string   "username",               :limit => 50,                 :null => false
+    t.string   "email",                                :default => "", :null => false
+    t.string   "encrypted_password",                   :default => "", :null => false
+    t.string   "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer  "sign_in_count",                        :default => 0
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string   "current_sign_in_ip"
+    t.string   "last_sign_in_ip"
   end
+
+  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
+  add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
 
   create_table "variants", :force => true do |t|
     t.string "name", :limit => 50, :null => false

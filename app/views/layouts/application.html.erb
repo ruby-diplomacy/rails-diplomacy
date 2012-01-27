@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>RailsDiplomacy</title>
-  <%= yield :prehead  %>
-  <%= stylesheet_link_tag    "application" %>
-  <%= javascript_include_tag "application" %>
-  <%= yield :afterhead %>
-  <%= csrf_meta_tags %>
-</head>
-<body>
+  <head>
+    <title>RailsDiplomacy</title>
+    <%= yield :prehead  %>
+    <%= stylesheet_link_tag    "application" %>
+    <%= javascript_include_tag "application" %>
+    <%= yield :afterhead %>
+    <%= csrf_meta_tags %>
+  </head>
+  <body>
+    <p class="notice"><%= notice %></p>
+    <p class="alert"><%= alert %></p>
+    <%= yield %>
 
-<%= yield %>
-
-</body>
+  </body>
 </html>

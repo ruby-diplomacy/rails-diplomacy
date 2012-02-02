@@ -12,6 +12,7 @@ module Diplomacy
       @state = state
       @map = map
       @orders = OrderCollection.new(order_list)
+      @invalid_orders = []
     end
     
     def validate_orders
@@ -19,8 +20,10 @@ module Diplomacy
         order.fail unless valid_order?(order)
         @@log.debug "Decided: #{order.status_readable}"
       end
+      sanitized_orders = @orders.orders.collect {|order| order.failed? ? Hold.new(order.unit, order.unit_area) : order}
+      invalid_orders = @orders.orders.collect {|order| order.failed? ? order : nil }
       
-      @orders
+      return OrderCollection.new(sanitized_orders), invalid_orders
     end
     
     def valid_order?(order)
@@ -82,7 +85,7 @@ module Diplomacy
 
     def resolve!(state, unchecked_orders)
       validator = Validator.new(state, @map, unchecked_orders)
-      @orders = validator.validate_orders
+      @orders,invalid_orders = validator.validate_orders
       
       @state = state
       
@@ -91,6 +94,8 @@ module Diplomacy
       end
       
       new_state = GameState.new
+      
+      reconcile!(@orders.orders, invalid_orders)
       
       return new_state,@orders.orders
     end
@@ -389,6 +394,12 @@ module Diplomacy
       end
       
       return strength
+    end
+    
+    def reconcile!(resolved_orders, invalid_orders)
+      resolved_orders.each_index do |index|
+        resolved_orders[index] = invalid_orders[index] if invalid_orders[index]
+      end
     end
   end
 end

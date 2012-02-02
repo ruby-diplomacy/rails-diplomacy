@@ -6,6 +6,8 @@ require_relative '../graph/graph'
 
 module Diplomacy
   class Validator
+    @@log = Logger.new( 'adjudicator.log', 'daily' )
+    
     def initialize(state, map, order_list)
       @state = state
       @map = map
@@ -15,12 +17,14 @@ module Diplomacy
     def validate_orders
       @orders.each do |order|
         order.fail unless valid_order?(order)
+        @@log.debug "Decided: #{order.status_readable}"
       end
       
       @orders
     end
     
     def valid_order?(order)
+      @@log.debug "Validating #{order}"
       case order
       when Move
         # can't move to own space
@@ -40,6 +44,9 @@ module Diplomacy
         m = @orders.supported_move(order)
         return false unless valid_order?(m)
       when Convoy
+        # if in coastal area, fail
+        return false unless @map.areas[order.unit_area].borders[Area::LAND_BORDER].empty?
+        
         m = Move.new(@state[order.src].unit, order.src, order.dst)
         m.unit_area_coast = order.src_coast
         m.dst_coast = order.dst_coast
@@ -280,6 +287,9 @@ module Diplomacy
       
       # areas in next_reached_areas might not be unique
       next_reached_areas.uniq!
+      
+      # if we reached no new areas, fail
+      return false if next_reached_areas.empty?
       
       check_path_recursive(move, unused_convoys, next_reached_areas)
     end

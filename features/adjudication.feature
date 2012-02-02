@@ -74,7 +74,7 @@ Feature: adjudicator resolves orders
     
   Scenarios: Diplomacy Adjudicator Test Cases - Convoys
     | currentstate | orders | adjudication |
-    | Tur:AGre,FAeg,FCon,FBla | AGre-Sev,FAegCAGre-Sev,FConCAGre-Sev,FBlaCAGre-Sev | FFFF |
+    | Tur:AGre,FAeg,FCon,FBla | AGre-Sev,FAegCAGre-Sev,FConCAGre-Sev,FBlaCAGre-Sev | FSFS |
     | Eng:FEng,ALon Fra:APar | FEngCALon-Bre,ALon-Bre,APar-Bre | SFF |
     | Eng:FEng,ALon,FMAO Fra:APar | FEngCALon-Bre,ALon-Bre,FMAOSALon-Bre,APar-Bre | SSSF |
     | Eng:FNth,ALon Ger:FSka | FNthCALon-Hol,ALon-Hol,FSka-Nth | SSF |

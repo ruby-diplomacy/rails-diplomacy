@@ -245,6 +245,11 @@ module Diplomacy
           end
         end
         
+        if @orders.convoyed_move(order).nil?
+          order.fail
+          return
+        end
+        
         order.succeed
       end
     end

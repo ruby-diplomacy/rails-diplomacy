@@ -199,6 +199,10 @@ module Diplomacy
       supports = @supportholds[area] || []
     end
     
+    def convoyed_move(convoy)
+      supported_move(convoy) # works exactly as this one should
+    end
+    
     def remove(order)
       # if object not found in @orders, don't try to find it anywhere else
       if @orders.delete(order)

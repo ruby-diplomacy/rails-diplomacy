@@ -60,7 +60,7 @@ Feature: adjudicator resolves orders
     | Aus:ABud Rus:FRum Tur:FBla,ABul | ABudSFRum,FRum-Hol,FBla-Rum,ABulSFBla-Rum | SFFS |
    #| Aus:ABud Rus:FRum Tur:FBla,ABul | ABudSFRum,FRum-Bul(sc),FBla-Rum,ABulSFBla-Rum | SFFS | perhaps without meaning for us, no corrections will ever be made
    #| Ita:Aeg Rus:FCon...
-    | Aus:ARum Tur:FBla | ARum-Arm,FBlaSARum-Arm | FS |
+    | Aus:ARum Tur:FBla | ARum-Arm,FBlaSARum-Arm | FF |
     | Eng:FEdi,ALiv Fra:FLon Ger:AYor | FEdiSALiv-Yor,ALiv-Yor,FLonSAYor,AYor-Hol | SFSF |
     | Aus:ASer,AVie Rus:AGal Tur:ABul | ASer-Bud,AVie-Bud,AGalSASer-Bud,ABul-Ser | SFSS |
     | Ger:ABer,ASil,FBal Ita:APru Rus:AWar,ALvn | ABer-Pru,ASilSABer-Pru,FBalSABer-Pru,APruSALvn-Pru,AWarSALvn-Pru,ALvn-Pru | SSSFSF |
@@ -72,6 +72,7 @@ Feature: adjudicator resolves orders
     | Ger:ABer,AMun Eng:FKie | ABer-Kie,AMunSFKie-Ber,FKie-Ber | FSF |
     | Ger:FHol,FHel,FSka Fra:FNth,FBel Eng:FEdi,FYor,FNor Aus:AKie,ARuh | FHol-Nth,FHelSFHol-Nth,FSkaSFHol-Nth,FNth-Hol,FBelSFNth-Hol,FEdiSFNor-Nth,FYorSFNor-Nth,FNor-Nth,AKieSARuh-Hol,ARuh-Hol | FSSFSSSFSF |
     
+    
   Scenarios: Diplomacy Adjudicator Test Cases - Convoys
     | currentstate | orders | adjudication |
     | Tur:AGre,FAeg,FCon,FBla | AGre-Sev,FAegCAGre-Sev,FConCAGre-Sev,FBlaCAGre-Sev | FSFS |
@@ -79,3 +80,11 @@ Feature: adjudicator resolves orders
     | Eng:FEng,ALon,FMAO Fra:APar | FEngCALon-Bre,ALon-Bre,FMAOSALon-Bre,APar-Bre | SSSF |
     | Eng:FNth,ALon Ger:FSka | FNthCALon-Hol,ALon-Hol,FSka-Nth | SSF |
     | Eng:FNth,ALon Fra:FEng,FBel Ger:FSka,FDen | FNthCALon-Hol,ALon-Hol,FEng-Nth,FBelSFEng-Nth,FSka-Nth,FDenSFSka-Nth | SSFSFS |
+    | Eng:FNth,ALon Ger:AHol,ABel,FHel,FSka Fra:APic,ABur | FNthCALon-Hol,ALon-Hol,AHolSABel,ABelSAHol,FHelSFSka-Nth,FSka-Nth,APic-Bel,ABurSAPic-Bel | FFSFSSFS |
+   #| Eng:FNth,ALon Ger:FHel,FSka...
+    | Eng:FNth,ALon Ger:FHel,FSka,ABel | FNthCALon-Hol,ALon-Hol,FHelSFSka-Nth,FSka-Nth,ABel-Hol | FFSSS |
+    | Eng:FEng,FNth,ALon Fra:FBre,FMAO | FEngCALon-Bel,FNthCALon-Bel,ALon-Bel,FBreSFMAO-Eng,FMAO-Eng | FSSSS |
+    | Eng:FNth,ALon Ger:FEng Fra:FBre,FMAO | FNthCALon-Bel,ALon-Bel,FEngCALon-Bel,FBreSFMAO-Eng,FMAO-Eng | SSFSS |
+    | Eng:ALon Ger:FEng Rus:FNth Fra:FBre,FMAO | ALon-Bel,FEngCALon-Bel,FNthCALon-Bel,FBreSFMAO-Eng,FMAO-Eng | SFSSS |
+    | Eng:FEng,ALon,FIri Fra:FNAO,FMAO | FEngCALon-Bel,ALon-Bel,FIriCALon-Bel,FNAOSFMAO-Iri,FMAO-Iri | SSFSS |
+    | Eng:ALon,FNth Fra:FEng Ger:FHol,FDen | ALon-Bel,FNthCALon-Bel,FEngCALon-Bel,FHolSFDen-Nth,FDen-Nth | SFSSS |

@@ -2,6 +2,7 @@ require 'logger'
 
 require_relative 'orders'
 require_relative 'state'
+require_relative 'backup_rule'
 require_relative '../graph/graph'
 
 module Diplomacy
@@ -20,8 +21,8 @@ module Diplomacy
         order.fail unless valid_order?(order)
         @@log.debug "Decided: #{order.status_readable}"
       end
-      sanitized_orders = @orders.orders.collect {|order| order.failed? ? Hold.new(order.unit, order.unit_area) : order}
-      invalid_orders = @orders.orders.collect {|order| order.failed? ? order : nil }
+      sanitized_orders = @orders.orders.collect {|order| order.resolved? ? Hold.new(order.unit, order.unit_area) : order}
+      invalid_orders = @orders.orders.collect {|order| order.resolved? ? order : nil }
       
       return OrderCollection.new(sanitized_orders), invalid_orders
     end
@@ -84,7 +85,7 @@ module Diplomacy
       if backup_rule
         @backup_rule = backup_rule
       else
-        @backup_rule = BackupRule.new(szykman=true)
+        @backup_rule = BackupRule.new(:simple_circular)
       end
     end
 
@@ -107,7 +108,7 @@ module Diplomacy
     end
     
     def resolve_order!(order)
-      if not order.unresolved?
+      if order.resolved?
         @@log.debug "#{order} already resolved: #{order.status_readable}"
         return
       end
@@ -117,7 +118,12 @@ module Diplomacy
       else
         @@log.debug("Loop detected: #{@loop_detector}")
         
-        @backup_rule.resolve!(@loop_detector)
+        loop = Array.new(@loop_detector)
+        @loop_detector = []
+        
+        unless guess_resolve!(loop)
+          @backup_rule.resolve!(loop)
+        end
         return
       end
       
@@ -130,7 +136,7 @@ module Diplomacy
       @loop_detector.delete(order)
       
       # sets order status
-      adjudicate!(order, dependencies)
+      adjudicate!(order)
       @@log.debug "Decided: #{order.status_readable}"
     end
     
@@ -175,8 +181,8 @@ module Diplomacy
       dependencies
     end
     
-    def adjudicate!(order, dependencies)
-      if not order.unresolved?
+    def adjudicate!(order)
+      if order.resolved?
         @@log.debug "#{order} already resolved: #{order.status_readable}"
         return
       end
@@ -273,6 +279,8 @@ module Diplomacy
         
         order.succeed
       end
+      
+      @@log.debug "Decision: #{order.resolution_readable}"
     end
     
     def check_path(move)
@@ -283,7 +291,7 @@ module Diplomacy
       
       @@log.debug "related convoys: #{related_convoys}"
       
-      successful_convoys = related_convoys.reject {|convoy| convoy.status.eql? FAILURE}
+      successful_convoys = related_convoys.reject {|convoy| convoy.failed?}
       
       # see if remaining convoy orders form a path
       check_path_recursive(move, successful_convoys, [move.unit_area])
@@ -423,24 +431,68 @@ module Diplomacy
     end
     
     def guess_resolve!(loop)
+      @@log.debug "Entered guess_resolve! for loop: #{loop}"
+      return if loop.empty?
+      
+      resolutions = []
+      
+      head = loop[0]
+      tail = loop[1..-1].reverse
+      
+      # guess negative for head
+      head.guess(Diplomacy::FAILURE)
+      tail.each do |order|
+        adjudicate!(order)
+      end
+      
+      head.unresolve
+      adjudicate!(head)
+      
+      @@log.debug tail.collect { |order| order.status_readable }
+      
+      resolutions << head.resolution
+      
+      # now clear and guess positive
+      clear_orders!(tail)
+      
+      head.guess(Diplomacy::SUCCESS)
+      tail.each do |order|
+        adjudicate!(order)
+      end
+      
+      head.unresolve
+      adjudicate!(head)
+      
+      @@log.debug tail.collect { |order| order.to_s }
+      
+      resolutions << head.resolution
+      
+      @@log.debug "Guess resolutions: #{resolutions}"
+      
+      clear_orders!(tail)
+      
+      if (consistent = resolutions[0] == resolutions[2])
+        head.resolution = resolutions[0]
+        head.resolve
+        
+        # hm. might be better to store them
+        tail.each do |order|
+          adjudicate!(order)
+        end
+      end
+      
+      consistent
+    end
+    
+    def clear_orders!(orders)
+      orders.each do |order|
+        order.unresolve
+      end
     end
     
     def reconcile!(resolved_orders, invalid_orders)
       resolved_orders.each_index do |index|
         resolved_orders[index] = invalid_orders[index] if invalid_orders[index]
-      end
-    end
-  end
-  
-  class BackupRule
-    def initialize(szykman)
-      @szykman = szykman
-    end
-    
-    def resolve!(loop)
-      # TODO: make meaningful rule
-      loop.each do |order|
-        order.fail
       end
     end
   end

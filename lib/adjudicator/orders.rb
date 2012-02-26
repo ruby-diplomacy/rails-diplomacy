@@ -5,56 +5,95 @@ require_relative '../graph/graph'
 
 module Diplomacy 
   UNRESOLVED = 0
-  SUCCESS = 1
-  FAILURE = 2
+  GUESSING = 1
+  RESOLVED = 2
+  
+  SUCCESS = 0
+  FAILURE = 1
 
   class GenericOrder
-    attr_accessor :unit, :unit_area, :dst, :status, :unit_area_coast, :dst_coast
+    attr_accessor :unit, :unit_area, :dst, :status, :resolution, :unit_area_coast, :dst_coast
     def initialize(unit, unit_area, dst)
       @unit = unit
       @unit_area = unit_area
       @dst = dst
-      @status = Diplomacy::UNRESOLVED
+      @status = UNRESOLVED
+      @resolution = FAILURE
     end
     # affected area
     def affected
       dst
     end
     
+    def resolve
+      @status = RESOLVED
+    end
+    
     def succeed
-      @status = SUCCESS
+      resolve
+      @resolution = SUCCESS
     end
     
     def fail
-      @status = FAILURE
+      resolve
+      @resolution = FAILURE
+    end
+    
+    def guess(guess)
+      @status = GUESSING
+      @resolution = guess
+    end
+    
+    def unresolve
+      @status = UNRESOLVED
     end
     
     def nationality
       unit.nationality
     end
     
+    def resolved?
+      @status == RESOLVED
+    end
+    
     def unresolved?
       @status == UNRESOLVED
     end
     
+    def guessing?
+      @status == GUESSING
+    end
+    
     def failed?
-      @status == FAILURE
+      puts "UNRESOLVED ORDER! (#{to_s})"if unresolved?
+      @resolution == FAILURE
     end
     
     def succeeded?
-      @status == SUCCESS
+      puts "UNRESOLVED ORDER! (#{to_s})"if unresolved?
+      @resolution == SUCCESS
     end
     
     def status_readable
       case @status
-      when 0
-        stat_str = :UNRESOLVED
-      when 1
-        stat_str = :SUCCESS
-      when 2
-        stat_str = :FAILURE
+      when UNRESOLVED
+        stat_str = "UNRESOLVED"
+      when GUESSING
+        stat_str = "GUESSING #{resolution_readable}"
+      when RESOLVED
+        stat_str = "#{resolution_readable}"
       end
-      return stat_str
+      stat_str
+    end
+    
+    def resolution_readable
+      case @resolution
+      when SUCCESS
+        res_str = "SUCCESS"
+      when FAILURE
+        res_str = "FAILURE"
+      end
+      res_str
     end
     
     def prefix

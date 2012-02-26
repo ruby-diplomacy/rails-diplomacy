@@ -28,6 +28,10 @@ Feature: adjudicator resolves orders
     | Aus:AVie Ita:AVen | AVie-Tyr,AVen-Tyr | FF |
     | Aus:AVie Ger:AMun Ita:AVen | AVie-Tyr,AMun-Tyr,AVen-Tyr | FFF |
     
+  Scenarios: Diplomacy Adjudicator Test Cases - Circular Movement
+    | currentstate | orders | adjudication |
+    | Tur:FAnk,ACon,ASmy | FAnk-Con,ACon-Smy,ASmy-Ank | SSS |
+    
   Scenarios: Diplomacy Adjudicator Test Cases - Supports and Dislodges
     | currentstate | orders | adjudication |
     | Aus:FAdr,ATri Ita:AVen,ATyr | FAdrSATri-Ven,ATri-Ven,AVenH,ATyrSAVen | SFSS |

@@ -20,12 +20,12 @@ Then /^the "([^"]*)" should be correct\.$/ do |adjudication|
   
   # check orders
   adjudication.length.times do |index|
-    @actual_adjudication << status_to_s(@adjudicated_orders[index].status)
+    @actual_adjudication << status_to_s(@adjudicated_orders[index].resolution)
     case adjudication[index]
     when 'S'
-      @adjudicated_orders[index].status.should == Diplomacy::SUCCESS
+      @adjudicated_orders[index].resolution.should == Diplomacy::SUCCESS
     when 'F'
-      @adjudicated_orders[index].status.should == Diplomacy::FAILURE
+      @adjudicated_orders[index].resolution.should == Diplomacy::FAILURE
     end
   end
 end

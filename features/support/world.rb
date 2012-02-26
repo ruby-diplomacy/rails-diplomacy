@@ -97,8 +97,6 @@ module DiplomacyWorld
       return 'S'
     when Diplomacy::FAILURE
       return 'F'
-    when Diplomacy::UNRESOLVED
-      return 'U'
     end
   end
 end

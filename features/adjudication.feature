@@ -88,3 +88,4 @@ Feature: adjudicator resolves orders
     | Eng:ALon Ger:FEng Rus:FNth Fra:FBre,FMAO | ALon-Bel,FEngCALon-Bel,FNthCALon-Bel,FBreSFMAO-Eng,FMAO-Eng | SFSSS |
     | Eng:FEng,ALon,FIri Fra:FNAO,FMAO | FEngCALon-Bel,ALon-Bel,FIriCALon-Bel,FNAOSFMAO-Iri,FMAO-Iri | SSFSS |
     | Eng:ALon,FNth Fra:FEng Ger:FHol,FDen | ALon-Bel,FNthCALon-Bel,FEngCALon-Bel,FHolSFDen-Nth,FDen-Nth | SFSSS |
+    | Eng:FLon,FWal Fra:ABre,FEng | FLonSFWal-Eng,FWal-Eng,ABre-Lon,FEngCABre-Lon | SSFF |

@@ -79,8 +79,13 @@ module Diplomacy
     attr_accessor :orders
     attr_accessor :map
     
-    def initialize(map)
+    def initialize(map, backup_rule=nil)
       @map = map
+      if backup_rule
+        @backup_rule = backup_rule
+      else
+        @backup_rule = BackupRule.new(szykman=true)
+      end
     end
 
     def resolve!(state, unchecked_orders)
@@ -88,6 +93,7 @@ module Diplomacy
       @orders,invalid_orders = validator.validate_orders
       
       @state = state
+      @loop_detector = []
       
       @orders.each do |order|
         resolve_order!(order)
@@ -106,11 +112,22 @@ module Diplomacy
         return
       end
       
+      unless @loop_detector.member?(order)
+        @loop_detector << order
+      else
+        @@log.debug("Loop detected: #{@loop_detector}")
+        
+        @backup_rule.resolve!(@loop_detector)
+        return
+      end
+      
       dependencies = get_dependencies(order)
       
       dependencies.each do |dependency|
-        resolve_order!(dependency) # TODO avoid infinite loops
+        resolve_order!(dependency)
       end
+      
+      @loop_detector.delete(order)
       
       # sets order status
       adjudicate!(order, dependencies)
@@ -159,6 +176,10 @@ module Diplomacy
     end
     
     def adjudicate!(order, dependencies)
+      if not order.unresolved?
+        @@log.debug "#{order} already resolved: #{order.status_readable}"
+        return
+      end
       @@log.debug "Adjudicating #{order}"
       
       case order
@@ -401,9 +422,25 @@ module Diplomacy
       return strength
     end
     
+    def guess_resolve!(loop)
+    end
+    
     def reconcile!(resolved_orders, invalid_orders)
       resolved_orders.each_index do |index|
         resolved_orders[index] = invalid_orders[index] if invalid_orders[index]
+      end
+    end
+  end
+  
+  class BackupRule
+    def initialize(szykman)
+      @szykman = szykman
+    end
+    
+    def resolve!(loop)
+      # TODO: make meaningful rule
+      loop.each do |order|
+        order.fail
       end
     end
   end

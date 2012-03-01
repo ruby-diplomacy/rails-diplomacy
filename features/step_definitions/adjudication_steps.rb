@@ -25,7 +25,9 @@ Then /^the "([^"]*)" should be correct\.$/ do |adjudication|
     when 'S'
       @adjudicated_orders[index].resolution.should == Diplomacy::SUCCESS
     when 'F'
-      @adjudicated_orders[index].resolution.should == Diplomacy::FAILURE
+      [Diplomacy::FAILURE, Diplomacy::INVALID].member?(@adjudicated_orders[index].resolution).should be_true
+    when 'I'
+      @adjudicated_orders[index].resolution.should == Diplomacy::INVALID
     end
   end
 end

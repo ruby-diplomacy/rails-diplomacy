@@ -18,11 +18,11 @@ module Diplomacy
     
     def validate_orders
       @orders.each do |order|
-        order.fail unless valid_order?(order)
+        order.invalidate unless valid_order?(order)
         @@log.debug "Decided: #{order.status_readable}"
       end
-      sanitized_orders = @orders.orders.collect {|order| order.resolved? ? Hold.new(order.unit, order.unit_area) : order}
-      invalid_orders = @orders.orders.collect {|order| order.resolved? ? order : nil }
+      sanitized_orders = @orders.orders.collect {|order| order.invalid? ? Hold.new(order.unit, order.unit_area) : order}
+      invalid_orders = @orders.orders.collect {|order| order.invalid? ? order : nil }
       
       return OrderCollection.new(sanitized_orders), invalid_orders
     end
@@ -137,7 +137,6 @@ module Diplomacy
       
       # sets order status
       adjudicate!(order)
-      @@log.debug "Decided: #{order.status_readable}"
     end
     
     def get_dependencies(order)

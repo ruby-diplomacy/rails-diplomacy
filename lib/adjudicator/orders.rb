@@ -10,6 +10,7 @@ module Diplomacy
   
   SUCCESS = 0
   FAILURE = 1
+  INVALID = 2
 
   class GenericOrder
     attr_accessor :unit, :unit_area, :dst, :status, :resolution, :unit_area_coast, :dst_coast
@@ -37,6 +38,11 @@ module Diplomacy
     def fail
       resolve
       @resolution = FAILURE
+    end
+    
+    def invalidate
+      resolve
+      @resolution = INVALID
     end
     
     def guess(guess)
@@ -72,6 +78,10 @@ module Diplomacy
     def succeeded?
       puts "UNRESOLVED ORDER! (#{to_s})"if unresolved?
       @resolution == SUCCESS
+    end
+    
+    def invalid?
+      @resolution == INVALID
     end
     
     def status_readable

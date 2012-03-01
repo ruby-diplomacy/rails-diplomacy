@@ -11,7 +11,7 @@ Feature: adjudicator resolves orders
   Scenarios: Simple Tests
     | currentstate | orders | adjudication |
     | Rus:FStP(nc) | FStP(nc)-Bar | S |
-    | Rus:FStP(sc) | FStP(sc)-Bar | F |
+    | Rus:FStP(sc) | FStP(sc)-Bar | I |
     
   Scenarios: Diplomacy Adjudicator Test Cases - Basic Checks
     | currentstate | orders | adjudication |

@@ -31,6 +31,12 @@ Feature: adjudicator resolves orders
   Scenarios: Diplomacy Adjudicator Test Cases - Circular Movement
     | currentstate | orders | adjudication |
     | Tur:FAnk,ACon,ASmy | FAnk-Con,ACon-Smy,ASmy-Ank | SSS |
+    | Tur:FAnk,ACon,ASmy,ABul | FAnk-Con,ACon-Smy,ASmy-Ank,ABulSFAnk-Con | SSSS |
+    | Tur:FAnk,ACon,ASmy,ABul | FAnk-Con,ACon-Smy,ASmy-Ank,ABul-Con | FFFF |
+    | Aus:ATri,ASer Tur:ABul,FAeg,FIon,FAdr Ita:FNap | ATri-Ser,ASer-Bul,ABul-Tri,FAegCABul-Tri,FIonCABul-Tri,FAdrCABul-Tri,FNap-Ion | SSSSSSF |
+    | Aus:ATri,ASer Tur:ABul,FAeg,FIon,FAdr Ita:FNap,FTun | ATri-Ser,ASer-Bul,ABul-Tri,FAegCABul-Tri,FIonCABul-Tri,FAdrCABul-Tri,FNap-Ion,FTunSFNap-Ion | FFFSFSSS |
+    | Eng:FNth,ALon Fra:FEng,ABel | FNthCALon-Bel,ALon-Bel,FEngCABel-Lon,ABel-Lon | SSSS |
+    | Eng:FNth,ALon Fra:FEng,ABel,ABur | FNthCALon-Bel,ALon-Bel,FEngCABel-Lon,ABel-Lon,ABur-Bel | FFFFF |
     
   Scenarios: Diplomacy Adjudicator Test Cases - Supports and Dislodges
     | currentstate | orders | adjudication |

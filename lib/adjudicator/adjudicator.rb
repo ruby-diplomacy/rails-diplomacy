@@ -199,10 +199,11 @@ module Diplomacy
         
         @@log.debug "Has attack strength #{attack_strength}"
         
-        if not head_to_head_move.nil?
+        unless head_to_head_move.nil?
           # there is a head to head battle
           defend_prevent_strengths = [calculate_defend_strength(head_to_head_move)]
-          if not (competing_moves = @orders.moves_by_dst(order.dst).reject {|move| move.equal? order}).nil?
+          
+          unless (competing_moves = @orders.moves_by_dst(order.dst).reject {|move| move.equal? order}).nil?
             competing_moves.each do |competing_move|
               defend_prevent_strengths << calculate_prevent_strength(competing_move)
             end
@@ -212,7 +213,6 @@ module Diplomacy
           
           attack_strength > defend_prevent_strengths[-1] ? 
             order.succeed : order.fail
-            
         else
           # there is no head to head battle
           hold_strength = calculate_hold_strength(order.dst)
@@ -447,9 +447,9 @@ module Diplomacy
       head.unresolve
       adjudicate!(head)
       
-      @@log.debug tail.collect { |order| order.status_readable }
+      @@log.debug tail.collect { |order| "#{order.to_s} #{order.status_readable}" }
       
-      resolutions << head.resolution
+      resolutions << (head.resolution == Diplomacy::FAILURE)
       
       # now clear and guess positive
       clear_orders!(tail)
@@ -462,16 +462,16 @@ module Diplomacy
       head.unresolve
       adjudicate!(head)
       
-      @@log.debug tail.collect { |order| order.to_s }
+      @@log.debug tail.collect { |order| "#{order.to_s} #{order.status_readable}" }
       
-      resolutions << head.resolution
+      resolutions << (head.resolution == Diplomacy::SUCCESS)
       
       @@log.debug "Guess resolutions: #{resolutions}"
       
       clear_orders!(tail)
       
-      if (consistent = resolutions[0] == resolutions[2])
-        head.resolution = resolutions[0]
+      if (consistent = resolutions[0] ^ resolutions[1])
+        head.resolution = resolutions[0] ? Diplomacy::FAILURE : Diplomacy::SUCCESS
         head.resolve
         
         # hm. might be better to store them

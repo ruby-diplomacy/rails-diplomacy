@@ -85,7 +85,7 @@ module Diplomacy
       if backup_rule
         @backup_rule = backup_rule
       else
-        @backup_rule = BackupRule.new(:simple_circular)
+        @backup_rule = BackupRule.new(:simple_circular, :convoy_paradox)
       end
     end
 
@@ -120,6 +120,14 @@ module Diplomacy
         
         loop = Array.new(@loop_detector)
         @loop_detector = []
+        
+        loop_deps = []
+        loop.each do |order|
+          loop_deps.concat(get_dependencies(order).reject {|order| loop.member? order })
+        end
+        loop.concat(loop_deps)
+        
+        @@log.debug "Loop was augmented to include #{loop_deps}"
         
         unless guess_resolve!(loop)
           @backup_rule.resolve!(loop)
@@ -199,40 +207,29 @@ module Diplomacy
         
         @@log.debug "Has attack strength #{attack_strength}"
         
+        competing_strengths = []
+        
         unless head_to_head_move.nil?
           # there is a head to head battle
-          defend_prevent_strengths = [calculate_defend_strength(head_to_head_move)]
-          
-          @@log.debug "Defend strength for #{head_to_head_move}: #{defend_prevent_strengths[0]}"
-          
-          unless (competing_moves = @orders.moves_by_dst(order.dst).reject {|move| move.equal? order}).nil?
-            competing_moves.each do |competing_move|
-              defend_prevent_strengths << calculate_prevent_strength(competing_move)
-            end
-          end
-          
-          defend_prevent_strengths.sort!
-          
-          attack_strength > defend_prevent_strengths[-1] ? 
-            order.succeed : order.fail
+          competing_strengths << calculate_defend_strength(head_to_head_move)
+          @@log.debug "Defend strength for #{head_to_head_move}: #{competing_strengths[0]}"
         else
           # there is no head to head battle
-          hold_strength = calculate_hold_strength(order.dst)
-          @@log.debug "Hold strength for #{order.dst}: #{hold_strength}"
-          hold_prevent_strengths = [hold_strength]
-          # competing moves
-          @orders.moves_by_dst(order.dst, skip_me=true, me=order).each do |competing_move|
-            hold_prevent_strengths << calculate_prevent_strength(competing_move)
-          end
-          
-          hold_prevent_strengths.sort!
-          
-          @@log.debug "#{attack_strength}, #{hold_prevent_strengths}"
-          
-          attack_strength > hold_prevent_strengths[-1] ? 
-            order.succeed : order.fail
+          competing_strengths << calculate_hold_strength(order.dst)
+          @@log.debug "Hold strength for #{order.dst}: #{competing_strengths[0]}"
         end
         
+        # competing moves
+        @orders.moves_by_dst(order.dst, skip_me=true, me=order).each do |competing_move|
+          competing_strengths << calculate_prevent_strength(competing_move)
+        end
+        
+        competing_strengths.sort!
+        
+        @@log.debug "Competing strengths: #{competing_strengths}"
+        
+        competing_strengths.empty? || attack_strength > competing_strengths[-1] ? 
+          order.succeed : order.fail
       when Support, SupportHold
         # get all moves against this area
         moves_to_area = @orders.moves_by_dst(order.unit_area)
@@ -378,16 +375,6 @@ module Diplomacy
     end
     
     def calculate_defend_strength(move)
-      # check if convoyed
-      convoyed = !(@orders.convoys_for_move(move).collect {|c| c.succeeded? }.empty?)
-      if convoyed
-        # probable convoyed move, avoid checking path with unresolved convoys
-        @orders.convoys_for_move(move).each do |c|
-          resolve_order!(c)
-        end
-        return 0 if check_path(move)
-      end
-      
       strength = 1
       supports = @orders.supports_by_dst(move.dst)
       
@@ -452,7 +439,7 @@ module Diplomacy
       head = loop[0]
       tail = loop[1..-1].reverse
       
-      # guess negative for head
+      @@log.debug "Guessing negative for #{head.to_s}"
       head.guess(Diplomacy::FAILURE)
       tail.each do |order|
         adjudicate!(order)
@@ -460,6 +447,7 @@ module Diplomacy
       
       head.unresolve
       adjudicate!(head)
+      @@log.debug "Guess result: #{head.status_readable}"
       
       @@log.debug tail.collect { |order| "#{order.to_s} #{order.status_readable}" }
       
@@ -468,6 +456,7 @@ module Diplomacy
       # now clear and guess positive
       clear_orders!(tail)
       
+      @@log.debug "Guessing positive for #{head.to_s}"
       head.guess(Diplomacy::SUCCESS)
       tail.each do |order|
         adjudicate!(order)
@@ -475,6 +464,7 @@ module Diplomacy
       
       head.unresolve
       adjudicate!(head)
+      @@log.debug "Guess result: #{head.status_readable}"
       
       @@log.debug tail.collect { |order| "#{order.to_s} #{order.status_readable}" }
       

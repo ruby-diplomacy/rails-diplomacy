@@ -45,12 +45,12 @@ module Diplomacy
   
   class SimpleCircularMovementRule < Rule
     def match(loop)
-      loop.each_index do |index|
-        order = loop[index]
-        return false unless Move === order
+      possible_circular = loop.reject {|order| !(Move === order) }
+      possible_circular.each_index do |index|
+        return false if possible_circular.size < 3
         
-        next_index = (index + 1) % loop.size
-        return false unless order.dst = loop[next_index].unit_area
+        next_index = (index + 1) % possible_circular.size
+        return false unless possible_circular[index].dst = possible_circular[next_index].unit_area
         
         true
       end
@@ -63,7 +63,53 @@ module Diplomacy
     end
   end
   
+  class ConvoyParadox < Rule
+    # TODO add initialize for alternate rulings
+    def match(loop)
+      loop.each do |order|
+        case order.unit.type
+        when Unit::FLEET
+          case order
+          when Move
+            if @disrupting_move.nil?
+              @disrupting_move = order
+            else
+              return false
+            end
+          when Support
+            if @contested_support.nil?
+              @contested_support = order
+            else
+              return false
+            end
+          when Convoy
+            if @convoying_fleet.nil?
+              @convoying_fleet = order
+            else
+              return false
+            end
+          end
+        end
+      end
+      
+      return false if @contested_support.nil? || @disrupting_move.nil? || @convoying_fleet.nil?
+      
+      if (@contested_support.src == @disrupting_move.unit_area && @contested_support.dst == @disrupting_move.dst && @disrupting_move.dst == @convoying_fleet.unit_area)
+        return true
+      else
+        return false
+      end
+    end
+    
+    def resolve!(loop)
+      @contested_support.succeed
+      @disrupting_move.succeed
+      @convoying_fleet.fail
+    end
+  end
+  
   RULES = { 
-    simple_circular: SimpleCircularMovementRule.new
+    simple_circular: SimpleCircularMovementRule.new,
+    convoy_paradox: ConvoyParadox.new
   }
 end

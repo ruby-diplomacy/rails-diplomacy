@@ -203,6 +203,8 @@ module Diplomacy
           # there is a head to head battle
           defend_prevent_strengths = [calculate_defend_strength(head_to_head_move)]
           
+          @@log.debug "Defend strength for #{head_to_head_move}: #{defend_prevent_strengths[0]}"
+          
           unless (competing_moves = @orders.moves_by_dst(order.dst).reject {|move| move.equal? order}).nil?
             competing_moves.each do |competing_move|
               defend_prevent_strengths << calculate_prevent_strength(competing_move)
@@ -288,16 +290,18 @@ module Diplomacy
       # check convoy path
       related_convoys = @orders.convoys_for_move(move)
       
-      @@log.debug "related convoys: #{related_convoys}"
+      @@log.debug "Related convoys: #{related_convoys}"
       
       successful_convoys = related_convoys.reject {|convoy| convoy.failed?}
       
       # see if remaining convoy orders form a path
-      check_path_recursive(move, successful_convoys, [move.unit_area])
+      ret = check_path_recursive(move, successful_convoys, [move.unit_area])
+      @@log.debug "Convoy succeeds? #{ret}"
+      ret
     end
     
     def check_path_recursive(move, unused_convoys, last_reached_areas)
-      @@log.debug "unused_convoys: #{unused_convoys}, last_reached_areas: #{last_reached_areas}"
+      @@log.debug "Unused_convoys: #{unused_convoys}, last_reached_areas: #{last_reached_areas}"
       
       last_reached_areas.each do |area|
         # if we have reached some area bordering the target area, there is a valid path
@@ -313,7 +317,7 @@ module Diplomacy
         # delete the corresponding convoys
         unused_convoys.each do |convoy|
           neighbours = @map.neighbours?(area, convoy.unit_area, Area::SEA_BORDER)
-          @@log.debug "neighbours: #{convoy.unit_area}, #{area}, #{neighbours}"
+          @@log.debug "Neighbours: #{convoy.unit_area}, #{area}, #{neighbours}"
           if @map.neighbours?(area, convoy.unit_area, Area::SEA_BORDER) and (not next_reached_areas.member? convoy.unit_area)
             next_reached_areas << convoy.unit_area
             unused_convoys.delete(convoy)
@@ -374,6 +378,16 @@ module Diplomacy
     end
     
     def calculate_defend_strength(move)
+      # check if convoyed
+      convoyed = !(@orders.convoys_for_move(move).collect {|c| c.succeeded? }.empty?)
+      if convoyed
+        # probable convoyed move, avoid checking path with unresolved convoys
+        @orders.convoys_for_move(move).each do |c|
+          resolve_order!(c)
+        end
+        return 0 if check_path(move)
+      end
+      
       strength = 1
       supports = @orders.supports_by_dst(move.dst)
       

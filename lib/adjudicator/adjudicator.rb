@@ -172,7 +172,10 @@ module Diplomacy
         # get all moves towards this area
         moves_to_area = @orders.moves_by_dst(order.unit_area)
         
-        # get related convoy orders - these are the true dependencies
+        # add moves in case one of them dislodges this support
+        dependencies.concat(moves_to_area)
+        
+        # get related convoy orders - these are the most important dependencies
         moves_to_area.each do |move|
           # get all convoys for this move
           dependencies.concat(@orders.convoys_for_move(move))
@@ -234,6 +237,11 @@ module Diplomacy
         competing_strengths.empty? || attack_strength > competing_strengths[-1] ? 
           order.succeed : order.fail
       when Support, SupportHold
+        if dislodged(order)
+          order.fail
+          return
+        end
+          
         # get all moves against this area
         moves_to_area = @orders.moves_by_dst(order.unit_area)
         
@@ -431,6 +439,14 @@ module Diplomacy
       end
       
       return strength
+    end
+    
+    def dislodged(order)
+      if !(Move === order) || order.failed?
+        return !(@orders.moves_by_dst(order.unit_area).reject {|move| move.failed? }.empty?)
+      else
+        return false
+      end
     end
     
     def guess_resolve!(loop)

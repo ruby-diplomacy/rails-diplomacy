@@ -47,7 +47,7 @@ module Diplomacy
     def match(loop)
       possible_circular = loop.reject {|order| !(Move === order) }
       possible_circular.each_index do |index|
-        return false if possible_circular.size < 3
+        return false if possible_circular.size < 2
         
         next_index = (index + 1) % possible_circular.size
         return false unless possible_circular[index].dst = possible_circular[next_index].unit_area

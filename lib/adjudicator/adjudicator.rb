@@ -166,8 +166,8 @@ module Diplomacy
         # get the move leaving from the destination - can only be one or zero
         dep_move = @orders.moves_by_origin(order.dst)
         
-        # add the move from the destination, unless it's a head to head 
-        dependencies << dep_move unless dep_move.nil? or dep_move.dst == order.unit_area
+        # add the move from the destination
+        dependencies << dep_move unless dep_move.nil?
       when Support, SupportHold
         # get all moves towards this area
         moves_to_area = @orders.moves_by_dst(order.unit_area)
@@ -203,13 +203,16 @@ module Diplomacy
         dst_move = @orders.moves_by_origin(order.dst)
         head_to_head_move = dst_move if (not dst_move.nil?) and dst_move.dst == order.unit_area
         
+        # check if move convoyed
+        convoyed = !((@orders.convoys_for_move(order).reject {|convoy| convoy.resolved? && convoy.failed? }).empty?)
+        
         attack_strength = calculate_attack_strength(order)
         
         @@log.debug "Has attack strength #{attack_strength}"
         
         competing_strengths = []
         
-        unless head_to_head_move.nil?
+        unless head_to_head_move.nil? || convoyed
           # there is a head to head battle
           competing_strengths << calculate_defend_strength(head_to_head_move)
           @@log.debug "Defend strength for #{head_to_head_move}: #{competing_strengths[0]}"

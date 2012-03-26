@@ -46,11 +46,11 @@ module Diplomacy
   class SimpleCircularMovementRule < Rule
     def match(loop)
       possible_circular = loop.reject {|order| !(Move === order) }
+      return false if possible_circular.size < 2
+      
       possible_circular.each_index do |index|
-        return false if possible_circular.size < 2
-        
         next_index = (index + 1) % possible_circular.size
-        return false unless possible_circular[index].dst = possible_circular[next_index].unit_area
+        return false unless possible_circular[index].dst == possible_circular[next_index].unit_area
         
         true
       end

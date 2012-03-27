@@ -81,7 +81,13 @@ Feature: adjudicator resolves orders
     | Ger:ABer,FKie,AMun | ABer-Kie,FKie-Ber,AMunSABer-Kie | FFS |
     | Ger:ABer,AMun Eng:FKie | ABer-Kie,AMunSFKie-Ber,FKie-Ber | FSF |
     | Ger:FHol,FHel,FSka Fra:FNth,FBel Eng:FEdi,FYor,FNor Aus:AKie,ARuh | FHol-Nth,FHelSFHol-Nth,FSkaSFHol-Nth,FNth-Hol,FBelSFNth-Hol,FEdiSFNor-Nth,FYorSFNor-Nth,FNor-Nth,AKieSARuh-Hol,ARuh-Hol | FSSFSSSFSF |
-    
+    | Ger:FHol,FHel,FSka Fra:FNth,FBel Eng:FEdi,FYor,FNwg,FLon Aus:AKie,ARuh | FHol-Nth,FHelSFHol-Nth,FSkaSFHol-Nth,FNth-Hol,FBelSFNth-Hol,FEdiSFNwg-Nth,FYorSFNwg-Nth,FNwg-Nth,FLonSFNwg-Nth,AKieSARuh-Hol,ARuh-Hol | FSSFSSSSSSF |
+    | Ger:FHol,FHel Fra:FNth,FBel,FEng Aus:AKie,ARuh | FHol-Nth,FHelSFHol-Nth,FNth-Hol,FBelSFNth-Hol,FEngSFHol-Nth,AKieSARuh-Hol,ARuh-Hol | FSFSSSF |
+    | Eng:FNth,FYor Ger:FHol,FHel Rus:FSka,FNor | FNthH,FYorSFNor-Nth,FHolSFHel-Nth,FHel-Nth,FSkaSFNor-Nth,FNor-Nth | SSSFSF |
+    | Eng:FNth,FYor Ger:FHol,FHel Rus:FSka,FNor | FNth-Nor,FYorSFNor-Nth,FHolSFHel-Nth,FHel-Nth,FSkaSFNor-Nth,FNor-Nth | FSSFSF |
+    | Eng:FNth,FYor Ger:FHol,FHel Rus:FSka,FNor | FNth-Nwg,FYorSFNor-Nth,FHolSFHel-Nth,FHel-Nth,FSkaSFNor-Nth,FNor-Nth | SSSFSS |
+    | Eng:FNth,FYor Ger:FHol,FHel,FDen Rus:FSka,FNor | FNth-Den,FYorSFNor-Nth,FHolSFHel-Nth,FHel-Nth,FDen-Hel,FSkaSFNor-Nth,FNor-Nth | FSSFFSF |
+    | Fra:ASpa,FMAO,FLyo Ger:AMar,AGas Ita:FPor,FWes | ASpa-Por,FMAOCASpa-Por,FLyoSFPor-Spa(nc),AMarSAGas-Spa,AGas-Spa,FPor-Spa(nc),FWesSFPor-Spa(n) | SSSSFSS |
     
   Scenarios: Diplomacy Adjudicator Test Cases - Convoys
     | currentstate | orders | adjudication |

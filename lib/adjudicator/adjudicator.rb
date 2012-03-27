@@ -225,9 +225,9 @@ module Diplomacy
           @@log.debug "Hold strength for #{order.dst}: #{competing_strengths[0]}"
         end
         
-        # competing moves
+        # competing moves - if opponent dislodged in a head to head, they don't prevent
         @orders.moves_by_dst(order.dst, skip_me=true, me=order).each do |competing_move|
-          competing_strengths << calculate_prevent_strength(competing_move)
+          competing_strengths << calculate_prevent_strength(competing_move) unless (dislodged(competing_move).present? && dislodged(competing_move).unit_area == order.dst)
         end
         
         competing_strengths.sort!
@@ -443,9 +443,7 @@ module Diplomacy
     
     def dislodged(order)
       if !(Move === order) || order.failed?
-        return !(@orders.moves_by_dst(order.unit_area).reject {|move| move.failed? }.empty?)
-      else
-        return false
+        return @orders.moves_by_dst(order.unit_area).detect {|move| move.succeeded? }
       end
     end
     

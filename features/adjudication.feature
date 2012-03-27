@@ -57,7 +57,7 @@ Feature: adjudicator resolves orders
     | Rus:FCon,FBla Tur:FAnk | FConSFBla-Ank,FBla-Ank,FAnk-Con | SSF |
     | Eng:ALon,FNth Fra:FEng,ABel | ALonH,FNthCABel-Lon,FEngSABel-Lon,ABel-Lon | SSSS |
     | Rus:FCon,FBla Tur:FAnk,ASmy,AArm | FConSFBla-Ank,FBla-Ank,FAnk-Con,ASmySFAnk-Con,AArm-Ank | FFSSF |
-    | Rus:FCon,FBla,ABul Tur:FAnk,ASmy,AArm | FConSFBla-Ank,FBla-Ank,ABulSFCon,FAnk-Con,ASmySFAnk-Con,AArm-Ank | SSSSSS |
+    | Rus:FCon,FBla,ABul Tur:FAnk,ASmy,AArm | FConSFBla-Ank,FBla-Ank,ABulSFCon,FAnk-Con,ASmySFAnk-Con,AArm-Ank | SSSFSF |
     | Rus:FCon,FBla,ASmy Tur:FAnk | FConSFBla-Ank,FBla-Ank,ASmySFAnk-Con,FAnk-Con | SSSF |
     | Eng:FLon,FNth,AYor Fra:FEng | FLonSFNth-Eng,FNth-Eng,AYor-Lon,FEngH | SSFS |
     | Aus:FTri Ita:AVen,ATyr Ger:AMun Rus:ASil,ABer | FTriH,AVen-Tri,ATyrSAVen-Tri,AMun-Tyr,ASil-Mun,ABerSASil-Mun | SFFFSS |

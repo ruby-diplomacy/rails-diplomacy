@@ -100,11 +100,11 @@ module Diplomacy
         resolve_order!(order)
       end
       
-      new_state = GameState.new
-      
       reconcile!(@orders.orders, invalid_orders)
       
-      return new_state,@orders.orders
+      state.apply_orders!(@orders.orders)
+      
+      return state,@orders.orders
     end
     
     def resolve_order!(order)

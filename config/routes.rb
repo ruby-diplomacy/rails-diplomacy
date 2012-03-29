@@ -10,6 +10,7 @@ RailsDiplomacy::Application.routes.draw do
   resources :chatrooms do |chatrooms|
     resources :messages, :name_prefix => 'chatroom_'
   end
+  
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

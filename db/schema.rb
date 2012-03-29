@@ -27,14 +27,6 @@ ActiveRecord::Schema.define(:version => 20120127123216) do
 
   add_index "chatrooms", ["game_id"], :name => "index_chatrooms_game"
 
-  create_table "game_users", :force => true do |t|
-    t.integer  "game_id"
-    t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "power_id"
-  end
-
   create_table "games", :force => true do |t|
     t.string   "title",      :limit => 50,                :null => false
     t.integer  "status",                   :default => 0, :null => false

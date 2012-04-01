@@ -512,6 +512,7 @@ module Diplomacy
     
     def reconcile!(resolved_orders, invalid_orders)
       resolved_orders.each_index do |index|
+        @@log.debug "ORDER NEVER RESOLVED! (#{resolved_orders[index]})" if resolved_orders[index].unresolved?
         resolved_orders[index] = invalid_orders[index] if invalid_orders[index]
       end
     end

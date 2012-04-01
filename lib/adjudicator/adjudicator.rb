@@ -63,9 +63,9 @@ module Diplomacy
       if move.unit.is_army? && @map.neighbours?(move.unit_area, move.dst, Area::LAND_BORDER)
         return true
       elsif move.unit.is_fleet?
-        # yuck - but it gets the job done
-        move.unit_area_coast.nil? ? from = move.unit_area : from = (move.unit_area.to_s + move.unit_area_coast.to_s).to_sym
-        move.dst_coast.nil? ? to = move.dst : to = (move.dst.to_s + move.dst_coast.to_s).to_sym
+        # yuck - but it gets the job done (fleets can support movement to coasts they can't reach)
+        from = move.unit_area_coast.nil? || Support === move ? move.unit_area : (move.unit_area.to_s + move.unit_area_coast.to_s).to_sym
+        to = move.dst_coast.nil? || Support === move ? move.dst : (move.dst.to_s + move.dst_coast.to_s).to_sym
         
         return true if @map.neighbours?(from, to, Area::SEA_BORDER)
       else

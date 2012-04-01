@@ -103,6 +103,8 @@ module Diplomacy
         res_str = "SUCCESS"
       when FAILURE
         res_str = "FAILURE"
+      when INVALID
+        res_str = "INVALID"
       end
       res_str
     end

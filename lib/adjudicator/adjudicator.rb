@@ -155,7 +155,7 @@ module Diplomacy
         dependencies.concat(@orders.convoys_for_move(order))
         
         # get all moves to the same destination
-        some_deps = @orders.moves_by_dst(order.dst, skip_me=true, me=order)
+        dependencies.concat(@orders.moves_by_dst(order.dst, skip_me=true, me=order))
         
         # get all supports to the destination
         dependencies.concat(@orders.supports_by_dst(order.dst))

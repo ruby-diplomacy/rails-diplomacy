@@ -26,6 +26,8 @@ module Diplomacy
         end
       end
       
+      @@log.debug "No rule matched, using All Hold fallback"
+      
       # 'All Hold' fallback
       loop.each do |order|
         order.fail
@@ -66,6 +68,9 @@ module Diplomacy
   class ConvoyParadox < Rule
     # TODO add initialize for alternate rulings
     def match(loop)
+      @contested_support = nil
+      @disrupting_move = nil
+      @convoying_fleet = nil
       loop.each do |order|
         case order.unit.type
         when Unit::FLEET

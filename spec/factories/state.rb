@@ -3,7 +3,7 @@ FactoryGirl.define do
     "nationality #{n}"
   end
 
-  factory :unit do
+  factory :unit, class: Diplomacy::Unit do
     nationality
     type 1
 

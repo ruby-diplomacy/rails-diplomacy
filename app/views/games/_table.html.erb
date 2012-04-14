@@ -1,0 +1,21 @@
+<table class="table table-stripped">
+  <thead>
+    <tr>
+      <th>Game Title</th>
+      <th>Variant</th>
+      <th>Started At</th>
+      <th>Options</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @games.each do |game| %>
+      <tr>
+        <td><%= link_to game.title, game %></td>
+        <td><%= game.variant.name %></td>
+        <td><%= game.start_time %></td>
+        <td><%= link_to 'Delete', game, confirm: 'Are you sure?', method: :delete %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

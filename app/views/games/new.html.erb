@@ -1,2 +1,9 @@
-<h1>Games#new</h1>
-<p>Find me in app/views/games/new.html.erb</p>
+<%= form_for @game, html: {class: 'well form-horizontal'} do |f| %>
+  <%= f.label :title %>
+  <%= f.text_field :title, class: 'span3' %>
+
+  <%= f.label :variant %>
+  <%= f.select :variant_id, Variant.options_for_select %>
+
+  <%= f.button 'Create', class: 'btn' %>
+<% end %>

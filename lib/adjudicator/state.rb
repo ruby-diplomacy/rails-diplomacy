@@ -7,7 +7,7 @@ module Diplomacy
     attr_accessor :nationality
     attr_accessor :type
     
-    def initialize(nationality, type)
+    def initialize(nationality=nil, type=nil)
       @nationality = nationality
       @type = type
     end

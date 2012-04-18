@@ -97,9 +97,6 @@ GEM
       multi_json (~> 1.0)
     factory_girl (3.1.0)
       activesupport (>= 3.0.0)
-    factory_girl_rails (3.1.0)
-      factory_girl (~> 3.1.0)
-      railties (>= 3.0.0)
     faye (0.8.2)
       cookiejar (>= 0.3.0)
       em-http-request (>= 0.3.0)
@@ -261,7 +258,7 @@ DEPENDENCIES
   database_cleaner
   devise
   execjs
-  factory_girl_rails
+  factory_girl
   faye
   foreman
   guard-rspec

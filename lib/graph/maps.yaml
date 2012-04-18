@@ -2,6 +2,8 @@ Standard:
   Areas:
     War: Warsaw
     StP: St. Peterburg
+    StP(nc): St. Peterburg (North coast)
+    StP(sc): St. Peterburg (South coast)
     Mos: Moscow
     Sev: Sevastopol
     Arm: Armenia
@@ -40,6 +42,8 @@ Standard:
     Pic: Picardy
     Bre: Brest
     Spa: Spain
+    Spa(nc): Spain (North coast)
+    Spa(sc): Spain (South coast)
     Por: Portugal
     Pie: Piedmont
     Ven: Venice
@@ -83,10 +87,12 @@ Standard:
     - [Wal, Iri, S]
     - [Wal, Eng, S]
     - [Wal, Liv, L, S]
+    - [Wal, Yor, L]
     - [Liv, NAO, S]
     - [Liv, Cly, L, S]
     - [Liv, Edi, L]
     - [Liv, Iri, S]
+    - [Liv, Yor, L]
     - [Cly, NAO, S]
     - [Cly, Nwg, S]
     - [Edi, Nwg, S]
@@ -186,6 +192,14 @@ Standard:
     - [Por, Spa, L, S]
     - [Spa, Gas, L, S]
     - [Spa, Mar, L, S]
+    - [Spa(nc), Por, S]
+    - [Spa(nc), Gas, S]
+    - [Spa(nc), MAO, S]
+    - [Spa(sc), Por, S]
+    - [Spa(sc), Mar, S]
+    - [Spa(sc), MAO, S]
+    - [Spa(sc), Wes, S]
+    - [Spa(sc), Lyo, S]
     - [Bre, Pic, L, S]
     - [Bre, Par, L]
     - [Bre, Gas, L, S]
@@ -278,6 +292,11 @@ Standard:
     - [Mos, StP, L]
     - [Mos, War, L]
     - [StP, Bar, S]
+    - [StP(nc), Bar, S]
+    - [StP(nc), Nor, S]
+    - [StP(sc), Bot, S]
+    - [StP(sc), Fin, S]
+    - [StP(sc), Lvn, S]
     - [Bar, Nor, S]
   SCs: 
     - StP

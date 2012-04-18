@@ -49,10 +49,13 @@ module DiplomacyWorld
   
   def parse_single_order(orderblob)
     # try to parse it as a move
-    /^[AF](?'unit_area'\w{3})-(?'dst'\w{3})$/ =~ orderblob
+    /^[AF](?'unit_area'\w{3})(?'unit_area_coast'\(.+?\))?-(?'dst'\w{3})(?'dst_coast'[^-]+)?$/ =~ orderblob
     if not unit_area.nil?
       unit = gamestate[unit_area.to_sym].unit unless unit_area.nil?
-      return Diplomacy::Move.new(unit, unit_area.to_sym, dst.to_sym)
+      move = Diplomacy::Move.new(unit, unit_area.to_sym, dst.to_sym)
+      move.unit_area_coast = unit_area_coast if not unit_area_coast.nil?
+      move.dst_coast = dst_coast if not dst_coast.nil?
+      return move
     end
     
     # try to parse it as a hold
@@ -63,10 +66,14 @@ module DiplomacyWorld
     end
     
     # try to parse it as a support
-    /^[AF](?'unit_area'\w{3})S[AF](?'src'\w{3})-(?'dst'\w{3})$/ =~ orderblob
+    /^[AF](?'unit_area'\w{3})(?'unit_area_coast'\(.+?\))?S[AF](?'src'\w{3})(?'src_coast'\(.+?\))?-(?'dst'\w{3})(?'dst_coast'[^-]+)?$/ =~ orderblob
     if not unit_area.nil?
       unit = gamestate[unit_area.to_sym].unit unless unit_area.nil?
-      return Diplomacy::Support.new(unit, unit_area.to_sym, src.to_sym, dst.to_sym)
+      support = Diplomacy::Support.new(unit, unit_area.to_sym, src.to_sym, dst.to_sym)
+      support.unit_area_coast = unit_area_coast if not unit_area_coast.nil?
+      support.src_coast = src_coast if not src_coast.nil?
+      support.dst_coast = dst_coast if not dst_coast.nil?
+      return support
     end
     
     # try to parse it as a support hold
@@ -90,8 +97,8 @@ module DiplomacyWorld
       return 'S'
     when Diplomacy::FAILURE
       return 'F'
-    when Diplomacy::UNRESOLVED
-      return 'U'
+    when Diplomacy::INVALID
+      return 'I'
     end
   end
 end

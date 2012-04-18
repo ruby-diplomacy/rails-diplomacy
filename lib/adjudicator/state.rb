@@ -38,19 +38,37 @@ module Diplomacy
   end
 
   class GameState < Hash
+    attr_accessor :retreats
+    
     def initialize
       self.default = AreaState.new
+      self.retreats = {}
     end
     
     def area_state(area)
-      self[area.abbrv]
+      if Area === area
+        self[area.abbrv]
+      elsif Symbol === area
+        return self[area]
+      end
     end
     
     def area_unit(area)
-      if Area === area 
-        return self[area.abbrv].unit
-      elsif Symbol === area
-        return self[area].unit
+      area_state(area).unit
+    end
+    
+    def set_area_unit(area, unit)
+      area_state(area).unit = unit
+    end
+    
+    def apply_orders!(orders)
+      orders.each do |order|
+        if Move === order && order.succeeded?
+          @retreats[order.dst] = area_unit(order.dst)
+          
+          set_area_unit(order.dst, area_unit(order.unit_area))
+          set_area_unit(order.unit_area, nil)
+        end
       end
     end
   end

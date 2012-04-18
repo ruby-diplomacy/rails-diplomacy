@@ -2,78 +2,75 @@ require 'logger'
 
 require_relative 'orders'
 require_relative 'state'
+require_relative 'backup_rule'
 require_relative '../graph/graph'
 
 module Diplomacy
-  class OrderCollection
-    attr_accessor :orders
-    attr_accessor :moves
-    attr_accessor :supports
-    attr_accessor :supportholds
-    attr_accessor :holds
-    attr_accessor :convoys
+  class Validator
+    @@log = Logger.new( 'adjudicator.log', 'daily' )
     
-    def initialize(orders)
-      @orders = []
-      @moves = {}
-      @supports = {}
-      @holds = {}
-      @supportholds = {}
-      @convoys = {}
-      
-      # create wrappers and categorize orders
-      orders.each do |order|
-        case order
-        when Move; (self.moves[order.dst] ||= Array.new) << order
-        when Support; (self.supports[order.dst] ||= Array.new) << order
-        when Hold ; (self.holds[order.dst] ||= Array.new) << order
-        when SupportHold;  (self.supportholds[order.dst] ||= Array.new) << order
-        when Convoy;  (self.convoys[order.dst] ||= Array.new) << order
-        end
-
-        @orders << order
+    def initialize(state, map, order_list)
+      @state = state
+      @map = map
+      @orders = OrderCollection.new(order_list)
+      @invalid_orders = []
+    end
+    
+    def validate_orders
+      @orders.each do |order|
+        order.invalidate unless valid_order?(order)
+        @@log.debug "Decided: #{order.status_readable}"
       end
-    end
-    
-    def each(&blk)
-      @orders.each(&blk)
-    end
-    
-    def convoys_for_move(move)
-      convoys_to_area = @convoys[move.dst]
-      return [] if convoys_to_area.nil?
+      sanitized_orders = @orders.orders.collect {|order| order.invalid? ? Hold.new(order.unit, order.unit_area) : order}
+      invalid_orders = @orders.orders.collect {|order| order.invalid? ? order : nil }
       
-      convoys_to_area.find_all { |convoy| convoy.src.eql? move.unit_area }
+      return OrderCollection.new(sanitized_orders), invalid_orders
     end
     
-    def moves_by_dst(area, skip_me=false, me=nil)
-      moves = @moves[area] || []
-      
-      skip_me ?  moves.reject {|move| move.equal? me} : moves
-    end
-    
-    def supports_by_dst(area)
-      supports = @supports[area] || []
-    end
-    
-    def moves_by_origin(area)
-      @moves.values.each do |moves_for_area|
-        # only one at most can exist, so detect is enough
-        if not (ret = moves_for_area.detect { |move| move.unit_area.eql? area }).nil?
-          return ret
+    def valid_order?(order)
+      @@log.debug "Validating #{order}"
+      case order
+      when Move
+        # can't move to own space
+        return false if order.dst.eql? order.unit_area
+        
+        # if sea unit, can't be convoyed, move must be valid
+        return false if order.unit.is_fleet? && (not valid_move?(order))
+        
+        # if land unit, invalid move might be part of a convoy
+        if order.unit.is_army? && !valid_move?(order) && @orders.convoys_for_move(order).empty?
+          return false
         end
+      when Support
+        return false unless valid_move?(order) # works fine for support validity, too
+        
+        # check whether supported move is valid, as well
+        m = @orders.supported_move(order)
+        return false unless valid_order?(m)
+      when Convoy
+        # if in coastal area, fail
+        return false unless @map.areas[order.unit_area].borders[Area::LAND_BORDER].empty?
+        
+        m = Move.new(@state[order.src].unit, order.src, order.dst)
+        m.unit_area_coast = order.src_coast
+        m.dst_coast = order.dst_coast
+        return false unless valid_order?(m)
       end
-      
-      # no compyling move was found, return nil
-      return nil
+      true
     end
     
-    def hold_in(area)
-      hold = @holds[area] || []
-    end
-    
-    def supportholds_to(area)
-      supports = @supportholds[area] || []
+    def valid_move?(move)
+      if move.unit.is_army? && @map.neighbours?(move.unit_area, move.dst, Area::LAND_BORDER)
+        return true
+      elsif move.unit.is_fleet?
+        # yuck - but it gets the job done
+        move.unit_area_coast.nil? ? from = move.unit_area : from = (move.unit_area.to_s + move.unit_area_coast.to_s).to_sym
+        move.dst_coast.nil? ? to = move.dst : to = (move.dst.to_s + move.dst_coast.to_s).to_sym
+        
+        return true if @map.neighbours?(from, to, Area::SEA_BORDER)
+      else
+        return false
+      end
     end
   end
   
@@ -83,43 +80,73 @@ module Diplomacy
     attr_accessor :orders
     attr_accessor :map
     
-    def initialize(map)
+    def initialize(map, backup_rule=nil)
       @map = map
+      if backup_rule
+        @backup_rule = backup_rule
+      else
+        @backup_rule = BackupRule.new(:simple_circular, :convoy_paradox)
+      end
     end
 
-    def validate_orders!(state, orders)
-      puts 'FIXME: VALIDATE ORDERS'
-      true
-    end
-
-    def resolve!(state, orders)
-      return unless validate_orders!(state, orders)
+    def resolve!(state, unchecked_orders)
+      validator = Validator.new(state, @map, unchecked_orders)
+      @orders,invalid_orders = validator.validate_orders
       
       @state = state
-      
-      @orders = OrderCollection.new(orders)
+      @loop_detector = []
       
       @orders.each do |order|
         resolve_order!(order)
       end
       
-      new_state = GameState.new
+      reconcile!(@orders.orders, invalid_orders)
       
-      return new_state,@orders.orders
+      state.apply_orders!(@orders.orders)
+      
+      return state,@orders.orders
     end
     
 
 
     def resolve_order!(order)
-      return unless  order.unresolved?
-      
-      get_dependecies(order).each do |dependency|
-        resolve_order!(dependency) # TODO avoid infinite loops
+      if order.resolved?
+        @@log.debug "#{order} already resolved: #{order.status_readable}"
+        return
       end
       
+      unless @loop_detector.member?(order)
+        @loop_detector << order
+      else
+        @@log.debug("Loop detected: #{@loop_detector}")
+        
+        loop = Array.new(@loop_detector)
+        @loop_detector = []
+        
+        loop_deps = []
+        loop.each do |order|
+          loop_deps.concat(get_dependencies(order).reject {|order| loop.member? order })
+        end
+        loop.concat(loop_deps)
+        
+        @@log.debug "Loop was augmented to include #{loop_deps}"
+        
+        unless guess_resolve!(loop)
+          @backup_rule.resolve!(loop)
+        end
+        return
+      end
+      
+      dependencies = get_dependencies(order)
+      
+      dependencies.each do |dependency|
+        resolve_order!(dependency)
+      end
+      
+      @loop_detector.delete(order)
+      
       # sets order status
-      adjudicate!(order, dependencies)
-      @@log.debug "Decided: #{order.status}"
+      adjudicate!(order)
     end
 
 
@@ -143,13 +170,16 @@ module Diplomacy
         # get the move leaving from the destination - can only be one or zero
         dep_move = @orders.moves_by_origin(order.dst)
         
-        # add the move from the destination, unless it's a head to head 
-        dependencies << dep_move unless dep_move.nil? or dep_move.dst == order.unit_area
+        # add the move from the destination
+        dependencies << dep_move unless dep_move.nil?
       when Support, SupportHold
         # get all moves towards this area
         moves_to_area = @orders.moves_by_dst(order.unit_area)
         
-        # get related convoy orders - these are the true dependencies
+        # add moves in case one of them dislodges this support
+        dependencies.concat(moves_to_area)
+        
+        # get related convoy orders - these are the most important dependencies
         moves_to_area.each do |move|
           # get all convoys for this move
           dependencies.concat(@orders.convoys_for_move(move))
@@ -165,7 +195,11 @@ module Diplomacy
       dependencies
     end
     
-    def adjudicate!(order, dependencies)
+    def adjudicate!(order)
+      if order.resolved?
+        @@log.debug "#{order} already resolved: #{order.status_readable}"
+        return
+      end
       @@log.debug "Adjudicating #{order}"
       
       case order
@@ -176,82 +210,90 @@ module Diplomacy
         dst_move = @orders.moves_by_origin(order.dst)
         head_to_head_move = dst_move if (not dst_move.nil?) and dst_move.dst == order.unit_area
         
+        # check if move convoyed
+        convoyed = !((@orders.convoys_for_move(order).reject {|convoy| convoy.resolved? && convoy.failed? }).empty?)
+        
         attack_strength = calculate_attack_strength(order)
         
         @@log.debug "Has attack strength #{attack_strength}"
         
-        unless head_to_head_move.nil?
+        competing_strengths = []
+        
+        unless head_to_head_move.nil? || convoyed
           # there is a head to head battle
-          defend_prevent_strengths = [calculate_defend_strength(head_to_head_move)]
-          unless (competing_moves = @orders.moves_by_dst(order.dst).reject {|move| move.equal? order}).nil?
-            competing_moves.each do |competing_move|
-              defend_prevent_strengths << calculate_prevent_strength(competing_move)
-            end
-          end
-          
-          defend_prevent_strengths.sort!
-          
-          (attack_strength > defend_prevent_strengths[-1]) ? order.status = SUCCESS : order.status = FAILURE
-            
+          competing_strengths << calculate_defend_strength(head_to_head_move)
+          @@log.debug "Defend strength for #{head_to_head_move}: #{competing_strengths[0]}"
         else
           # there is no head to head battle
-          hold_strength = calculate_hold_strength(order.dst)
-          @@log.debug "Hold strength for #{order.dst}: #{hold_strength}"
-          hold_prevent_strengths = [hold_strength]
-          # competing moves
-          @orders.moves_by_dst(order.dst, skip_me=true, me=order).each do |competing_move|
-            hold_prevent_strengths << calculate_prevent_strength(competing_move)
-          end
-          
-          hold_prevent_strengths.sort!
-          
-          @@log.debug "#{attack_strength}, #{hold_prevent_strengths}"
-          
-          (attack_strength > hold_prevent_strengths[-1]) ? order.status = SUCCESS : order.status = FAILURE
+          competing_strengths << calculate_hold_strength(order.dst)
+          @@log.debug "Hold strength for #{order.dst}: #{competing_strengths[0]}"
         end
         
+        # competing moves - if opponent dislodged in a head to head, they don't prevent
+        @orders.moves_by_dst(order.dst, skip_me=true, me=order).each do |competing_move|
+          competing_strengths << calculate_prevent_strength(competing_move) unless (dislodged(competing_move).present? && dislodged(competing_move).unit_area == order.dst)
+        end
+        
+        competing_strengths.sort!
+        
+        @@log.debug "Competing strengths: #{competing_strengths}"
+        
+        competing_strengths.empty? || attack_strength > competing_strengths[-1] ? 
+          order.succeed : order.fail
       when Support, SupportHold
+        if dislodged(order)
+          order.fail
+          return
+        end
+          
         # get all moves against this area
         moves_to_area = @orders.moves_by_dst(order.unit_area)
         
         moves_to_area.each do |move|
-          if order.nationality != move.nationality and
-              move.unit_area != order.dst
-            order.status = FAILURE
+          if order.nationality != move.nationality &&
+              move.unit_area != order.dst && check_path(move)
+            order.fail
             return 
           end
         end
           
         # no moves have cut this support, so it succeeds (with exception below)
-        order.status = SUCCESS
+        order.succeed
         
         if SupportHold === order 
           # support holds fail if the supported unit moves
-          order.status = FAILURE if not @orders.moves_by_origin(order.dst).nil?
+          order.fail if not @orders.moves_by_origin(order.dst).nil?
         else # Support === order
           supported_move = @orders.moves_by_origin(order.src)
           
           # supports fail if there is no such move, or if the move of the 
           # unit in the target area moves elsewhere
           if supported_move == nil or not supported_move.dst.eql? order.dst
-            order.status = FAILURE
+            order.fail
           end
         end
       when Hold
         # Hold always succeeds
-        order.status = SUCCESS
+        order.succeed
       when Convoy
         intercepting_moves = @orders.moves_by_dst(order.unit_area)
         
         intercepting_moves.each do |move|
-          if move.status == SUCCESS
-            order.status = FAILURE
+          if move.succeeded?
+            order.fail
             return
           end
         end
         
-        order.status = SUCCESS
+        if @orders.convoyed_move(order).nil?
+          order.fail
+          return
+        end
+        
+        order.succeed
       end
+      
+      @@log.debug "Decision: #{order.resolution_readable}"
     end
     
     def check_path(move)
@@ -260,16 +302,18 @@ module Diplomacy
       # check convoy path
       related_convoys = @orders.convoys_for_move(move)
       
-      @@log.debug "related convoys: #{related_convoys}"
+      @@log.debug "Related convoys: #{related_convoys}"
       
-      successful_convoys = related_convoys.reject {|convoy| convoy.status.eql? FAILURE}
+      successful_convoys = related_convoys.reject {|convoy| convoy.failed?}
       
       # see if remaining convoy orders form a path
-      check_path_recursive(move, successful_convoys, [move.unit_area])
+      ret = check_path_recursive(move, successful_convoys, [move.unit_area])
+      @@log.debug "Convoy succeeds? #{ret}"
+      ret
     end
     
     def check_path_recursive(move, unused_convoys, last_reached_areas)
-      @@log.debug "unused_convoys: #{unused_convoys}, last_reached_areas: #{last_reached_areas}"
+      @@log.debug "Unused_convoys: #{unused_convoys}, last_reached_areas: #{last_reached_areas}"
       
       last_reached_areas.each do |area|
         # if we have reached some area bordering the target area, there is a valid path
@@ -285,7 +329,7 @@ module Diplomacy
         # delete the corresponding convoys
         unused_convoys.each do |convoy|
           neighbours = @map.neighbours?(area, convoy.unit_area, Area::SEA_BORDER)
-          @@log.debug "neighbours: #{convoy.unit_area}, #{area}, #{neighbours}"
+          @@log.debug "Neighbours: #{convoy.unit_area}, #{area}, #{neighbours}"
           if @map.neighbours?(area, convoy.unit_area, Area::SEA_BORDER) and (not next_reached_areas.member? convoy.unit_area)
             next_reached_areas << convoy.unit_area
             unused_convoys.delete(convoy)
@@ -297,6 +341,9 @@ module Diplomacy
       
       # areas in next_reached_areas might not be unique
       next_reached_areas.uniq!
+      
+      # if we reached no new areas, fail
+      return false if next_reached_areas.empty?
       
       check_path_recursive(move, unused_convoys, next_reached_areas)
     end
@@ -312,13 +359,13 @@ module Diplomacy
       # use this to determine if unit leaving - can only be zero or one
       dst_move = @orders.moves_by_origin(move.dst)
       
-      if unit_at_dst == nil or ( (not dst_move.nil?) and dst_move.status == SUCCESS )
+      if unit_at_dst == nil or ( (not dst_move.nil?) and dst_move.succeeded? )
         # destination is empty or the unit at the destination successfully moves away
         supports = @orders.supports_by_dst(move.dst)
         
         supports.each do |support|
           if support.src == move.unit_area and 
-              support.status == SUCCESS 
+              support.succeeded?
             strength += 1
           end
         end
@@ -332,7 +379,7 @@ module Diplomacy
           supports.each do |support|
             if support.src == move.unit_area and 
                 support.nationality != unit_at_dst.nationality and 
-                support.status == SUCCESS 
+                support.succeeded?
               strength += 1
             end
           end
@@ -348,7 +395,7 @@ module Diplomacy
       
       supports.each do |support|
         if support.src == move.unit_area and 
-            support.status == SUCCESS 
+            support.succeeded?
           strength += 1
         end
       end
@@ -366,7 +413,7 @@ module Diplomacy
       # FIXME some ambiguity regarding prevent strength and defend strength
       supports.each do |support|
         if support.src == move.unit_area and 
-            support.status == SUCCESS 
+            support.succeeded?
           strength += 1
         end
       end
@@ -380,15 +427,15 @@ module Diplomacy
         dst_move = @orders.moves_by_origin(area)
         
         if (not dst_move.nil?) # unit was ordered to move
-          strength = 0 if dst_move.status != SUCCESS
-          strength = 1 if dst_move.status != FAILURE
+          strength = 0 if dst_move.succeeded?
+          strength = 1 if dst_move.failed?
         else # unit was ordered something supportable
           strength = 1
           
           supports = @orders.supportholds_to(area)
           
           supports.each do |support|
-            strength += 1 if support.status == SUCCESS 
+            strength += 1 if support.succeeded?
           end
         end
       else # there is no unit
@@ -396,6 +443,81 @@ module Diplomacy
       end
       
       return strength
+    end
+    
+    def dislodged(order)
+      if !(Move === order) || order.failed?
+        return @orders.moves_by_dst(order.unit_area).detect {|move| move.succeeded? }
+      end
+    end
+    
+    def guess_resolve!(loop)
+      @@log.debug "Entered guess_resolve! for loop: #{loop}"
+      return if loop.empty?
+      
+      resolutions = []
+      
+      head = loop[0]
+      tail = loop[1..-1].reverse
+      
+      @@log.debug "Guessing negative for #{head.to_s}"
+      head.guess(Diplomacy::FAILURE)
+      tail.each do |order|
+        adjudicate!(order)
+      end
+      
+      head.unresolve
+      adjudicate!(head)
+      @@log.debug "Guess result: #{head.status_readable}"
+      
+      @@log.debug tail.collect { |order| "#{order.to_s} #{order.status_readable}" }
+      
+      resolutions << (head.resolution == Diplomacy::FAILURE)
+      
+      # now clear and guess positive
+      clear_orders!(tail)
+      
+      @@log.debug "Guessing positive for #{head.to_s}"
+      head.guess(Diplomacy::SUCCESS)
+      tail.each do |order|
+        adjudicate!(order)
+      end
+      
+      head.unresolve
+      adjudicate!(head)
+      @@log.debug "Guess result: #{head.status_readable}"
+      
+      @@log.debug tail.collect { |order| "#{order.to_s} #{order.status_readable}" }
+      
+      resolutions << (head.resolution == Diplomacy::SUCCESS)
+      
+      @@log.debug "Guess resolutions: #{resolutions}"
+      
+      clear_orders!(tail)
+      
+      if (consistent = resolutions[0] ^ resolutions[1])
+        head.resolution = resolutions[0] ? Diplomacy::FAILURE : Diplomacy::SUCCESS
+        head.resolve
+        
+        # hm. might be better to store them
+        tail.each do |order|
+          adjudicate!(order)
+        end
+      end
+      
+      consistent
+    end
+    
+    def clear_orders!(orders)
+      orders.each do |order|
+        order.unresolve
+      end
+    end
+    
+    def reconcile!(resolved_orders, invalid_orders)
+      resolved_orders.each_index do |index|
+        resolved_orders[index] = invalid_orders[index] if invalid_orders[index]
+      end
     end
   end
 end

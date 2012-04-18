@@ -4,7 +4,15 @@
 # instead of editing this one. Cucumber will automatically load all features/**/*.rb
 # files.
 
-require 'cucumber/rails'
+require 'spork'
+# 
+Spork.prefork do
+  ENV["RAILS_ENV"] ||= "test"
+  require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
+  require 'factory_girl'
+  require 'cucumber/rails'
+  require 'cucumber/rspec/doubles'
+end
 
 # Capybara defaults to XPath selectors rather than Webrat's default of CSS3. In
 # order to ease the transition to Capybara we set the default here. If you'd

@@ -87,7 +87,7 @@ Feature: adjudicator resolves orders
     | Eng:FNth,FYor Ger:FHol,FHel Rus:FSka,FNor | FNth-Nor,FYorSFNor-Nth,FHolSFHel-Nth,FHel-Nth,FSkaSFNor-Nth,FNor-Nth | FSSFSF |
     | Eng:FNth,FYor Ger:FHol,FHel Rus:FSka,FNor | FNth-Nwg,FYorSFNor-Nth,FHolSFHel-Nth,FHel-Nth,FSkaSFNor-Nth,FNor-Nth | SSSFSS |
     | Eng:FNth,FYor Ger:FHol,FHel,FDen Rus:FSka,FNor | FNth-Den,FYorSFNor-Nth,FHolSFHel-Nth,FHel-Nth,FDen-Hel,FSkaSFNor-Nth,FNor-Nth | FSSFFSF |
-    | Fra:ASpa,FMAO,FLyo Ger:AMar,AGas Ita:FPor,FWes | ASpa-Por,FMAOCASpa-Por,FLyoSFPor-Spa(nc),AMarSAGas-Spa,AGas-Spa,FPor-Spa(nc),FWesSFPor-Spa(n) | SSSSFSS |
+    | Fra:ASpa,FMAO,FLyo Ger:AMar,AGas Ita:FPor,FWes | ASpa-Por,FMAOCASpa-Por,FLyoSFPor-Spa(nc),AMarSAGas-Spa,AGas-Spa,FPor-Spa(nc),FWesSFPor-Spa(nc) | SSSSFSS |
     | Aus:ABud,ASer Ita:AVie Rus:AGal,ARum | ABud-Rum,ASerSAVie-Bud,AVie-Bud,AGal-Bud,ARumSAGal-Bud | FSFFS |
     | Eng:FEdi,FYor Fra:FBel,FEng Ger:FNth Rus:FNwg,FNor | FEdiSFYor-Nth,FYor-Nth,FBel-Nth,FEngSFBel-Nth,FNthH,FNwg-Nth,FNorSFNwg-Nth | SFFSSFS |
     | Eng:ALiv-Edi,FEdi-Liv | ALiv-Edi,FEdi-Liv | FF |

@@ -42,7 +42,8 @@ module Diplomacy
           return false
         end
       when Support
-        return false unless valid_move?(order) # works fine for support validity, too
+        m = Move.new(order.unit, order.unit_area, order.dst) # check whether unit can move to dst, disregarding coasts
+        return false unless valid_move?(m)
         
         # check whether supported move is valid, as well
         m = @orders.supported_move(order)

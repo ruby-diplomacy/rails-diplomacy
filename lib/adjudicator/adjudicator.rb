@@ -64,9 +64,9 @@ module Diplomacy
       if move.unit.is_army? && @map.neighbours?(move.unit_area, move.dst, Area::LAND_BORDER)
         return true
       elsif move.unit.is_fleet?
-        # yuck - but it gets the job done
-        move.unit_area_coast.nil? ? from = move.unit_area : from = (move.unit_area.to_s + move.unit_area_coast.to_s).to_sym
-        move.dst_coast.nil? ? to = move.dst : to = (move.dst.to_s + move.dst_coast.to_s).to_sym
+        # yuck - but it gets the job done (fleets can support movement to coasts they can't reach)
+        from = move.unit_area_coast.nil? || Support === move ? move.unit_area : (move.unit_area.to_s + move.unit_area_coast.to_s).to_sym
+        to = move.dst_coast.nil? || Support === move ? move.dst : (move.dst.to_s + move.dst_coast.to_s).to_sym
         
         return true if @map.neighbours?(from, to, Area::SEA_BORDER)
       else
@@ -160,7 +160,7 @@ module Diplomacy
         dependencies.concat(@orders.convoys_for_move(order))
         
         # get all moves to the same destination
-        some_deps = @orders.moves_by_dst(order.dst, skip_me=true, me=order)
+        dependencies.concat(@orders.moves_by_dst(order.dst, skip_me=true, me=order))
         
         # get all supports to the destination
         dependencies.concat(@orders.supports_by_dst(order.dst))
@@ -517,6 +517,7 @@ module Diplomacy
     
     def reconcile!(resolved_orders, invalid_orders)
       resolved_orders.each_index do |index|
+        @@log.debug "ORDER NEVER RESOLVED! (#{resolved_orders[index]})" if resolved_orders[index].unresolved?
         resolved_orders[index] = invalid_orders[index] if invalid_orders[index]
       end
     end

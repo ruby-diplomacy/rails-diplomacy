@@ -26,6 +26,8 @@ module Diplomacy
         end
       end
       
+      @@log.debug "No rule matched, using All Hold fallback"
+      
       # 'All Hold' fallback
       loop.each do |order|
         order.fail
@@ -66,8 +68,16 @@ module Diplomacy
   class ConvoyParadox < Rule
     # TODO add initialize for alternate rulings
     def match(loop)
+      @contested_support = nil
+      @disrupting_move = nil
+      @convoying_fleet = nil
+      @convoyed_move = nil
       loop.each do |order|
         case order.unit.type
+        when Unit::ARMY
+          if Move === order
+            @convoyed_move = order
+          end
         when Unit::FLEET
           case order
           when Move
@@ -92,9 +102,9 @@ module Diplomacy
         end
       end
       
-      return false if @contested_support.nil? || @disrupting_move.nil? || @convoying_fleet.nil?
+      return false if @contested_support.nil? || @disrupting_move.nil? || @convoying_fleet.nil? || @convoyed_move.nil?
       
-      if (@contested_support.src == @disrupting_move.unit_area && @contested_support.dst == @disrupting_move.dst && @disrupting_move.dst == @convoying_fleet.unit_area)
+      if (@contested_support.src == @disrupting_move.unit_area && @contested_support.dst == @disrupting_move.dst && @disrupting_move.dst == @convoying_fleet.unit_area&& @convoying_fleet.src == @convoyed_move.unit_area && @convoyed_move.dst == @contested_support.unit_area)
         return true
       else
         return false
@@ -105,6 +115,7 @@ module Diplomacy
       @contested_support.succeed
       @disrupting_move.succeed
       @convoying_fleet.fail
+      @convoyed_move.fail
     end
   end
   

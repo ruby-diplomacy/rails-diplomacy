@@ -2,7 +2,7 @@ require_relative 'orders'
 
 module Diplomacy
   class BackupRule
-    @@log = Logger.new( 'adjudicator.log', 'daily' )
+    @@log = Logger.new( Rails.root + 'log/adjudicator.log', 'daily' )
     
     def initialize(*rules)
       @rules = []

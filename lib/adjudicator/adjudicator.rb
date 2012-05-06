@@ -7,7 +7,7 @@ require_relative '../graph/graph'
 
 module Diplomacy
   class Validator
-    @@log = Logger.new( 'adjudicator.log', 'daily' )
+    @@log = Logger.new( Rails.root + 'log/adjudicator.log', 'daily' )
     
     def initialize(state, map, order_list)
       @state = state
@@ -149,8 +149,6 @@ module Diplomacy
       # sets order status
       adjudicate!(order)
     end
-
-
     
     def get_dependencies(order)
       dependencies = []

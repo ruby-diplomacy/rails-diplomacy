@@ -116,33 +116,28 @@ module Diplomacy
         return
       end
       
-      unless @loop_detector.member?(order)
+      unless @loop_detector.member?(order) or order.guessing?
         @loop_detector << order
       else
-        @@log.debug("Loop detected: #{@loop_detector}")
+        @@log.debug("Loop detected: #{@loop_detector} (but @loop is #{@loop})")
         
         loop = Array.new(@loop_detector)
-        @loop_detector = []
-        
-        loop_deps = []
-        loop.each do |order|
-          loop_deps.concat(get_dependencies(order).reject {|order| loop.member? order })
+          @loop_detector = []
+          
+          unless @loop # if already in a loop, don't try to second guess (heh)
+            unless guess_resolve!(loop)
+              @backup_rule.resolve!(loop)
+            end
+          end
+          
+          return
         end
-        loop.concat(loop_deps)
         
-        @@log.debug "Loop was augmented to include #{loop_deps}"
+        dependencies = get_dependencies(order)
         
-        unless guess_resolve!(loop)
-          @backup_rule.resolve!(loop)
+        dependencies.each do |dependency|
+          resolve_order!(dependency)
         end
-        return
-      end
-      
-      dependencies = get_dependencies(order)
-      
-      dependencies.each do |dependency|
-        resolve_order!(dependency)
-      end
       
       @loop_detector.delete(order)
       
@@ -158,7 +153,7 @@ module Diplomacy
         dependencies.concat(@orders.convoys_for_move(order))
         
         # get all moves to the same destination
-        dependencies.concat(@orders.moves_by_dst(order.dst, skip_me=true, me=order))
+        #dependencies.concat(@orders.moves_by_dst(order.dst, skip_me=true, me=order))
         
         # get all supports to the destination
         dependencies.concat(@orders.supports_by_dst(order.dst))
@@ -169,8 +164,14 @@ module Diplomacy
         # get the move leaving from the destination - can only be one or zero
         dep_move = @orders.moves_by_origin(order.dst)
         
-        # add the move from the destination unless it's a head to head
-        dependencies << dep_move unless dep_move.nil? or dep_move.dst == order.unit_area
+        if dep_move.present?
+          # check if either move convoyed - in that case there is no head to head
+          not_convoyed = @orders.convoys_for_move(dep_move).empty? || @orders.convoys_for_move(order).empty?
+		  @@log.debug "#{dep_move}, convoyed: #{!not_convoyed}"
+          
+          # add the move from the destination unless it's a head to head
+          dependencies << dep_move unless dep_move.dst == order.unit_area && not_convoyed
+        end
       when Support, SupportHold
         # get all moves towards this area
         moves_to_area = @orders.moves_by_dst(order.unit_area)
@@ -452,6 +453,7 @@ module Diplomacy
     
     def guess_resolve!(loop)
       @@log.debug "Entered guess_resolve! for loop: #{loop}"
+      @loop = true
       return if loop.empty?
       
       resolutions = []
@@ -462,7 +464,7 @@ module Diplomacy
       @@log.debug "Guessing negative for #{head.to_s}"
       head.guess(Diplomacy::FAILURE)
       tail.each do |order|
-        adjudicate!(order)
+        resolve_order!(order)
       end
       
       head.unresolve
@@ -479,7 +481,7 @@ module Diplomacy
       @@log.debug "Guessing positive for #{head.to_s}"
       head.guess(Diplomacy::SUCCESS)
       tail.each do |order|
-        adjudicate!(order)
+        resolve_order!(order)
       end
       
       head.unresolve
@@ -500,9 +502,11 @@ module Diplomacy
         
         # hm. might be better to store them
         tail.each do |order|
-          adjudicate!(order)
+          resolve_order!(order)
         end
       end
+      
+      @loop = false
       
       consistent
     end

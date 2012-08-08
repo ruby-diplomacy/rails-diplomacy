@@ -231,7 +231,7 @@ module Diplomacy
         
         # competing moves - if opponent dislodged in a head to head, they don't prevent
         @orders.moves_by_dst(order.dst, skip_me=true, me=order).each do |competing_move|
-          competing_strengths << calculate_prevent_strength(competing_move) unless (dislodged(competing_move).present? && dislodged(competing_move).unit_area == order.dst)
+          competing_strengths << calculate_prevent_strength(competing_move) unless dislodged(competing_move).present? 
         end
         
         competing_strengths.sort!
@@ -276,24 +276,23 @@ module Diplomacy
         # Hold always succeeds
         order.succeed
       when Convoy
-        intercepting_moves = @orders.moves_by_dst(order.unit_area)
-        
-        intercepting_moves.each do |move|
-          if move.succeeded?
-            order.fail
-            return
-          end
+        moves = dislodged(order)
+        unless moves.nil?
+          order.fail
+          @@log.debug moves
+          @@log.debug "Decision (dislodged): #{order.resolution_readable}"
+          return
         end
         
         if @orders.convoyed_move(order).nil?
           order.fail
+          @@log.debug "Decision: #{order.resolution_readable}"
           return
         end
-        
+      
+        @@log.debug "Decision: #{order.resolution_readable}"
         order.succeed
       end
-      
-      @@log.debug "Decision: #{order.resolution_readable}"
     end
     
     def check_path(move)

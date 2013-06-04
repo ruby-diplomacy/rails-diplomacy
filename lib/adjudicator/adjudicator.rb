@@ -231,7 +231,7 @@ module Diplomacy
         
         # competing moves - if opponent dislodged in a head to head, they don't prevent
         @orders.moves_by_dst(order.dst, skip_me=true, me=order).each do |competing_move|
-          competing_strengths << calculate_prevent_strength(competing_move) unless dislodged(competing_move).present? 
+          competing_strengths << calculate_prevent_strength(competing_move) unless (dislodged(competing_move).present? && competing_move.dst == order.unit_area)
         end
         
         competing_strengths.sort!

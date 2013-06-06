@@ -6,11 +6,13 @@ gem 'rails', '~> 3.2.0'
 # Bundle edge Rails instead:
 # gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
+gem 'ffi', '1.0.9'
+
 gem 'sqlite3'
 
 gem 'execjs'
 
-gem 'therubyracer'
+#gem 'therubyracer'
 gem 'faye'
 gem 'less-rails-bootstrap'
 
@@ -39,13 +41,14 @@ gem 'less-rails-bootstrap'
 
 # To use debugger
 group :development do 
-  gem 'ruby-debug19', :require => 'ruby-debug'
+  #gem 'ruby-debug19', :require => 'ruby-debug'
+  gem 'debugger'
   gem 'pry-rails'
   gem 'rspec-rails'
   gem 'watchr'
   gem 'guard-rspec'
   gem 'libnotify', :platforms => :mri_19
-  gem 'spork', :git => "git://github.com/sporkrb/spork.git"
+  gem 'spork-rails'#, :git => "git://github.com/sporkrb/spork.git"
   gem 'foreman'
   gem 'annotate', :git => 'git://github.com/ctran/annotate_models.git'
 end

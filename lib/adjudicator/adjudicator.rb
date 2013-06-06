@@ -31,16 +31,13 @@ module Diplomacy
       @@log.debug "Validating #{order}"
       case order
       when Move
-        # can't move to own space
-        return false if order.dst.eql? order.unit_area
+        return true if valid_move?(order)
         
-        # if sea unit, can't be convoyed, move must be valid
-        return false if order.unit.is_fleet? && (not valid_move?(order))
+        return false if order.unit_area == order.dst # it's easier to be explicit
         
-        # if land unit, invalid move might be part of a convoy
-        if order.unit.is_army? && !valid_move?(order) && @orders.convoys_for_move(order).empty?
-          return false
-        end
+        # if army, invalid move might be part of a convoy
+        # we only care if unit_area and dst are coastal, path() will take care of the rest
+        return false unless order.unit.is_army? && @map.areas[order.unit_area].is_coastal? && @map.areas[order.dst].is_coastal?
       when Support
         m = Move.new(order.unit, order.unit_area, order.dst) # check whether unit can move to dst, disregarding coasts
         return false unless valid_move?(m)
@@ -61,16 +58,10 @@ module Diplomacy
     end
     
     def valid_move?(move)
-      if move.unit.is_army? && @map.neighbours?(move.unit_area, move.dst, Area::LAND_BORDER)
-        return true
+      if move.unit.is_army?
+        return @map.neighbours?(move.unit_area, move.dst, Area::LAND_BORDER)
       elsif move.unit.is_fleet?
-        # yuck - but it gets the job done (fleets can support movement to coasts they can't reach)
-        from = move.unit_area_coast.nil? || Support === move ? move.unit_area : (move.unit_area.to_s + move.unit_area_coast.to_s).to_sym
-        to = move.dst_coast.nil? || Support === move ? move.dst : (move.dst.to_s + move.dst_coast.to_s).to_sym
-        
-        return true if @map.neighbours?(from, to, Area::SEA_BORDER)
-      else
-        return false
+        return @map.neighbours?(move.unit_area_with_coast, move.dst_with_coast, Area::SEA_BORDER)
       end
     end
   end

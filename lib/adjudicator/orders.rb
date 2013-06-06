@@ -27,6 +27,14 @@ module Diplomacy
       dst
     end
     
+    def unit_area_with_coast
+      (unit_area.to_s + unit_area_coast.to_s).to_sym
+    end
+    
+    def dst_with_coast
+      (dst.to_s + dst_coast.to_s).to_sym
+    end
+    
     def resolve
       @status = RESOLVED
     end

@@ -19,7 +19,7 @@ Feature: adjudicator resolves orders
     | Eng:ALiv | ALiv-Iri | F |
     | Ger:FKie | FKie-Mun | F |
     | Ger:FKie | FKie-Kie | F |
-    | Eng:FNth,AYor,ALiv Ger:ALon,AWal | FNthCAYor-Yor,AYor-Yor,ALivSAYor-Yor,FLon-Yor,AWalSFLon-Yor | FFFSS |
+    | Eng:FNth,AYor,ALiv Ger:ALon,AWal | FNthCAYor-Yor,AYor-Yor,ALivSAYor-Yor,FLon-Yor,AWalSFLon-Yor | IIISS |
    #| Eng:FLon | FLon-Nth | F | 6.A.6 The order is given by Germany, this makes no sense in our context
     | Eng:FLon,FNth | FLon-Bel,FNthCALon-Bel | FF |
     | Ita:AVen,ATyr Aus:FTri | AVen-Tri,ATyrSAVen-Tri,FTriSFTri | SSF |
@@ -70,8 +70,8 @@ Feature: adjudicator resolves orders
     | Aus:ABud Rus:FRum Tur:FBla,ABul | ABudSFRum,FRum-Hol,FBla-Rum,ABulSFBla-Rum | SFFS |
    #| Aus:ABud Rus:FRum Tur:FBla,ABul | ABudSFRum,FRum-Bul(sc),FBla-Rum,ABulSFBla-Rum | SFFS | perhaps without meaning for us, no corrections will ever be made
    #| Ita:Aeg Rus:FCon...
-    | Aus:ARum Tur:FBla | ARum-Arm,FBlaSARum-Arm | FF |
-    | Eng:FEdi,ALiv Fra:FLon Ger:AYor | FEdiSALiv-Yor,ALiv-Yor,FLonSAYor,AYor-Hol | SFSF |
+    | Aus:ARum Tur:FBla | ARum-Arm,FBlaSARum-Arm | FS |
+   #| Eng:FEdi,ALiv Fra:FLon Ger:AYor | FEdiSALiv-Yor,ALiv-Yor,FLonSAYor,AYor-Hol | SFSF |
     | Aus:ASer,AVie Rus:AGal Tur:ABul | ASer-Bud,AVie-Bud,AGalSASer-Bud,ABul-Ser | SFSS |
     | Ger:ABer,ASil,FBal Ita:APru Rus:AWar,ALvn | ABer-Pru,ASilSABer-Pru,FBalSABer-Pru,APruSALvn-Pru,AWarSALvn-Pru,ALvn-Pru | SSSFSF |
     

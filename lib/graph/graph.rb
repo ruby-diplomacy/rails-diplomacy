@@ -22,6 +22,18 @@ module Diplomacy
     def is_supply?
       @supply_center
     end
+    
+    def is_inland?
+      !@borders[LAND_BORDER].empty? && @borders[SEA_BORDER].empty?
+    end
+    
+    def is_coastal?
+      !@borders[LAND_BORDER].empty? && !@borders[SEA_BORDER].empty?
+    end
+    
+    def to_s
+      "#{name} (#{abbrv})#{is_supply? ? " *": ""}"
+    end
   end
 
   class Map

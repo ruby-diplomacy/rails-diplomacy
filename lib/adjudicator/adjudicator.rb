@@ -147,6 +147,9 @@ module Diplomacy
         # get all moves to the same destination
         #dependencies.concat(@orders.moves_by_dst(order.dst, skip_me=true, me=order))
         
+        # get all supports to my area (for HtHs)
+        dependencies.concat(@orders.supports_by_dst(order.unit_area))
+        
         # get all supports to the destination
         dependencies.concat(@orders.supports_by_dst(order.dst))
         

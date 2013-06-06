@@ -191,11 +191,11 @@ module Diplomacy
     end
     
     def adjudicate!(order)
+      @@log.debug "Adjudicating #{order}"
       if order.resolved?
         @@log.debug "#{order} already resolved: #{order.status_readable}"
         return
       end
-      @@log.debug "Adjudicating #{order}"
       
       case order
       when Move        
@@ -242,6 +242,7 @@ module Diplomacy
       when Support, SupportHold
         if dislodged(order)
           order.fail
+          @@log.debug "Decision (#{order}): #{order.resolution_readable}"
           return
         end
           
@@ -252,6 +253,7 @@ module Diplomacy
           if order.nationality != move.nationality &&
               move.unit_area != order.dst && check_path(move)
             order.fail
+            @@log.debug "Decision (#{order}): #{order.resolution_readable}"
             return 
           end
         end
@@ -285,13 +287,13 @@ module Diplomacy
         
         if @orders.convoyed_move(order).nil?
           order.fail
-          @@log.debug "Decision: #{order.resolution_readable}"
+          @@log.debug "Decision (#{order}): #{order.resolution_readable}"
           return
         end
       
-        @@log.debug "Decision: #{order.resolution_readable}"
         order.succeed
       end
+      @@log.debug "Decision (#{order}): #{order.resolution_readable}"
     end
     
     def check_path(move)

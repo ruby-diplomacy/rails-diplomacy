@@ -27,7 +27,14 @@ Feature: adjudicator resolves orders
     | Aus:AVen Ita:FRom,AApu | AVenH,FRomSAApu-Ven,AApu-Ven | SFF |
     | Aus:AVie Ita:AVen | AVie-Tyr,AVen-Tyr | FF |
     | Aus:AVie Ger:AMun Ita:AVen | AVie-Tyr,AMun-Tyr,AVen-Tyr | FFF |
-    
+
+  Scenarios: Diplomacy Adjudicator Test Cases - Coastal Issues
+    | currentstate | orders | adjudication |
+    | Fra:FGas,FMar Ita:FWes | FGas-Spa(nc),FMarSFGas-Spa(nc),FWes-Spa(sc) | SSF |
+    | Fra:FMar,FSpa(nc) Ita:FLyo | FMar-Lyo,FSpa(nc)SFMar-Lyo,FLyoH | FIS |
+    | Eng:FIri,FNAO Fra:FSpa(nc),FMAO Ita:FLyo | FIriSFNAO-MAO,FNAO-MAO,FSpa(nc)SFMAO,FMAOH,FLyo-Spa(sc) | SSFSF |
+    | Tur:FBul(sc),FCon | FBul(sc)-Con,FCon-Bul(ec) | FF |
+
   Scenarios: Diplomacy Adjudicator Test Cases - Circular Movement
     | currentstate | orders | adjudication |
     | Tur:FAnk,ACon,ASmy | FAnk-Con,ACon-Smy,ASmy-Ank | SSS |
@@ -62,7 +69,7 @@ Feature: adjudicator resolves orders
     | Eng:FLon,FNth,AYor Fra:FEng | FLonSFNth-Eng,FNth-Eng,AYor-Lon,FEngH | SSFS |
     | Aus:FTri Ita:AVen,ATyr Ger:AMun Rus:ASil,ABer | FTriH,AVen-Tri,ATyrSAVen-Tri,AMun-Tyr,ASil-Mun,ABerSASil-Mun | SFFFSS |
     | Ger:FKie,ABur Rus:AMun,ABer | FKie-Mun,ABurSFKie-Mun,AMun-Kie,ABerSAMun-Kie | FFSS |
-    | Ita:FLyo,FWes Fra:FSpa(nc),FMar | FLyo-Spa(sc),FWesSFLyo-Spa(sc),FSpa(nc)-Lyo,FMarSFSpa(nc)-Lyo | SSFF |
+    | Ita:FLyo,FWes Fra:FSpa(nc),FMar | FLyo-Spa(sc),FWesSFLyo-Spa(sc),FSpa(nc)-Lyo,FMarSFSpa(nc)-Lyo | SSII |
     | Fra:AMar,FSpa(sc) Ita:FLyo Tur:FTys,FWes | AMar-Lyo,FSpa(sc)SAMar-Lyo,FLyoH,FTysSFWes-Lyo,FWes-Lyo | IFSSS |
     | Ger:ABer,FKie Rus:FBal,APru | ABerSAPru,FKieSABer,FBalSAPru-Ber,APru-Ber | FSSF | 
     | Ger:ABer,FKie Rus:FBal,APru | ABerSAPru-Sil,FKieSABer,FBalSAPru-Ber,APru-Ber | FSSF |

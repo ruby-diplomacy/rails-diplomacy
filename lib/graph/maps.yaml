@@ -15,6 +15,8 @@ Standard:
     Aeg: Aegean Sea
     Con: Constantinople
     Bul: Bulgaria
+    Bul(ec): Bulgaria (East coast)
+    Bul(sc): Bulgaria (South coast)
     Gre: Greece
     Ser: Serbia
     Alb: Albania
@@ -271,6 +273,12 @@ Standard:
     - [Bul, Aeg, S]
     - [Bul, Con, L, S]
     - [Bul, Bla, S]
+    - [Bul(ec), Bla, S]
+    - [Bul(ec), Rum, S]
+    - [Bul(ec), Con, S]
+    - [Bul(sc), Gre, S]
+    - [Bul(sc), Aeg, S]
+    - [Bul(sc), Con, S]
     - [Con, Aeg, S]
     - [Con, Bla, S]
     - [Con, Ank, L, S]

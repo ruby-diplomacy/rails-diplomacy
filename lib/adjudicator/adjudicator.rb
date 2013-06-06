@@ -39,8 +39,9 @@ module Diplomacy
         # we only care if unit_area and dst are coastal, path() will take care of the rest
         return false unless order.unit.is_army? && @map.areas[order.unit_area].is_coastal? && @map.areas[order.dst].is_coastal?
       when Support
-        m = Move.new(order.unit, order.unit_area, order.dst) # check whether unit can move to dst, disregarding coasts
-        return false unless valid_move?(m)
+        m = Move.new(order.unit, order.unit_area, order.dst)
+        m.unit_area_coast = order.unit_area_coast
+        return false unless valid_move?(m) # check whether unit can move to dst, disregarding dst coast
         
         # check whether supported move is valid, as well
         m = @orders.supported_move(order)

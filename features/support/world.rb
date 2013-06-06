@@ -77,10 +77,13 @@ module DiplomacyWorld
     end
     
     # try to parse it as a support hold
-    /^[AF](?'unit_area'\w{3})S[AF](?'dst'\w{3})$/ =~ orderblob
+    /^[AF](?'unit_area'\w{3})(?'unit_area_coast'\(.+?\))?S[AF](?'dst'\w{3})(?'dst_coast'\(.+?\))?$/ =~ orderblob
     if not unit_area.nil?
       unit = gamestate[unit_area.to_sym].unit unless unit_area.nil?
-      return Diplomacy::SupportHold.new(unit, unit_area.to_sym, dst.to_sym)
+      support = Diplomacy::SupportHold.new(unit, unit_area.to_sym, dst.to_sym)
+      support.unit_area_coast = unit_area_coast if not unit_area_coast.nil?
+      support.dst_coast = dst_coast if not dst_coast.nil?
+      return support
     end
     
     # try to parse it as a convoy

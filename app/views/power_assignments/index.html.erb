@@ -1,0 +1,21 @@
+<h1>Listing power_assignments</h1>
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @power_assignments.each do |power_assignment| %>
+  <tr>
+    <td><%= link_to 'Show', power_assignment %></td>
+    <td><%= link_to 'Edit', edit_power_assignment_path(power_assignment) %></td>
+    <td><%= link_to 'Destroy', power_assignment, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Power assignment', new_power_assignment_path %>

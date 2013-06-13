@@ -1,9 +1,5 @@
-<%= form_for @game, html: {class: 'well form-horizontal'} do |f| %>
-  <%= f.label :title %>
-  <%= f.text_field :title, class: 'span3' %>
+<h1>New game</h1>
 
-  <%= f.label :variant %>
-  <%= f.select :variant_id, Variant.options_for_select %>
+<%= render 'form' %>
 
-  <%= f.button 'Create', class: 'btn' %>
-<% end %>
+<%= link_to 'Back', games_path %>

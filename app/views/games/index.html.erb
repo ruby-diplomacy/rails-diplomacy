@@ -1,22 +1,23 @@
-<h2>Current online games</h2>
+<h1>Listing games</h1>
+
 <table>
   <tr>
-    <th>Game Title</th>
-    <th>Variant</th>
-    <th>Started At</th>
-    <th>Options</th>
+    <th>Name</th>
+    <th></th>
+    <th></th>
+    <th></th>
   </tr>
 
-  <% @games.each do |game| %>
-    <tr>
-      <td><%= link_to game.title, game %></td>
-      <td><%= game.variant.name %></td>
-      <td><%= game.start_time %></td>
-      <td><%= link_to 'Delete', game, confirm: 'Are you sure?', method: :delete %></td>
-    </tr>
-  <% end %>
+<% @games.each do |game| %>
+  <tr>
+    <td><%= game.name %></td>
+    <td><%= link_to 'Show', game %></td>
+    <td><%= link_to 'Edit', edit_game_path(game) %></td>
+    <td><%= link_to 'Destroy', game, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
 </table>
+
+<br />
+
 <%= link_to 'New Game', new_game_path %>
-
-
-

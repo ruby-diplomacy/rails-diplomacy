@@ -1,1 +1,0 @@
-spork: bundle exec spork

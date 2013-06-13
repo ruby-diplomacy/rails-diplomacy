@@ -1,4 +1,0 @@
-<% push_to_message_server(channel_for_message(@message)) do %>
-  $('#message-list').append('<%= escape_javascript render(@message) %>');
-<% end %>
-

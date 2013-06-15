@@ -20,6 +20,7 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
+gem 'raphael-rails'
 gem 'jquery-rails'
 
 group :development, :test do
@@ -27,6 +28,7 @@ group :development, :test do
 end
 
 # To use ActiveModel has_secure_password
+
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
 # To use Jbuilder templates for JSON

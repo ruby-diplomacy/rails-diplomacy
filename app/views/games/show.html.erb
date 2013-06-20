@@ -1,11 +1,22 @@
 <p id="notice"><%= notice %></p>
 
-<p>
-  <b>Name:</b>
-  <%= @game.name %>
-  <div id="map"></div>
-</p>
+<div id="game">
+<h2><%= @game.name %></h2>
+<hr />
 
+<div id="map"></div>
+<div id="status">
+<h3>Game Status</h3>
+
+<p>JSON: <%= @game.current_state.to_gamestate.to_json %></p>
+<% for area, state in @game.current_state.to_gamestate %>
+	<div>
+		<h3><%= area %></h3>
+		<p><%= state.unit.nationality %> <%= state.unit.type_to_s %></p>
+	</div>
+<% end %>
+</div>
+</div>
 
 <%= link_to 'Edit', edit_game_path(@game) %> |
 <%= link_to 'Back', games_path %>

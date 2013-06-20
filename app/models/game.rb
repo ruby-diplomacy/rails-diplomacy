@@ -14,6 +14,8 @@ class Game < ActiveRecord::Base
   end
 
   def create_initial_state
-    states.create turn: 1, positions: "Placeholder"
+    mr = Diplomacy::MapReader.new
+    sp = Diplomacy::StateParser.new mr.maps['Standard'].starting_state
+    states.create turn: 1, state: sp.dump_state
   end
 end

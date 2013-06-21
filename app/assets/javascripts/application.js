@@ -12,5 +12,4 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require raphael-min
-//= require_tree .
+//= require_tree ./globals

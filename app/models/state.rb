@@ -4,6 +4,6 @@ class State < ActiveRecord::Base
 
   def to_gamestate
     state_parser = Diplomacy::StateParser.new
-    state_parser.parse_units_by_power positions || ""
+    state_parser.parse_state state || ""
   end
 end

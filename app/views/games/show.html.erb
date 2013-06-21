@@ -1,8 +1,8 @@
 <% content_for :includes do %><%= javascript_include_tag :game %><% end %>
-
+<div ng-app="diplomacy">
 <p id="notice"><%= notice %></p>
 
-<div id="game">
+<div id="game" ng-controller="DiplomacyGameCtrl">
 <h2><%= @game.name %></h2>
 <hr />
 
@@ -10,7 +10,6 @@
 <div id="status">
 <h3>Game Status</h3>
 
-<p>JSON: <%= @game.current_state.to_gamestate.to_json %></p>
 <% for area, state in @game.current_state.to_gamestate %>
 	<div>
 		<h3><%= area %></h3>
@@ -22,3 +21,4 @@
 
 <%= link_to 'Edit', edit_game_path(@game) %> |
 <%= link_to 'Back', games_path %>
+</div>

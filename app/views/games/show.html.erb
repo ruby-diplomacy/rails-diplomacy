@@ -10,12 +10,6 @@
 <div id="status">
 <h3>Game Status</h3>
 
-<% for area, state in @game.current_state.to_gamestate %>
-	<div>
-		<h3><%= area %></h3>
-		<p><%= state.unit.nationality %> <%= state.unit.type_to_s %></p>
-	</div>
-<% end %>
 </div>
 </div>
 

@@ -2,8 +2,10 @@ RailsDiplomacy::Application.routes.draw do
   resources :power_assignments
 
 
-  resources :games
-
+  resources :games do
+    resources :states
+    get 'state', on: :member, controller: :states, action: :show
+  end
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

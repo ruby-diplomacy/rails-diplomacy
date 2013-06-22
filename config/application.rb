@@ -64,5 +64,8 @@ module RailsDiplomacy
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    # My angular services want to access relative paths: this is necessary (I think.)
+    config.action_controller.default_url_options = { trailing_slash: true }
   end
 end

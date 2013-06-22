@@ -1,3 +1,3 @@
 'use strict'
 
-angular.module('diplomacy', [])
+angular.module('diplomacy', ['diplomacyServices'])

@@ -22,6 +22,9 @@ window.DiplomacyGameCtrl = [
           @gl.remove()
           @gl = false
       
-      StateService.query (data) ->
-        console.log data.state
+      StateService.query( (data) ->
+        console.log data
+      , (err) ->
+        console.error err
+      )
 ]

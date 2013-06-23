@@ -14,8 +14,7 @@ class Game < ActiveRecord::Base
   end
 
   def create_initial_state
-    mr = Diplomacy::MapReader.new
-    sp = Diplomacy::StateParser.new mr.maps['Standard'].starting_state
+    sp = Diplomacy::StateParser.new MAP_READER.maps['Standard'].starting_state
     states.create turn: 1, state: sp.dump_state
   end
 end

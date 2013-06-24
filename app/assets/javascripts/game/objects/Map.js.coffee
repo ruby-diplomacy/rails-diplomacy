@@ -17,7 +17,7 @@ class Map
         when "impassable"
           $(path.node).attr( fill: '#B6B6B6' )
         when "land"
-          $(path.node).attr( fill: '#E9E390' )
+          $(path.node).attr( fill: '#F7F4C3' )
         else
           console.log data.areas[area]['type']
           $(path.node).attr( fill: '#FFF' )

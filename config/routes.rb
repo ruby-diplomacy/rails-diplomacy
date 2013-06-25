@@ -1,4 +1,6 @@
 RailsDiplomacy::Application.routes.draw do
+  devise_for :users
+
   resources :power_assignments
 
 

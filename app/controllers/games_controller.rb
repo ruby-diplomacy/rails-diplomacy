@@ -26,10 +26,6 @@ class GamesController < ApplicationController
   def new
     @game = Game.new
     
-    7.times do
-      pa = @game.power_assignments.build
-    end
-
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @game }

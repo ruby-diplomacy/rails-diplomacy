@@ -6,14 +6,19 @@
 </div>
 
 <div id="game" ng-controller="DiplomacyGameCtrl">
-<h2><%= @game.name %></h2>
-<hr />
+	<h2><%= @game.name %></h2>
+	<hr />
 
-<div id="map"></div>
-<div id="status">
-<h3>Players</h3>
+	<div id="map"></div>
+	<div id="status">
+		<h3>Players</h3>
 
-</div>
+		<ul>
+		<% @game.power_assignments.each do |power| %>
+			<li><b><%= power.power %></b>: <%= power.user %></li>
+		<% end %>
+		</ul>
+	</div>
 </div>
 
 </div>

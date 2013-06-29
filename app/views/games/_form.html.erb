@@ -15,9 +15,6 @@
     <%= f.label :name %><br />
     <%= f.text_field :name %>
   </div>
-  <%= f.fields_for :power_assignments do |builder| %>
-    <%= render "power_assignments", :f => builder %>
-  <% end %>
   <div class="actions">
     <%= f.submit %>
   </div>

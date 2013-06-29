@@ -1,6 +1,9 @@
 <% content_for :includes do %><%= javascript_include_tag :game %><% end %>
 <div ng-app="diplomacy">
 <p id="notice"><%= notice %></p>
+<div id="controls">
+<%= link_to 'Back', games_path %>
+</div>
 
 <div id="game" ng-controller="DiplomacyGameCtrl">
 <h2><%= @game.name %></h2>
@@ -8,11 +11,9 @@
 
 <div id="map"></div>
 <div id="status">
-<h3>Game Status</h3>
+<h3>Players</h3>
 
 </div>
 </div>
 
-<%= link_to 'Edit', edit_game_path(@game) %> |
-<%= link_to 'Back', games_path %>
 </div>

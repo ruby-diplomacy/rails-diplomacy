@@ -1,0 +1,33 @@
+$headerHeight: 100px;
+$headerPadding: 10px;
+
+div#container {
+	position: relative;
+	width: 1200px;
+	margin: 0 auto;
+	div#header {
+		position: relative;
+		height: $headerHeight - 2 * $headerPadding;
+		background-color: #000000;
+		color: #FFFFFF;
+		padding: 10px;
+		div#menu {
+			position: absolute;
+			bottom: 10px;
+			right: 10px;
+			ul {
+				list-style-type: none;
+				margin:0;
+				padding:0;
+				li {
+					display: inline;
+				}
+			}
+			a {
+				color: #FFFFFF;
+			}
+		}
+	}
+	div#content {
+	}
+}

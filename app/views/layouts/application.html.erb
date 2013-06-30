@@ -9,10 +9,25 @@
 </head>
 <body>
 
-<p class="notice"><%= notice %></p>
-<p class="alert"><%= alert %></p>
+<div id="notice" class="notice"><%= notice %></div>
+<div id="alert" class="alert"><%= alert %></div>
 
+<div id="container">
+	<div id="header">
+		<div id="menu">
+			<ul>
+				<% if user_signed_in? %>
+					<li><%= link_to "Sign out", destroy_user_session_path, method: :delete %></li>
+				<% else %>
+					<li><%= link_to "Sign in", new_user_session_path %></li>
+				<% end %>
+			</ul>
+		</div>
+	</div>
+	<div id="content">
 <%= yield %>
+	</div>
+</div>
 
 </body>
 </html>

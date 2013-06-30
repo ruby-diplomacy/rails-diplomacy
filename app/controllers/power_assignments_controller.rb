@@ -1,4 +1,7 @@
 class PowerAssignmentsController < ApplicationController
+
+  before_filter :authenticate_user!
+
   # GET /power_assignments
   # GET /power_assignments.json
   def index
@@ -25,6 +28,11 @@ class PowerAssignmentsController < ApplicationController
   # GET /power_assignments/new.json
   def new
     @power_assignment = PowerAssignment.new
+    if params[:game_id]
+      @power_assignment.game = Game.find(params[:game_id])
+      taken_powers = @power_assignment.game.power_assignments.collect {|pa| pa.power }
+      @available_powers = @power_assignment.game.powers - taken_powers
+    end
 
     respond_to do |format|
       format.html # new.html.erb
@@ -35,12 +43,18 @@ class PowerAssignmentsController < ApplicationController
   # GET /power_assignments/1/edit
   def edit
     @power_assignment = PowerAssignment.find(params[:id])
+    if params[:game_id]
+      @power_assignment.game = Game.find(params[:game_id])
+      taken_powers = @power_assignment.game.power_assignments.collect {|pa| pa.power }
+      @available_powers = @power_assignment.game.powers - taken_powers
+    end
   end
 
   # POST /power_assignments
   # POST /power_assignments.json
   def create
     @power_assignment = PowerAssignment.new(params[:power_assignment])
+    @power_assignment.user = current_user
 
     respond_to do |format|
       if @power_assignment.save

@@ -10,11 +10,13 @@
       </ul>
     </div>
   <% end %>
-  
+
   <div class="field">
     <%= f.label :power %><br />
-    <%= f.text_field :power %>
+    <%= f.select :power,  @available_powers.collect {|pa| [pa, pa] } %>
   </div>
+
+  <%= f.hidden_field :game_id %>
 
   <div class="actions">
     <%= f.submit %>

@@ -6,6 +6,7 @@ RailsDiplomacy::Application.routes.draw do
 
   resources :games do
     resources :states
+    resources :power_assignments
     get 'state', on: :member, controller: :states, action: :show
   end
 

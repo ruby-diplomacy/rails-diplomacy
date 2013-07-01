@@ -33,6 +33,10 @@ class Game < ActiveRecord::Base
     states.order("turn DESC").first
   end
 
+  def started?
+    not [PHASES[:awaiting_players], PHASES[:finished]].member? self.phase
+  end
+
   def progress_phase
     case self.phase
     when PHASES[:awaiting_players]

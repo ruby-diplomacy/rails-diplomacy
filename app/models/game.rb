@@ -7,8 +7,6 @@ class Game < ActiveRecord::Base
   
   accepts_nested_attributes_for :power_assignments, reject_if: proc { |a| a[:power].blank? }, :allow_destroy => true
 
-  after_create :create_initial_state
-
   PHASES = {
     awaiting_players: 0,
     movement: 1,
@@ -18,6 +16,15 @@ class Game < ActiveRecord::Base
     finished: 5
   }
 
+  after_create :create_initial_state
+
+  def create_initial_state
+    sp = Diplomacy::StateParser.new MAP_READER.maps['Standard'].starting_state
+    states.create turn: 1, state: sp.dump_state
+  end
+
+  # END HOOK METHODS ==========================
+
   def powers
     MAP_READER.maps['Standard'].powers.keys
   end
@@ -26,8 +33,11 @@ class Game < ActiveRecord::Base
     states.order("turn DESC").first
   end
 
-  def create_initial_state
-    sp = Diplomacy::StateParser.new MAP_READER.maps['Standard'].starting_state
-    states.create turn: 1, state: sp.dump_state
+  def progress_phase
+    case self.phase
+    when PHASES[:awaiting_players]
+      self.phase = PHASES[:movement]
+      self.save
+    end
   end
 end

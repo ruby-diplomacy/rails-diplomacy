@@ -11,7 +11,7 @@
 	<div id="map"></div>
 	<div id="status">
 		<% if user_signed_in? %>
-			<% if joined? @game, current_user %>
+			<% if joined?(current_user, @game) %>
 				<%= link_to "Change power", edit_game_power_assignment_path(@game, power_for_user(current_user, @game)) %>
 			<% else %>
 				<%= link_to "Join game", new_game_power_assignment_path(@game) %>

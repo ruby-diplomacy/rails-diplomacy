@@ -1,6 +1,6 @@
 module GamesHelper
   def joined?(user, game)
-    power_for_user(user, game).nil?
+    !power_for_user(user, game).nil?
   end
 
   def power_for_user(user, game)

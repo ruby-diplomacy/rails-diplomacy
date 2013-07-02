@@ -15,7 +15,7 @@ class GamesController < ApplicationController
   def show
     @game = Game.find(params[:id])
 
-    if user_signed_in?
+    if user_signed_in? and joined?(current_user, @game)
       @order_list = OrderList.new(power: power_for_user(current_user, @game).power, state: @game.current_state)
     end
 
@@ -91,5 +91,10 @@ class GamesController < ApplicationController
     user.power_assignments.where(game_id: game.id).first
   end
   helper_method :power_for_user
+
+  def joined?(user, game)
+    not power_for_user(user, game).nil?
+  end
+  helper_method :joined?
 
 end

@@ -1,5 +1,6 @@
 class State < ActiveRecord::Base
   belongs_to :game
+  has_many :order_lists
   attr_accessible :state, :turn
 
   def to_gamestate

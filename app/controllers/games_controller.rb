@@ -15,6 +15,10 @@ class GamesController < ApplicationController
   def show
     @game = Game.find(params[:id])
 
+    if user_signed_in?
+      @order_list = OrderList.new(power: power_for_user(current_user, @game).power, state: @game.current_state)
+    end
+
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @game }
@@ -80,4 +84,12 @@ class GamesController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  private
+
+  def power_for_user(user, game)
+    user.power_assignments.where(game_id: game.id).first
+  end
+  helper_method :power_for_user
+
 end

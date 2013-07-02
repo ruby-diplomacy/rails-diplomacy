@@ -1,0 +1,6 @@
+<%= form_for(order_list, remote: true) do |f| %>
+  <%= f.text_area :orders %>
+  <%= f.hidden_field :state_id %>
+  <%= f.hidden_field :power %>
+  <%= f.submit :Submit %>
+<% end %>

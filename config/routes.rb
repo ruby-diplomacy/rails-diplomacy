@@ -1,4 +1,8 @@
 RailsDiplomacy::Application.routes.draw do
+  get "order_list/create"
+
+  get "order_list/show"
+
   devise_for :users
 
   resources :power_assignments
@@ -9,6 +13,8 @@ RailsDiplomacy::Application.routes.draw do
     resources :power_assignments
     get 'state', on: :member, controller: :states, action: :show
   end
+
+  resources :order_lists, only: [:create, :show, :index]
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

@@ -37,7 +37,7 @@ class Game < ActiveRecord::Base
     not [PHASES[:awaiting_players], PHASES[:finished]].member? self.phase
   end
 
-  def progress_phase
+  def progress_phase!
     case self.phase
     when PHASES[:awaiting_players]
       self.phase = PHASES[:movement]

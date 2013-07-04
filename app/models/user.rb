@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
     #:validatable
   )
 
-  has_many :power_assignments
+  has_many :power_assignments, dependent: :destroy
   has_many :games, through: :power_assignments
 
   # devise attributes

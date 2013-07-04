@@ -1,7 +1,7 @@
 class Game < ActiveRecord::Base
-  has_many :power_assignments
+  has_many :power_assignments, dependent: :destroy
   has_many :users, through: :power_assignments
-  has_many :states
+  has_many :states, dependent: :destroy
 
   attr_accessible :name, :power_assignments_attributes, :states, :phase
   

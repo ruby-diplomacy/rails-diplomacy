@@ -1,6 +1,6 @@
 class State < ActiveRecord::Base
   belongs_to :game
-  has_many :order_lists
+  has_many :order_lists, dependent: :destroy
   attr_accessible :state, :turn, :season, :year
 
   def bundle_orders

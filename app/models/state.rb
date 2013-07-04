@@ -3,6 +3,14 @@ class State < ActiveRecord::Base
   has_many :order_lists
   attr_accessible :state, :turn
 
+  def bundle_orders
+    bundle = []
+    self.order_lists.each do |order_list|
+      bundle << "#{order_list.orders}" if order_list.orders.present?
+    end
+    bundle.join(",")
+  end
+
   def to_gamestate
     state_parser = Diplomacy::StateParser.new
     state_parser.parse_state state || ""

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130701222511) do
+ActiveRecord::Schema.define(:version => 20130704013501) do
 
   create_table "games", :force => true do |t|
     t.string   "name"
@@ -45,8 +45,10 @@ ActiveRecord::Schema.define(:version => 20130701222511) do
     t.integer  "turn"
     t.string   "state"
     t.integer  "game_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
+    t.string   "season"
+    t.integer  "year",       :limit => 2
   end
 
   add_index "states", ["game_id"], :name => "index_states_on_game_id"

@@ -41,34 +41,47 @@ class Game < ActiveRecord::Base
     when PHASES[:awaiting_players]
       self.phase = PHASES[:movement]
     when PHASES[:movement]
-      current_state = self.current_state
+      previous_state_record = self.current_state
 
       sp = Diplomacy::StateParser.new
-      previous_state = sp.parse_state(current_state.state)
+      previous_state = sp.parse_state(previous_state_record.state)
       op = Diplomacy::OrderParser.new previous_state
 
       # adjudicate orders
-      new_state, adjudicated_orders = ADJUDICATOR.resolve! previous_state, op.parse_orders(current_state.bundle_orders)
+      new_state, adjudicated_orders = ADJUDICATOR.resolve! previous_state, op.parse_orders(previous_state_record.bundle_orders)
       dumper = Diplomacy::StateParser.new new_state
 
       # save adjudicated orders and create new state
-      self.states.create(state: dumper.dump_state, turn: current_state.turn + 1)
+      new_state_record = self.states.create(
+        state: dumper.dump_state,
+        turn: previous_state_record.turn + 1,
+        season: previous_state_record.season,
+        year: previous_state_record.year
+      )
 
       if not new_state.retreats.empty?
         # if there are retreats, go to retreats
         self.phase = PHASES[:retreats]
-      elsif false
+      elsif previous_state_record.is_fall?
         # if not, and it's Fall, go to supply
-        # if Fall
         self.phase = PHASES[:supply]
       else
         # otherwise, just go to movement again
+        new_state_record.progress_season!
         self.phase = PHASES[:movement]
       end
     when PHASES[:retreats]
       # if it's Fall, go to supply, otherwise to movement
+      if previous_state_record.is_fall?
+        self.phase = PHASES[:supply]
+      else
+        new_state_record.progress_season!
+        self.phase = PHASES[:movement]
+      end
     when PHASES[:supply]
       # if someone won, go to finished, otherwise to movement
+      new_state_record.progress_season!
+      self.phase = PHASES[:movement]
     end
 
     self.save

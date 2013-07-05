@@ -4,6 +4,8 @@ class PowerAssignment < ActiveRecord::Base
   
   attr_accessible :power, :game_id
 
+  validates :user, uniqueness: { scope: :game_id }
+
   after_update :check_game_ready
 
   def check_game_ready

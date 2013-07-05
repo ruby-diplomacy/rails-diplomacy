@@ -17,4 +17,6 @@ class User < ActiveRecord::Base
   # devise attributes
   attr_accessible :email, :password, :password_confirmation#, :remember_me
   attr_accessible :name
+
+  validates :email, uniqueness: { case_insensitive: true }
 end

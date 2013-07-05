@@ -16,6 +16,7 @@ class OrderList < ActiveRecord::Base
   belongs_to :state
   attr_accessible :orders, :power, :state, :state_id
 
+  validates :power, :state, presence: true
   validates_with OrderValidator
 
   before_create :destroy_previous

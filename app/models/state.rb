@@ -3,6 +3,9 @@ class State < ActiveRecord::Base
   has_many :order_lists, dependent: :destroy
   attr_accessible :state, :turn, :season, :year
 
+  validates :game, presence: true
+  validates :turn, uniqueness: { scope: :game_id } # NB: this isn't 100%, but we don't care much
+
   def bundle_orders
     bundle = []
     self.order_lists.each do |order_list|

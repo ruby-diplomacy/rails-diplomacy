@@ -7,6 +7,8 @@ class Game < ActiveRecord::Base
   
   accepts_nested_attributes_for :power_assignments, reject_if: proc { |a| a[:power].blank? }, :allow_destroy => true
 
+  validates :name, presence: true
+
   PHASES = {
     awaiting_players: 0,
     movement: 1,
@@ -15,6 +17,7 @@ class Game < ActiveRecord::Base
     finished: 4
   }
 
+  # START CALLBACK METHODS ========================
   after_create :create_initial_state
 
   def create_initial_state
@@ -22,7 +25,7 @@ class Game < ActiveRecord::Base
     states.create turn: 1, state: sp.dump_state
   end
 
-  # END HOOK METHODS ==========================
+  # END CALLBACK METHODS ==========================
 
   def powers
     MAP_READER.maps['Standard'].powers.keys

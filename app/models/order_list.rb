@@ -2,10 +2,9 @@ class OrderValidator < ActiveModel::Validator
 	def validate(record)
     # this code is unintuitive at best, I wonder who wrote that damn gem
     sp = Diplomacy::StateParser.new
-    orders = []
-    op = Diplomacy::OrderParser.new sp.parse_state(record.state.state), orders
+    op = Diplomacy::OrderParser.new sp.parse_state(record.state.state)
 
-    op.parse_orders record.orders
+    orders = op.parse_orders record.orders
 
     unless orders.compact!.nil?
       record.errors[:orders] << "Invalid order list"

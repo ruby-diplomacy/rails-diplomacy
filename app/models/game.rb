@@ -40,16 +40,15 @@ class Game < ActiveRecord::Base
   end
 
   def progress_phase!
+    previous_state_record = self.current_state
+    sp = Diplomacy::StateParser.new
+    previous_state = sp.parse_state(previous_state_record.state)
+    op = Diplomacy::OrderParser.new previous_state
+
     case self.phase
     when PHASES[:awaiting_players]
       self.phase = PHASES[:movement]
     when PHASES[:movement]
-      previous_state_record = self.current_state
-
-      sp = Diplomacy::StateParser.new
-      previous_state = sp.parse_state(previous_state_record.state)
-      op = Diplomacy::OrderParser.new previous_state
-
       # adjudicate orders
       new_state, adjudicated_orders = ADJUDICATOR.resolve! previous_state, op.parse_orders(previous_state_record.bundle_orders)
       dumper = Diplomacy::StateParser.new new_state
@@ -74,6 +73,17 @@ class Game < ActiveRecord::Base
         self.phase = PHASES[:movement]
       end
     when PHASES[:retreats]
+      # adjudicate orders
+      new_state, adjudicated_orders = ADJUDICATOR.resolve_retreats! previous_state, op.parse_orders(previous_state_record.bundle_orders)
+      dumper = Diplomacy::StateParser.new new_state
+
+      # save adjudicated orders and create new state
+      new_state_record = self.states.create(
+        state: dumper.dump_state,
+        turn: previous_state_record.turn + 1,
+        season: previous_state_record.season,
+        year: previous_state_record.year
+      )
       # if it's Fall, go to supply, otherwise to movement
       if previous_state_record.is_fall?
         self.phase = PHASES[:supply]

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130704013501) do
+ActiveRecord::Schema.define(:version => 20130706154744) do
 
   create_table "games", :force => true do |t|
     t.string   "name"
@@ -22,10 +22,10 @@ ActiveRecord::Schema.define(:version => 20130704013501) do
 
   create_table "order_lists", :force => true do |t|
     t.string   "power"
-    t.string   "orders"
+    t.string   "orders",     :default => ""
     t.integer  "state_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
   end
 
   add_index "order_lists", ["state_id"], :name => "index_order_lists_on_state_id"
@@ -45,10 +45,10 @@ ActiveRecord::Schema.define(:version => 20130704013501) do
     t.integer  "turn"
     t.string   "state"
     t.integer  "game_id"
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
-    t.string   "season"
-    t.integer  "year",       :limit => 2
+    t.datetime "created_at",                                    :null => false
+    t.datetime "updated_at",                                    :null => false
+    t.string   "season",                  :default => "Spring"
+    t.integer  "year",       :limit => 2, :default => 1901
   end
 
   add_index "states", ["game_id"], :name => "index_states_on_game_id"

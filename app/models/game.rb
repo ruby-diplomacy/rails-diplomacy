@@ -51,15 +51,7 @@ class Game < ActiveRecord::Base
     when PHASES[:movement]
       # adjudicate orders
       new_state, adjudicated_orders = ADJUDICATOR.resolve! previous_state, op.parse_orders(previous_state_record.bundle_orders)
-      dumper = Diplomacy::StateParser.new new_state
-
-      # save adjudicated orders and create new state
-      new_state_record = self.states.create(
-        state: dumper.dump_state,
-        turn: previous_state_record.turn + 1,
-        season: previous_state_record.season,
-        year: previous_state_record.year
-      )
+      new_state_record = create_new_state_record(new_state, previous_state_record)
 
       if not new_state.retreats.empty?
         # if there are retreats, go to retreats
@@ -73,17 +65,10 @@ class Game < ActiveRecord::Base
         self.phase = PHASES[:movement]
       end
     when PHASES[:retreats]
-      # adjudicate orders
+      # adjudicate retreats
       new_state, adjudicated_orders = ADJUDICATOR.resolve_retreats! previous_state, op.parse_orders(previous_state_record.bundle_orders)
-      dumper = Diplomacy::StateParser.new new_state
+      new_state_record = create_new_state_record(new_state, previous_state_record)
 
-      # save adjudicated orders and create new state
-      new_state_record = self.states.create(
-        state: dumper.dump_state,
-        turn: previous_state_record.turn + 1,
-        season: previous_state_record.season,
-        year: previous_state_record.year
-      )
       # if it's Fall, go to supply, otherwise to movement
       if previous_state_record.is_fall?
         self.phase = PHASES[:supply]
@@ -92,11 +77,33 @@ class Game < ActiveRecord::Base
         self.phase = PHASES[:movement]
       end
     when PHASES[:supply]
+      # adjudicate builds
+      new_state, adjudicated_orders = ADJUDICATOR.resolve_builds! previous_state, op.parse_orders(previous_state_record.bundle_orders)
+      new_state_record = create_new_state_record(new_state, previous_state_record)
+
       # if someone won, go to finished, otherwise to movement
-      new_state_record.progress_season!
-      self.phase = PHASES[:movement]
+      if false # TODO someone won
+        self.phase = PHASES[:finished]
+      else
+        new_state_record.progress_season!
+        self.phase = PHASES[:movement]
+      end
     end
 
     self.save
+  end
+
+  private
+
+  def create_new_state_record(new_state, previous_state_record)
+    dumper = Diplomacy::StateParser.new new_state
+
+    # save adjudicated orders and create new state
+    return self.states.create(
+      state: dumper.dump_state,
+      turn: previous_state_record.turn + 1,
+      season: previous_state_record.season,
+      year: previous_state_record.year
+    )
   end
 end

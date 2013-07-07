@@ -46,21 +46,67 @@ describe Game do
   describe "progress_phase!" do
     context "when awaiting players" do
       it "should go to movement" do
-        game.phase = Game::PHASES[:awaiting_players]
-        game.progress_phase!
-        game.phase.should eq(Game::PHASES[:movement])
+        g = FactoryGirl.create(:game_just_started)
+        g.progress_phase!
+        g.phase.should eq(Game::PHASES[:movement])
       end
     end
     context "when in movement, with retreats present" do
-      it "should go to retreats"
+      it "should go to retreats" do
+        g = FactoryGirl.create(:game_ongoing)
+        FactoryGirl.create(
+          :state,
+          turn: g.current_state.turn + 1,
+          game: g,
+          state: "France:APic,ABur|Pic,Bur Germany:ABel|Bel"
+        )
+
+        FactoryGirl.create(
+          :order_list,
+          state: g.current_state,
+          power: "France",
+          orders: "APic-Bel,ABurSAPic-Bel"
+        )
+        FactoryGirl.create(
+          :order_list,
+          state: g.current_state,
+          power: "Germany",
+          orders: "ABelH"
+        )
+
+        g.progress_phase!
+
+        g.phase.should eq(Game::PHASES[:retreats])
+      end
     end
     context "when in movement, without retreats present" do
       context "if it is Fall" do
-        it "should go to supply"
+        it "should go to supply" do
+          g = FactoryGirl.create(:game_ongoing)
+          FactoryGirl.create(:state_fall, turn: g.current_state.turn + 1)
+
+          FactoryGirl.create(:order_list, state: g.current_state)
+
+          g.progress_phase!
+
+          g.phase.should eq(Game::PHASES[:movement])
+        end
       end
       context "if it is Spring" do
-        it "should go to movement"
+        it "should go to movement" do
+          g = FactoryGirl.create(:game_ongoing)
+          FactoryGirl.create(:state_spring, turn: g.current_state.turn + 1)
+
+          FactoryGirl.create(:order_list, state: g.current_state)
+
+          g.progress_phase!
+
+          g.phase.should eq(Game::PHASES[:movement])
+        end
       end
+    end
+    context "when in supply, if someone won" do
+      it "should go to finished"
     end
   end
 end

@@ -25,10 +25,17 @@
 		<% end %>
 		</ul>
 	</div>
-  <div class="clearfix"></div>
-  <% if user_signed_in? and joined?(current_user, @game) and @game.started? %>
-    <div id="orders"><h3>Submit orders</h3><%= render partial: "order_list/game_form", locals: { order_list: @order_list } %></div>
-  <% end %>
+	<div class="clearfix"></div>
+<% if user_signed_in? and joined?(current_user, @game) and @game.started? %>
+	<div id="orders">
+		<h3>Submit orders</h3>
+		<div id="success" class="submit-status">Orders successfully submitted. 
+		<%= image_tag "tick-button.png", alt: "Success" %></div>
+		<div id="failure" class="submit-status">Order submission failed: <span></span>
+		<%= image_tag "cross-button.png", alt: "Failure" %></div>
+	<%= render partial: "order_list/game_form", locals: { order_list: @order_list } %>
+	</div>
+<% end %>
 </div>
 
 </div>

@@ -16,7 +16,7 @@ class GamesController < ApplicationController
     @game = Game.find(params[:id])
 
     if user_signed_in? and joined?(current_user, @game)
-      @order_list = OrderList.new(power: power_for_user(current_user, @game).power, state: @game.current_state)
+      @order_list = OrderList.where(power: power_for_user(current_user, @game).power, state_id: @game.current_state.id).first_or_initialize
     end
 
     respond_to do |format|

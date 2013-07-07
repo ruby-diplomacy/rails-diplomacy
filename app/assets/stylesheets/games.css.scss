@@ -9,4 +9,12 @@ div#game {
 		display: inline-block;
 		vertical-align: top;
 	}
+	div#orders {
+		&>h3 {
+			display: inline;
+		}
+		div.submit-status {
+			display: none;
+		}
+	}
 }

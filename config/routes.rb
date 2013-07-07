@@ -14,7 +14,7 @@ RailsDiplomacy::Application.routes.draw do
     get 'state', on: :member, controller: :states, action: :show
   end
 
-  resources :order_lists, only: [:create, :show, :index]
+  resources :order_lists, only: [:create, :show, :update, :index]
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

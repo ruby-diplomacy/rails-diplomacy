@@ -40,6 +40,11 @@ class Map
         if area_state.unit
           unit = area_state.unit
 
+          if area_state.coast
+            area = @areas["#{abbrv}(#{area_state.coast})"]
+          else
+            area = @areas[abbrv]
+
           if unit.type == 1
             paperUnit = @paper.circle area.coords[0], area.coords[1], 5
           else

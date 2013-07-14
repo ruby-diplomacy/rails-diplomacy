@@ -12,6 +12,7 @@ RailsDiplomacy::Application.routes.draw do
     resources :states
     resources :power_assignments
     get 'state', on: :member, controller: :states, action: :show
+    put :start, on: :member
   end
 
   resources :order_lists, only: [:create, :show, :update, :index]

@@ -84,6 +84,25 @@ class GamesController < ApplicationController
       format.json { head :no_content }
     end
   end
+  
+  def start
+    @game = Game.find(params[:id])
+
+    if @game.phase == Game::PHASES[:awaiting_players]
+      respond_to do |format|
+        if @game.progress_phase!
+          format.html { redirect_to @game, notice: 'Game started.' }
+          format.json { head :no_content }
+        else
+          format.html { redirect_to @game, error: 'Game could not be started.' }
+          format.json { render json: @game.errors, status: :unprocessable_entity }
+        end
+      end
+    else
+      format.html { redirect_to @game, error: 'Game has already begun.' }
+      format.json { render json: { game: 'Game has already begun' }, status: :unprocessable_entity }
+    end
+  end
 
   private
 

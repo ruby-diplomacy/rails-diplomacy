@@ -19,7 +19,7 @@ end
 
 class OrderList < ActiveRecord::Base
   belongs_to :state
-  attr_accessible :orders, :power, :state, :state_id
+  attr_accessible :orders, :power, :state, :state_id, :confirmed
 
   validates :power, :state, presence: true
   validates_with OrderValidator

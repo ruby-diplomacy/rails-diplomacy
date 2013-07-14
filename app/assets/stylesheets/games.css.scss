@@ -16,5 +16,18 @@ div#game {
 		div.submit-status {
 			display: none;
 		}
+    textarea.confirmed {
+      color: green;
+    }
+    textarea.unconfirmed {
+      color: orange;
+    }
+    textarea.error {
+      color: red;
+    }
 	}
 }
+
+.hide {
+  display: none;
+} 

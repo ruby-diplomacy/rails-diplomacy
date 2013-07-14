@@ -1,5 +1,14 @@
 'use strict'
 
+hexToR = (h) ->
+  parseInt (cutHex(h)).substring(0, 2), 16
+hexToG = (h) ->
+  parseInt (cutHex(h)).substring(2, 4), 16
+hexToB = (h) ->
+  parseInt (cutHex(h)).substring(4, 6), 16
+cutHex = (h) ->
+  (if (h.charAt(0) is "#") then h.substring(1, 7) else h)
+
 class Map
   constructor: (data, paper) ->
     @areas = data.areas
@@ -24,11 +33,14 @@ class Map
 
       unless type == "impassable"
         path.hover (e) ->
-          if not @gl
-            @gl = @glow({ color: "#008080", width: 7 }).toFront()
+          if not @fill
+            @fill = $(this.node).attr('fill')
+            amount = 15
+            highlight = "rgb(#{hexToR(@fill) + amount}, #{hexToG(@fill) + amount}, #{hexToB(@fill) + amount})"
+            $(this.node).attr( fill: highlight )
         , (e) ->
-          @gl.remove()
-          @gl = false
+          $(this.node).attr( fill: @fill )
+          @fill = false
 
   apply_state: (state) ->
     for abbrv, area_state of state

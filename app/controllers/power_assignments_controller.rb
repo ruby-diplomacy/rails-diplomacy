@@ -58,7 +58,7 @@ class PowerAssignmentsController < ApplicationController
 
     respond_to do |format|
       if @power_assignment.save
-        format.html { redirect_to @power_assignment, notice: 'Power assignment was successfully created.' }
+        format.html { redirect_to @power_assignment.game, notice: 'Power assignment was successfully created.' }
         format.json { render json: @power_assignment, status: :created, location: @power_assignment }
       else
         format.html { render action: "new" }
@@ -74,7 +74,7 @@ class PowerAssignmentsController < ApplicationController
 
     respond_to do |format|
       if @power_assignment.update_attributes(params[:power_assignment])
-        format.html { redirect_to @power_assignment, notice: 'Power assignment was successfully updated.' }
+        format.html { redirect_to @power_assignment.game, notice: 'Power assignment was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: "edit" }

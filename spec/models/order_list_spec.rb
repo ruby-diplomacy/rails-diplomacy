@@ -16,4 +16,13 @@ describe OrderList do
 
     game.current_state.order_lists.where(power: "Power").count.should eq(1)
   end
+
+  it "should progress the game if all players have submitted and confirmed" do
+    # TODO if all UNDEFEATED powers have submitted and confirmed
+    Game.any_instance.should_receive(:progress_phase!).once
+
+    game.powers.each do |power|
+      order_list = FactoryGirl.create(:order_list, state: game.current_state, power: power, confirmed: true)
+    end
+  end
 end

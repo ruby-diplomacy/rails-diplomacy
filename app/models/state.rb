@@ -14,6 +14,18 @@ class State < ActiveRecord::Base
     bundle.join(",")
   end
 
+  def all_order_lists_confirmed?
+    powers = []
+    self.order_lists.each do |order_list|
+      if order_list.confirmed
+        powers << order_list.power
+      else
+        return false # even one unconfirmed order list stops progression
+      end
+    end
+    return (self.game.powers - powers).length == 0
+  end
+
   def is_fall?
     self.season == 'Fall'
   end

@@ -40,6 +40,7 @@ end
 FactoryGirl.define do
   factory :user do |f|
     sequence(:name) {|n| "User #{n}" }
+    sequence(:email) {|n| "general#{n}@hq.com" }
   end
 end
 

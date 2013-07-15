@@ -25,8 +25,13 @@ class OrderList < ActiveRecord::Base
   validates_with OrderValidator
 
   before_create :destroy_previous
+  after_save :check_progress_game
 
   def destroy_previous
     previous = OrderList.where(state_id: self.state.id, power: power).destroy_all
+  end
+
+  def check_progress_game
+    self.state.game.progress_phase! if self.state.all_order_lists_confirmed?
   end
 end

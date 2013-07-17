@@ -1,0 +1,8 @@
+<div id="orders" class="tab-pane">
+	<legend>Submit orders</legend>
+	<div id="success" class="submit-status">Orders successfully submitted. 
+	<%= image_tag "tick-button.png", alt: "Success" %></div>
+	<div id="failure" class="submit-status">Order submission failed: <span></span>
+	<%= image_tag "cross-button.png", alt: "Failure" %></div>
+	<%= render partial: "order_list/game_form", locals: { order_list: @order_list } %>
+</div>

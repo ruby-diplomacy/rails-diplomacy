@@ -6,8 +6,8 @@ window.DiplomacyGameCtrl = [
   'MapService'
   'StateService'
   ($scope, $http, MapService, StateService) ->
-    $scope.paper = Raphael "map", 900, 800
-    $scope.paper.setViewBox(0, 0, 610, 560, true)
+    $scope.paper = Raphael "map", "100%", 700
+    $scope.paper.setViewBox(0, 0, 610, 560, false)
 
     MapService.query (data) ->
       $scope.map = new Map(data, $scope.paper)

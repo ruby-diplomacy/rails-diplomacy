@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>RailsDiplomacy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <%= stylesheet_link_tag    "application", :media => "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
@@ -9,13 +10,14 @@
 </head>
 <body>
 
-<div id="notice" class="notice"><%= notice %></div>
-<div id="alert" class="alert"><%= alert %></div>
+<% if notice %><div id="notice" class="notice"><%= notice %></div><% end %>
+<% if alert %><div id="alert" class="alert"><%= alert %></div><% end %>
 
-<div id="container">
-	<div id="header">
-		<div id="menu">
-			<ul>
+<div class="container">
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<a class="brand" href="#">Ruby diplomacy</a>
+			<ul class="nav">
 				<% if user_signed_in? %>
 					<li><%= link_to "Sign out", destroy_user_session_path, method: :delete %></li>
 				<% else %>
@@ -24,7 +26,7 @@
 			</ul>
 		</div>
 	</div>
-	<div id="content">
+	<div id="row-fluid">
 <%= yield %>
 	</div>
 </div>

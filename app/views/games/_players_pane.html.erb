@@ -1,0 +1,16 @@
+<div id="players" class="tab-pane active">
+<% if user_signed_in? and (not @game.started?) %>
+	<% if joined?(current_user, @game) %>
+		<%= link_to "Change power", edit_game_power_assignment_path(@game, power_for_user(current_user, @game)) %>
+		<%= link_to "Start game", start_game_path(@game), method: :put %>
+	<% else %>
+		<%= link_to "Join game", new_game_power_assignment_path(@game) %>
+	<% end %>
+<% end %>
+<h3>Players</h3>
+<ul>
+<% @game.power_assignments.each do |power| %>
+	<li><b><%= power.power %></b>: <%= power.user.name if power.user.present? %></li>
+<% end %>
+</ul>
+</div>

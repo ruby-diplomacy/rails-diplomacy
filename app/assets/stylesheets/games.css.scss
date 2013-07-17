@@ -2,30 +2,22 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-div#game {
-	width: 1200px;
-	margin: 0 auto;
-	>div {
-		display: inline-block;
-		vertical-align: top;
+div#orders {
+	div.submit-status {
+		display: none;
 	}
-	div#orders {
-		&>h3 {
-			display: inline;
-		}
-		div.submit-status {
-			display: none;
-		}
-    textarea.confirmed {
-      color: green;
-    }
-    textarea.unconfirmed {
-      color: orange;
-    }
-    textarea.error {
-      color: red;
-    }
-	}
+  textarea {
+    width: 80%;
+  }
+  textarea.confirmed {
+    color: green;
+  }
+  textarea.unconfirmed {
+    color: orange;
+  }
+  textarea.error {
+    color: red;
+  }
 }
 
 .hide {

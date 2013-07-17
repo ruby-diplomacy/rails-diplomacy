@@ -1,42 +1,27 @@
 <% content_for :includes do %><%= javascript_include_tag :game %><% end %>
-<div ng-app="diplomacy">
-<div id="controls">
+<div ng-app="diplomacy" class="span12">
+<!--div id="controls">
 <%= link_to 'Back', games_path %>
-</div>
+</div-->
 
-<div id="game" ng-controller="DiplomacyGameCtrl">
+<div class="row">
 	<h2><%= @game.name %></h2>
 	<hr />
-
-	<div id="map"></div>
-	<div id="status">
-		<% if user_signed_in? and (not @game.started?) %>
-			<% if joined?(current_user, @game) %>
-				<%= link_to "Change power", edit_game_power_assignment_path(@game, power_for_user(current_user, @game)) %>
-				<%= link_to "Start game", start_game_path(@game), method: :put %>
-			<% else %>
-				<%= link_to "Join game", new_game_power_assignment_path(@game) %>
-			<% end %>
-		<% end %>
-		<h3>Players</h3>
-
-		<ul>
-		<% @game.power_assignments.each do |power| %>
-			<li><b><%= power.power %></b>: <%= power.user.name if power.user.present? %></li>
-		<% end %>
+</div>
+<div id="game" class="row" ng-controller="DiplomacyGameCtrl">
+	<div id="map" class="span8"></div>
+	<div id="state" class="span4">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#players" data-toggle="tab">Players</a></li>
+			<li><a href="#orders" data-toggle="tab">Orders</a></li>
 		</ul>
+		<div class="tab-content">
+			<%= render 'players_pane' %>
+			<% if user_signed_in? and joined?(current_user, @game) and @game.started? %>
+			<%= render 'orders_pane' %>
+			<% end %>
+		</div>
 	</div>
-	<div class="clearfix"></div>
-<% if user_signed_in? and joined?(current_user, @game) and @game.started? %>
-	<div id="orders">
-		<h3>Submit orders</h3>
-		<div id="success" class="submit-status">Orders successfully submitted. 
-		<%= image_tag "tick-button.png", alt: "Success" %></div>
-		<div id="failure" class="submit-status">Order submission failed: <span></span>
-		<%= image_tag "cross-button.png", alt: "Failure" %></div>
-	<%= render partial: "order_list/game_form", locals: { order_list: @order_list } %>
-	</div>
-<% end %>
 </div>
 
 </div>

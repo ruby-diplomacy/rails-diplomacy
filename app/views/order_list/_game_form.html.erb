@@ -1,9 +1,12 @@
 <%= form_for(order_list, remote: true) do |f| %>
-  <%= f.text_area :orders, class: order_list.confirmed ? :confirmed : :unconfirmed %>
+<fieldset>
+  <%= f.text_area :orders, class: (order_list.confirmed ? :confirmed : :unconfirmed), rows: 10 %>
+	<br />
+  <%= f.button :Submit, class: :btn, type: :submit %>
+  <%= f.submit :Confirm, class: order_list.confirmed ? [:hide, :btn] : :btn %>
+  <%= f.submit :Unconfirm, class: order_list.confirmed ? :btn : [:hide, :btn] %>
   <%= f.hidden_field :state_id %>
   <%= f.hidden_field :power %>
   <%= f.hidden_field :confirmed %>
-  <%= f.submit :Submit %>
-  <%= f.submit :Confirm, class: order_list.confirmed ? :hide : '' %>
-  <%= f.submit :Unconfirm, class: order_list.confirmed ? '' : :hide %>
+</fieldset>
 <% end %>

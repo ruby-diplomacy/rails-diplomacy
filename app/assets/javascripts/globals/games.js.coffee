@@ -23,3 +23,8 @@ $ ->
     $('#orders textarea').removeClass().addClass('unconfirmed')
     $(this).addClass('hide')
     $('#orders form input[type=submit][value=Confirm]').removeClass('hide')
+
+  $('#state ul.nav-tabs a').click( (e) ->
+    e.preventDefault()
+    $(this).tab('show')
+  )

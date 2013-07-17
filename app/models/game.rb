@@ -50,7 +50,8 @@ class Game < ActiveRecord::Base
       self.phase = PHASES[:movement]
     when PHASES[:movement]
       # adjudicate orders
-      new_state, adjudicated_orders = ADJUDICATOR.resolve! previous_state, op.parse_orders(previous_state_record.bundle_orders)
+      adjust = previous_state_record.is_fall? # if it was fall, also adjust ownership of areas
+      new_state, adjudicated_orders = ADJUDICATOR.resolve! previous_state, op.parse_orders(previous_state_record.bundle_orders), adjust
       new_state_record = create_new_state_record(new_state, previous_state_record)
 
       if not new_state.retreats.empty?
@@ -66,7 +67,8 @@ class Game < ActiveRecord::Base
       end
     when PHASES[:retreats]
       # adjudicate retreats
-      new_state, adjudicated_orders = ADJUDICATOR.resolve_retreats! previous_state, op.parse_orders(previous_state_record.bundle_orders)
+      adjust = previous_state_record.is_fall? # if it was fall, also adjust ownership of areas
+      new_state, adjudicated_orders = ADJUDICATOR.resolve_retreats! previous_state, op.parse_orders(previous_state_record.bundle_orders), adjust
       new_state_record = create_new_state_record(new_state, previous_state_record)
 
       # if it's Fall, go to supply, otherwise to movement

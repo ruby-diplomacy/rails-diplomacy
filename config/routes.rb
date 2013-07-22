@@ -11,7 +11,10 @@ RailsDiplomacy::Application.routes.draw do
   resources :games do
     resources :states
     resources :power_assignments
-    get 'state', on: :member, controller: :states, action: :show
+    get :available, on: :collection, action: :index, scope: :available
+    get :finished, on: :collection, action: :index, scope: :finished
+    get :ongoing, on: :collection, action: :index, scope: :ongoing
+    get :state, on: :member, controller: :states, action: :show
     put :start, on: :member
   end
 

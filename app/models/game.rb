@@ -17,6 +17,10 @@ class Game < ActiveRecord::Base
     finished: 4
   }
 
+  scope :available, -> { where(phase: PHASES[:awaiting_players]) }
+  scope :finished, -> { where(phase: PHASES[:finished]) }
+  scope :ongoing, -> { where(phase: PHASES.values_at(:movement, :retreats, :supply)) }
+
   # START CALLBACK METHODS ========================
   after_create :create_initial_state
 

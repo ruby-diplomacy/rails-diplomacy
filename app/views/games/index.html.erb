@@ -1,19 +1,13 @@
-<h1>Listing games</h1>
+<h1><%= game_index_list(params) %></h1>
 
-<table>
+<table class="table table-striped">
   <tr>
     <th>Name</th>
-    <th></th>
-    <th></th>
-    <th></th>
   </tr>
 
 <% @games.each do |game| %>
   <tr>
-    <td><%= game.name %></td>
-    <td><%= link_to 'Show', game %></td>
-    <td><%= link_to 'Edit', edit_game_path(game) %></td>
-    <td><%= link_to 'Destroy', game, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <td><%= link_to game.name, game %></td>
   </tr>
 <% end %>
 </table>

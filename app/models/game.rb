@@ -17,6 +17,7 @@ class Game < ActiveRecord::Base
     finished: 4
   }
 
+  default_scope order('created_at DESC')
   scope :available, -> { where(phase: PHASES[:awaiting_players]) }
   scope :finished, -> { where(phase: PHASES[:finished]) }
   scope :ongoing, -> { where(phase: PHASES.values_at(:movement, :retreats, :supply)) }

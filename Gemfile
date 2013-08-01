@@ -30,6 +30,9 @@ group :development, :test do
   gem 'factory_girl_rails'
 end
 
+gem 'delayed_job_active_record'
+#gem 'delayed_job_web'
+
 gem 'ruby-adjudicator'
 
 gem 'devise'

@@ -14,6 +14,8 @@ class Map
     @areas = data.areas
     @powers = data.powers
     @paper = paper
+
+    $(@power_color_styles()).appendTo('head')
     
     for own area of data.areas
       path = paper.path(data.areas[area]['path'])
@@ -70,5 +72,12 @@ class Map
 
   power_color: (power) ->
     return @powers[power].colour
+
+  power_color_styles: ->
+    styles = ""
+    for own power, info of @powers
+      styles += ".#{power} { background-color: #{info.colour} } "
+
+    return "<style>#{styles}</style>"
 
 window.Map = Map

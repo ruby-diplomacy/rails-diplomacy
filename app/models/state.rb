@@ -45,6 +45,19 @@ class State < ActiveRecord::Base
     self.save
   end
 
+  def sc_list_per_power
+    gs = self.to_gamestate
+  	supply_centers = MAP_READER.maps['Standard'].supply_centers
+    result = {}
+    supply_centers.each do |abbrv, area|
+      area_state = gs[abbrv]
+      unless area_state.owner.nil?
+        (result[area_state.owner] ||= Array.new) << abbrv
+      end
+    end
+    result
+  end
+
   def to_gamestate
     state_parser = Diplomacy::StateParser.new
     state_parser.parse_state state || ""

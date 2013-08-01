@@ -7,10 +7,12 @@
 		<%= link_to "Join game", new_game_power_assignment_path(@game) %>
 	<% end %>
 <% end %>
-<h3>Players</h3>
-<ul>
-<% @game.power_assignments.each do |power| %>
-	<li><b><%= power.power %></b>: <%= power.user.name if power.user.present? %></li>
+<table class="table">
+<% @power_assignments.reverse.each do |power| %>
+	<tr>
+		<td><b class="<%= power.power %>"><%= power.power %></b><%= " (#{power.user.name})" if power.user.present? %></td>
+		<td><%= "<span>#{@sc_list_per_power[power.power.to_sym].length}</span> SCs".html_safe %></td>
+	</tr>
 <% end %>
-</ul>
+</table>
 </div>

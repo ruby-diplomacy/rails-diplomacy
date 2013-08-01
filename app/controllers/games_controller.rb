@@ -18,6 +18,14 @@ class GamesController < ApplicationController
   # GET /games/1.json
   def show
     @game = Game.find(params[:id])
+    @sc_list_per_power = @game.current_state.sc_list_per_power.with_indifferent_access#.sort_by {|_k, v| v.length }.reverse
+    @power_assignments = @game.power_assignments.sort do |pa1, pa2|
+      if @sc_list_per_power.has_key? pa1.power and @sc_list_per_power.has_key? pa2.power
+        @sc_list_per_power[pa1.power].length <=> @sc_list_per_power[pa2.power].length
+      else
+        0
+      end
+    end
 
     if user_signed_in? and joined?(current_user, @game)
       @order_list = OrderList.where(power: power_for_user(current_user, @game).power, state_id: @game.current_state.id).first_or_initialize

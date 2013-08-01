@@ -20,6 +20,20 @@ div#orders {
   }
 }
 
+#players {
+  b {
+    width: 5em;
+    padding: 0.5em;
+    border-radius: 5px;
+    color: white;
+    text-shadow: 0.1em 0.1em 0.2em black;
+  }
+  tr td:last-of-type span {
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+}
+
 .hide {
   display: none;
 }

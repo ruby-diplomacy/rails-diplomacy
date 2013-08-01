@@ -8,9 +8,23 @@
 	<% end %>
 <% end %>
 <table class="table">
+	<tr>
+		<th>Power</th>
+		<th>Orders</th>
+		<th>Stats</th>
+	</tr>
 <% @power_assignments.reverse.each do |power| %>
 	<tr>
 		<td><b class="<%= power.power %>"><%= power.power %></b><%= " (#{power.user.name})" if power.user.present? %></td>
+		<td class="order-status"><% if (ol = order_list_for_user(power.user, @game)).nil? %>
+			<%= image_tag "orange-flag.png", alt: :"Not sent", title: :"Not sent" %></div>
+		<% else %>
+			<% if ol.confirmed? %>
+				<%= image_tag "green-flag.png", alt: :"Confirmed", title: :"Confirmed" %></div>
+			<% else %>
+				<%= image_tag "yellow-flag.png", alt: :"Sent but unconfirmed", title: :"Sent but unconfirmed" %></div>
+			<% end %>
+		<% end %></td>
 		<td><%= "<span>#{@sc_list_per_power[power.power.to_sym].length}</span> SCs".html_safe %></td>
 	</tr>
 <% end %>

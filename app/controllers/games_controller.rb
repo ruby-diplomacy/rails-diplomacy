@@ -18,6 +18,7 @@ class GamesController < ApplicationController
   # GET /games/1.json
   def show
     @game = Game.find(params[:id])
+
     @sc_list_per_power = @game.current_state.sc_list_per_power.with_indifferent_access#.sort_by {|_k, v| v.length }.reverse
     @power_assignments = @game.power_assignments.sort do |pa1, pa2|
       if @sc_list_per_power.has_key? pa1.power and @sc_list_per_power.has_key? pa2.power
@@ -122,6 +123,13 @@ class GamesController < ApplicationController
     user.power_assignments.where(game_id: game.id).first
   end
   helper_method :power_for_user
+
+  def order_list_for_user(user, game)
+    power = power_for_user(user, game)
+    puts "Power: #{power}"
+    game.current_state.order_lists.where(power: power.power).first
+  end
+  helper_method :order_list_for_user
 
   def joined?(user, game)
     not power_for_user(user, game).nil?

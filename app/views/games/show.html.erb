@@ -4,9 +4,11 @@
 <%= link_to 'Back', games_path %>
 </div-->
 
+<div id="game-title" class="row">
+	<span class="span8"><h2><%= @game.name %></h2></span><span id="season" class="span4"><h3><%= "#{@game.current_state.season}, #{@game.current_state.year} (#{@game.phase_name})"%></h3></span>
+</div>
 <div class="row">
-	<h2><%= @game.name %></h2>
-	<hr />
+	<span class="span12"><hr /></span>
 </div>
 <div id="game" class="row" ng-controller="DiplomacyGameCtrl">
 	<div id="map" class="span8"></div>

@@ -100,6 +100,14 @@ class Game < ActiveRecord::Base
     self.save
   end
 
+  def phase_name
+    PHASES.each do |name, val|
+      if val == self.phase
+        return name.to_s.gsub(/_/, " ").capitalize
+      end
+    end
+  end
+
   private
 
   def create_new_state_record(new_state, previous_state_record)

@@ -19,7 +19,7 @@ class GamesController < ApplicationController
   def show
     @game = Game.find(params[:id])
 
-    @sc_list_per_power = @game.current_state.sc_list_per_power.with_indifferent_access#.sort_by {|_k, v| v.length }.reverse
+    @sc_list_per_power = @game.current_state.sc_list_per_power.with_indifferent_access
     @power_assignments = @game.power_assignments.sort do |pa1, pa2|
       if @sc_list_per_power.has_key? pa1.power and @sc_list_per_power.has_key? pa2.power
         @sc_list_per_power[pa1.power].length <=> @sc_list_per_power[pa2.power].length

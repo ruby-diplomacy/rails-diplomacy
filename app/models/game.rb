@@ -88,8 +88,10 @@ class Game < ActiveRecord::Base
       new_state, adjudicated_orders = ADJUDICATOR.resolve_builds! previous_state, op.parse_orders(previous_state_record.bundle_orders)
       new_state_record = create_new_state_record(new_state, previous_state_record)
 
+      max_scs = new_state_record.sc_list_per_power.values.max_by(&:length)
+
       # if someone won, go to finished, otherwise to movement
-      if false # TODO someone won
+      if max_scs.length > (MAP_READER.maps['Standard'].supply_centers.length / 2)
         self.phase = PHASES[:finished]
       else
         new_state_record.progress_season!

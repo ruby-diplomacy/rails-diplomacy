@@ -105,8 +105,35 @@ describe Game do
         end
       end
     end
-    context "when in supply, if someone won" do
-      it "should go to finished"
+    context "when in supply" do
+      it "should go to finished, if someone won" do
+        game.phase = Game::PHASES[:supply]
+
+        FactoryGirl.create(
+          :state,
+          turn: game.current_state.turn + 1,
+          game: game,
+          state: "Germany:|Kie,Ber,Mun,Den,Hol,Bel,Par,Mar,Bre,Spa,Por,Lon,Liv,Edi,Swe,Nor,Vie,War"
+        )
+
+        game.progress_phase!
+
+        game.phase.should eq(Game::PHASES[:finished])
+      end
+      it "should go to movement, if noone won" do
+        game.phase = Game::PHASES[:supply]
+
+        FactoryGirl.create(
+          :state,
+          turn: game.current_state.turn + 1,
+          game: game,
+          state: "Germany:|Kie,Ber,Mun,Den,Hol,Bel,Par,Mar,Bre,Spa,Por,Lon,Liv,Edi,Swe,Nor,Vie, France:|Con"
+        )
+
+        game.progress_phase!
+
+        game.phase.should eq(Game::PHASES[:movement])
+      end
     end
   end
 end

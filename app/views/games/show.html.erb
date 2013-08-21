@@ -5,7 +5,7 @@
 </div-->
 
 <div id="game-title" class="row">
-	<span class="span8"><h2><%= @game.name %></h2></span><span id="season" class="span4"><h3><%= "#{@game.current_state.season}, #{@game.current_state.year} (#{@game.phase_name})"%></h3></span>
+	<span class="span8"><h2><%= @game.name %></h2></span><span id="season" class="span4"><h3><%= pretty_print_phase(@game) %></h3></span>
 </div>
 <div class="row">
 	<span class="span12"><hr /></span>

@@ -3,11 +3,15 @@
 <table class="table table-striped">
   <tr>
     <th>Name</th>
+    <th>Phase</th>
+    <th>Phase length</th>
   </tr>
 
 <% @games.each do |game| %>
   <tr>
     <td><%= link_to game.name, game %></td>
+    <td><%= pretty_print_phase(game) %></td>
+    <td><%= pretty_print_duration(game.phase_length.minutes) %></td>
   </tr>
 <% end %>
 </table>

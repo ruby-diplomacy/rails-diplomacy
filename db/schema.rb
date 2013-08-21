@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130821192555) do
+ActiveRecord::Schema.define(:version => 20130801204917) do
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0, :null => false
@@ -31,11 +31,9 @@ ActiveRecord::Schema.define(:version => 20130821192555) do
 
   create_table "games", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at",                                 :null => false
-    t.datetime "updated_at",                                 :null => false
-    t.integer  "phase",        :limit => 1, :default => 0
-    t.integer  "phase_length",              :default => 720
-    t.datetime "next_phase"
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
+    t.integer  "phase",      :limit => 1, :default => 0
   end
 
   create_table "order_lists", :force => true do |t|

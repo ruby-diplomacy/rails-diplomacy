@@ -3,11 +3,12 @@ class Game < ActiveRecord::Base
   has_many :users, through: :power_assignments
   has_many :states, dependent: :destroy
 
-  attr_accessible :name, :power_assignments_attributes, :states, :phase
+  attr_accessible :name, :power_assignments_attributes, :states, :phase, :phase_length, :next_phase
   
   accepts_nested_attributes_for :power_assignments, reject_if: proc { |a| a[:power].blank? }, :allow_destroy => true
 
   validates :name, presence: true
+  validates :phase_length, presence: true, numericality: true, inclusion: 5..2880
 
   PHASES = {
     awaiting_players: 0,
@@ -17,6 +18,15 @@ class Game < ActiveRecord::Base
     finished: 4
   }
 
+  # suggested phase lengths
+  PHASE_LENGTHS = {
+    :'Five minutes' => 5,
+    :'Twelve hours' => 720,
+    :'Twenty four hours'=> 1440,
+    :'Thirty six hours'=> 2160,
+    :'Forty eight hours'=> 2880
+  }
+  
   default_scope order('created_at DESC')
   scope :available, -> { where(phase: PHASES[:awaiting_players]) }
   scope :finished, -> { where(phase: PHASES[:finished]) }

@@ -15,6 +15,10 @@
     <%= f.label :name %><br />
     <%= f.text_field :name %>
   </div>
+  <div class="field">
+    <%= f.label :phase_length %><br />
+    <%= f.select :phase_length, Game::PHASE_LENGTHS %>
+  </div>
   <div class="actions">
     <%= f.submit %>
   </div>

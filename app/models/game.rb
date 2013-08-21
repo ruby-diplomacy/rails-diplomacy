@@ -33,7 +33,7 @@ class Game < ActiveRecord::Base
   scope :ongoing, -> { where(phase: PHASES.values_at(:movement, :retreats, :supply)) }
 
   # START CALLBACK METHODS ========================
-  after_create :create_initial_state
+  after_create :create_initial_state, :set_next_phase
 
   def create_initial_state
     sp = Diplomacy::StateParser.new MAP_READER.maps['Standard'].starting_state
@@ -109,6 +109,7 @@ class Game < ActiveRecord::Base
       end
     end
 
+    self.set_next_phase
     self.save
   end
 
@@ -132,5 +133,10 @@ class Game < ActiveRecord::Base
       season: previous_state_record.season,
       year: previous_state_record.year
     )
+  end
+
+  def set_next_phase
+    self.next_phase = Time.current() + self.phase_length.minutes
+    self.save
   end
 end

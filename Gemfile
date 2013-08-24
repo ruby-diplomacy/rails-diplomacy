@@ -32,7 +32,8 @@ group :development, :test do
 end
 
 gem 'delayed_job_active_record'
-#gem 'delayed_job_web'
+gem 'delayed_job_web'
+gem 'daemons'
 
 gem 'ruby-adjudicator'
 

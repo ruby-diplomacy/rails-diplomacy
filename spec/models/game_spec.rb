@@ -162,6 +162,5 @@ describe Game do
         job.run_at.should eq(Time.now + game.phase_length.minutes)
       end
     end
-    it "should actually run"
   end
 end

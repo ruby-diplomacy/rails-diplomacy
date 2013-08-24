@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :game do |f|
     sequence(:name) {|n| "Game #{n}" }
+    phase_length 1440
 
     trait :just_started do
       phase Game::PHASES[:awaiting_players]

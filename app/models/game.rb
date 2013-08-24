@@ -4,6 +4,7 @@ class Game < ActiveRecord::Base
   has_many :states, dependent: :destroy
 
   attr_accessible :name, :power_assignments_attributes, :states, :phase, :phase_length, :next_phase
+  attr_reader :job_id
   
   accepts_nested_attributes_for :power_assignments, reject_if: proc { |a| a[:power].blank? }, :allow_destroy => true
 
@@ -109,7 +110,9 @@ class Game < ActiveRecord::Base
       end
     end
 
-    self.set_next_phase
+    set_next_phase
+    self.job_id = self.delay(run_at: self.next_phase).progress_phase!
+
     self.save
   end
 
@@ -138,5 +141,13 @@ class Game < ActiveRecord::Base
   def set_next_phase
     self.next_phase = Time.current() + self.phase_length.minutes
     self.save
+  end
+
+  def job_id=(id)
+    # try to cancel the old job, right?
+    old_job = Delayed::Job.find_by_id(@job_id)
+    old_job.destroy if old_job
+
+    @job_id = id
   end
 end

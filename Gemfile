@@ -28,6 +28,7 @@ gem 'jquery-rails'
 group :development, :test do
   gem 'rspec-rails', '~> 2.0'
   gem 'factory_girl_rails'
+  gem 'timecop'
 end
 
 gem 'delayed_job_active_record'

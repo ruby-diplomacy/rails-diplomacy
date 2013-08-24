@@ -136,4 +136,32 @@ describe Game do
       end
     end
   end
+  describe "delayed_job" do
+    it "should schedule a new phase when progressing" do
+      Delayed::Job.all.count.should eq(0)
+
+      game.progress_phase!
+      game.job_id.should_not be_nil
+
+      Delayed::Job.all.count.should eq(1)
+    end
+    it "should replace the old job when progressing early" do
+      Delayed::Job.all.count.should eq(0)
+
+      game.progress_phase!
+      old_id = game.job_id
+      game.progress_phase!
+      game.job_id.should_not eq(old_id)
+
+      Delayed::Job.all.count.should eq(1)
+    end
+    it "should set the correct time" do
+      Timecop.freeze(Time.now) do
+        game.progress_phase!
+        job = Delayed::Job.find_by_id(game.job_id)
+        job.run_at.should eq(Time.now + game.phase_length.minutes)
+      end
+    end
+    it "should actually run"
+  end
 end

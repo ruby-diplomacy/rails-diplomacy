@@ -3,15 +3,20 @@ class OrderValidator < ActiveModel::Validator
     if record.orders.nil?
       record.errors[:orders] << "Cannot be nil"
     else
-      # this code is unintuitive at best, I wonder who wrote that damn gem
       sp = Diplomacy::StateParser.new
       state = sp.parse_state(record.state.state)
       op = Diplomacy::OrderParser.new state
 
-      orders = op.parse_orders record.orders
+      begin
+        orders = op.parse_orders record.orders
 
-      unless orders.compact!.nil?
-        record.errors[:orders] << "Invalid order list"
+        orders.each do |order|
+
+        end
+      rescue Diplomacy::WrongOrderTypeError => wote
+        record.errors[:orders] << wote.message
+      rescue Diplomacy::OrderParsingError => ope
+        record.errors[:orders] << ope.message
       end
     end
   end

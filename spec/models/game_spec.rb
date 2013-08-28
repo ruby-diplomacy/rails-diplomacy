@@ -11,6 +11,14 @@ describe Game do
     game.phase.should eq(Game::PHASES[:awaiting_players])
   end
 
+  it "should start as soon as all powers are present" do
+    game
+    FactoryGirl.create_list(:power_assignment_with_user, 7, game: game)
+
+    game.reload
+    expect(game.phase).to eq(Game::PHASES[:movement])
+  end
+
   it "should have a valid initial state" do
     state = game.current_state
     state.turn.should eq(1)

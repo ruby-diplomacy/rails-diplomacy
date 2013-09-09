@@ -35,7 +35,7 @@ gem 'delayed_job_active_record'
 gem 'delayed_job_web'
 gem 'daemons'
 
-gem 'ruby-adjudicator'
+gem 'ruby-adjudicator', :git => 'git://github.com/ruby-diplomacy/ruby-adjudicator.git'
 
 gem 'devise'
 
